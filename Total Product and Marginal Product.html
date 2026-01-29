@@ -1,1 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Function Model - Final Polish</title>
+    <style>
+        :root {
+            --tp-color: #00695c;
+            --mp-color: #c62828;
+            --tangent-color: #c62828;
+            --bg-color: #f4f7f6;
+            --box-bg: #ffffff;
+        }
 
+        body {
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h2 { margin-bottom: 5px; color: #1a237e; letter-spacing: -0.5px; }
+        p.subtitle { margin-top: 0; color: #546e7a; font-size: 0.95em; margin-bottom: 25px; text-align: center; max-width: 600px;}
+
+        .canvas-container {
+            position: relative;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            width: 750px;
+            height: 750px;
+            user-select: none;
+            cursor: ew-resize;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #smart-tooltip {
+            position: absolute;
+            top: 385px; 
+            transform: translate(-50%, -50%); 
+            width: 220px;
+            background: var(--box-bg);
+            border: 1px solid #ddd;
+            border-top: 3px solid var(--tp-color);
+            border-bottom: 3px solid var(--mp-color);
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            padding: 12px;
+            z-index: 10; 
+            pointer-events: none; 
+            text-align: center;
+            /* Using a slight transition for smooth sliding */
+            transition: left 0.1s ease-out;
+        }
+
+        .stat-grid {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 8px;
+            font-family: "Menlo", monospace;
+            font-size: 13px;
+            color: #444;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .stat-val { font-weight: bold; }
+        .note-title { font-weight: 800; margin-bottom: 4px; display: block; color: #1a237e; font-size: 13px; text-transform: uppercase; }
+        .note-body { color: #37474f; font-size: 12px; line-height: 1.4; }
+        .highlight-text { background: rgba(255, 235, 59, 0.4); padding: 0 3px; border-radius: 2px; color: #000; }
+    </style>
+</head>
+<body>
+
+    <h2>Short-Run Production Function</h2>
+    <p class="subtitle">Drag to interact. The explanation box and slope label are optimized for visibility.</p>
+
+    <div class="canvas-container" id="container">
+        <canvas id="mainCanvas" width="750" height="750"></canvas>
+        <div id="smart-tooltip">
+            <div class="stat-grid">
+                <span>Labor: <span class="stat-val" id="disp-l">0</span></span>
+            </div>
+            <span class="note-title" id="note-title">Phase</span>
+            <div class="note-body" id="note-body">Explanation...</div>
+        </div>
+    </div>
+
+<script>
+    const CONFIG = {
+        minL: 0,
+        maxL: 10,
+        funcTP: (L) => -Math.pow(L, 3) + 12 * Math.pow(L, 2),
+        funcMP: (L) => -3 * Math.pow(L, 2) + 24 * L,
+        inflectionPoint: 4, 
+        maxTotalPoint: 8,
+        layout: {
+            width: 750,
+            height: 750,
+            paddingLeft: 70, 
+            paddingRight: 60,
+            topGraphY: 40,
+            topGraphH: 280,
+            botGraphY: 450,
+            botGraphH: 250
+        },
+        scales: {
+            maxTP_Y: 300, 
+            maxMP_Y: 60,
+            minMP_Y: -70
+        },
+        colors: {
+            tp: '#00695c',
+            mp: '#c62828',
+            tangent: '#c62828',
+            grid: '#e0e0e0',
+            axis: '#263238',
+            zoneInc: '#e8f5e9', 
+            zoneDim: '#fff8e1'
+        }
+    };
+
+    let state = { L: 0.6, isDragging: false };
+
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const tooltip = document.getElementById('smart-tooltip');
+    const container = document.getElementById('container');
+
+    function setupCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = CONFIG.layout.width * dpr;
+        canvas.height = CONFIG.layout.height * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${CONFIG.layout.width}px`;
+        canvas.style.height = `${CONFIG.layout.height}px`;
+    }
+
+    const toX = (L) => {
+        const usableW = CONFIG.layout.width - CONFIG.layout.paddingLeft - CONFIG.layout.paddingRight;
+        return CONFIG.layout.paddingLeft + (L / CONFIG.maxL) * usableW;
+    };
+    const fromX = (px) => {
+        const usableW = CONFIG.layout.width - CONFIG.layout.paddingLeft - CONFIG.layout.paddingRight;
+        let val = ((px - CONFIG.layout.paddingLeft) / usableW) * CONFIG.maxL;
+        return Math.max(0, Math.min(CONFIG.maxL, val));
+    };
+    const toY = (val, graphTop, graphHeight, maxVal, minVal = 0) => {
+        const range = maxVal - minVal;
+        const normalized = (val - minVal) / range;
+        return (graphTop + graphHeight) - (normalized * graphHeight);
+    };
+
+    function drawCleanBackgroundZones() {
+        const left = CONFIG.layout.paddingLeft;
+        const right = CONFIG.layout.width - CONFIG.layout.paddingRight;
+        const xInflect = toX(CONFIG.inflectionPoint);
+
+        const paintZones = (y, h) => {
+            ctx.fillStyle = CONFIG.colors.zoneInc;
+            ctx.fillRect(left, y, xInflect - left, h);
+            ctx.fillStyle = CONFIG.colors.zoneDim;
+            ctx.fillRect(xInflect, y, right - xInflect, h);
+        };
+
+        paintZones(CONFIG.layout.topGraphY, CONFIG.layout.topGraphH);
+        paintZones(CONFIG.layout.botGraphY, CONFIG.layout.botGraphH);
+    }
+
+    function drawGrid(graphTop, graphHeight, maxVal, minVal, stepY) {
+        const left = CONFIG.layout.paddingLeft;
+        const right = CONFIG.layout.width - CONFIG.layout.paddingRight;
+        const bottom = graphTop + graphHeight;
+
+        ctx.lineWidth = 1;
+        ctx.font = "12px Arial";
+        ctx.textAlign = "right"; 
+        ctx.textBaseline = "middle";
+
+        for(let v = minVal; v <= maxVal; v += stepY) {
+            if(v === 0 && minVal !== 0) continue; 
+            const y = toY(v, graphTop, graphHeight, maxVal, minVal);
+            ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.grid; 
+            ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke();
+            ctx.fillStyle = "#78909c";
+            ctx.fillText(v, left - 10, y);
+        }
+
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "top";
+        for(let l = 1; l <= CONFIG.maxL; l++) {
+            const x = toX(l);
+            ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.grid;
+            ctx.moveTo(x, graphTop); ctx.lineTo(x, bottom); ctx.stroke();
+            ctx.fillStyle = "#78909c";
+            ctx.fillText(l, x, bottom + 8);
+        }
+    }
+
+    function drawPhaseLabels() {
+        const left = CONFIG.layout.paddingLeft;
+        const right = CONFIG.layout.width - CONFIG.layout.paddingRight;
+        const xInflect = toX(CONFIG.inflectionPoint);
+
+        const paintLabels = (y) => {
+            ctx.font = "bold 11px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillStyle = "rgba(0,0,0,0.3)";
+            ctx.fillText("INCREASING MARGINAL RETURNS", (left + xInflect)/2, y);
+            ctx.fillText("DIMINISHING MARGINAL RETURNS", (xInflect + right)/2, y);
+        };
+
+        paintLabels(CONFIG.layout.topGraphY + 20);
+        paintLabels(CONFIG.layout.botGraphY + 20);
+    }
+
+    function drawAxesAndTitles(graphTop, graphHeight, maxVal, minVal, title, yLabel) {
+        const left = CONFIG.layout.paddingLeft;
+        const right = CONFIG.layout.width - CONFIG.layout.paddingRight;
+        const bottom = graphTop + graphHeight;
+
+        ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.axis; ctx.lineWidth = 1.5;
+        ctx.moveTo(left, graphTop); ctx.lineTo(left, bottom);
+        const yZero = toY(0, graphTop, graphHeight, maxVal, minVal);
+        ctx.moveTo(left, yZero); ctx.lineTo(right, yZero);
+        ctx.stroke();
+
+        ctx.fillStyle = "#263238"; 
+        ctx.font = "bold 14px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(title, left, graphTop - 15);
+        
+        ctx.save();
+        ctx.translate(left - 50, graphTop + graphHeight/2);
+        ctx.rotate(-Math.PI/2);
+        ctx.textAlign = "center";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(yLabel, 0, 0);
+        ctx.restore();
+
+        ctx.textAlign = "right";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("Labor", right, bottom + 25);
+    }
+
+    function drawCurve(func, graphTop, graphHeight, maxVal, minVal, color) {
+        ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+        const left = CONFIG.layout.paddingLeft;
+        const right = CONFIG.layout.width - CONFIG.layout.paddingRight;
+
+        for (let px = left; px <= right; px+=1) {
+            const l = fromX(px);
+            const val = func(l);
+            const py = toY(val, graphTop, graphHeight, maxVal, minVal);
+            if (py >= graphTop && py <= graphTop + graphHeight) {
+                if(px === left) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            } else {
+                ctx.moveTo(px, Math.min(Math.max(py, graphTop), graphTop + graphHeight));
+            }
+        }
+        ctx.stroke();
+    }
+
+    function drawTangentAndLabel(L, tpVal, slope) {
+        const len = 1.8; 
+        const x1 = L - len; const x2 = L + len;
+        const y1 = slope*(x1-L) + tpVal; const y2 = slope*(x2-L) + tpVal;
+        
+        const px1 = toX(x1); 
+        const py1 = toY(y1, CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0);
+        const px2 = toX(x2); 
+        const py2 = toY(y2, CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(CONFIG.layout.paddingLeft, CONFIG.layout.topGraphY, 
+                 CONFIG.layout.width - CONFIG.layout.paddingLeft - CONFIG.layout.paddingRight, 
+                 CONFIG.layout.topGraphH);
+        ctx.clip();
+
+        ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.tangent; ctx.lineWidth = 3; 
+        ctx.moveTo(px1, py1); ctx.lineTo(px2, py2); ctx.stroke();
+        ctx.restore();
+
+        // Slope Label Positioned Top-Left
+        const pointX = toX(L);
+        const pointY = toY(tpVal, CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0);
+        const text = `Slope = MP = ${slope.toFixed(1)}`;
+        ctx.font = "bold 12px monospace";
+        const textWidth = ctx.measureText(text).width;
+        
+        // Initial Top-Left offset
+        let lx = pointX - 10;
+        let ly = pointY - 20;
+        ctx.textAlign = "right";
+
+        // Safety: If hitting the left axis, shift to top-right
+        if (lx - textWidth < CONFIG.layout.paddingLeft) {
+            lx = pointX + 10;
+            ctx.textAlign = "left";
+        }
+
+        const boxW = textWidth + 10;
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fillRect(ctx.textAlign === "right" ? lx - boxW : lx, ly - 9, boxW, 18);
+        ctx.fillStyle = CONFIG.colors.tangent;
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, ctx.textAlign === "right" ? lx - 5 : lx + 5, ly);
+    }
+
+    function drawDottedConnector(L) {
+        const x = toX(L);
+        ctx.beginPath(); ctx.setLineDash([5, 5]); ctx.strokeStyle = "#90a4ae"; ctx.lineWidth = 1.5;
+        ctx.moveTo(x, CONFIG.layout.topGraphY); 
+        ctx.lineTo(x, CONFIG.layout.botGraphY + CONFIG.layout.botGraphH); 
+        ctx.stroke(); ctx.setLineDash([]); 
+    }
+
+    function drawPointAndLabel(L, val, graphTop, graphHeight, maxVal, minVal, color, labelPrefix) {
+        const x = toX(L);
+        const y = toY(val, graphTop, graphHeight, maxVal, minVal);
+        if(y < graphTop || y > graphTop + graphHeight) return;
+
+        ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); 
+        ctx.fillStyle = "#fff"; ctx.fill(); 
+        ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
+
+        const text = `${labelPrefix}: ${val.toFixed(0)}`;
+        ctx.font = "bold 12px monospace";
+        const boxW = ctx.measureText(text).width + 12;
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        ctx.fillRect(x + 12, y - 17, boxW, 18);
+        ctx.textBaseline = "middle"; ctx.textAlign = "left"; ctx.fillStyle = color;
+        ctx.fillText(text, x + 18, y - 8);
+    }
+
+    function updateDOM(L) {
+        let xPos = toX(L);
+        const boxWidth = 220;
+        const halfBox = boxWidth / 2;
+        const containerWidth = CONFIG.layout.width;
+
+        // Clamp xPos so the box edges don't leave the container bounds
+        xPos = Math.max(halfBox + 5, Math.min(containerWidth - halfBox - 5, xPos));
+        
+        tooltip.style.left = xPos + "px";
+        document.getElementById('disp-l').innerText = L.toFixed(1);
+        const titleEl = document.getElementById('note-title');
+        const bodyEl = document.getElementById('note-body');
+
+        if (L < 3.9) {
+            titleEl.innerText = "Increasing Marginal Returns";
+            bodyEl.innerHTML = `Total Product is <span class="highlight-text">convex</span>.<br><b style="color:var(--mp-color)">Marginal Product</b> is rising.`;
+        } else if (L >= 3.9 && L <= 4.1) {
+            titleEl.innerText = "Inflection Point";
+            bodyEl.innerHTML = `Maximum steepness.<br><b style="color:var(--mp-color)">Marginal Product</b> is maximized.`;
+        } else if (L > 4.1 && L < 7.9) {
+            titleEl.innerText = "Diminishing Returns";
+            bodyEl.innerHTML = `Total Product is <span class="highlight-text">concave</span>.<br><b style="color:var(--mp-color)">Marginal Product</b> is falling.`;
+        } else if (L >= 7.9 && L <= 8.1) {
+            titleEl.innerText = "Maximum Total Product";
+            bodyEl.innerHTML = `Slope = 0.<br><b style="color:var(--mp-color)">Marginal Product is Zero</b>.`;
+        } else {
+            titleEl.innerText = "Negative Returns";
+            bodyEl.innerHTML = `Slope is negative.<br><b style="color:var(--mp-color)">Marginal Product</b> is negative.`;
+        }
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const L = state.L;
+        const TP = CONFIG.funcTP(L);
+        const MP = CONFIG.funcMP(L);
+
+        drawCleanBackgroundZones();
+        drawGrid(CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0, 50);
+        drawGrid(CONFIG.layout.botGraphY, CONFIG.layout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, 20);
+        drawPhaseLabels();
+        drawDottedConnector(L);
+        drawAxesAndTitles(CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0, "Total Product", "Output");
+        drawAxesAndTitles(CONFIG.layout.botGraphY, CONFIG.layout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, "Marginal Product", "Output");
+        drawCurve(CONFIG.funcTP, CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0, CONFIG.colors.tp);
+        drawTangentAndLabel(L, TP, MP);
+        drawCurve(CONFIG.funcMP, CONFIG.layout.botGraphY, CONFIG.layout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, CONFIG.colors.mp);
+        drawPointAndLabel(L, TP, CONFIG.layout.topGraphY, CONFIG.layout.topGraphH, CONFIG.scales.maxTP_Y, 0, CONFIG.colors.tp, "Total Product");
+        drawPointAndLabel(L, MP, CONFIG.layout.botGraphY, CONFIG.layout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, CONFIG.colors.mp, "Marginal Product");
+        updateDOM(L);
+    }
+
+    function handleInput(e) {
+        const rect = container.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        state.L = fromX(clientX - rect.left);
+        if (Math.abs(state.L - Math.round(state.L)) < 0.25) state.L = Math.round(state.L);
+        render();
+    }
+
+    container.addEventListener('mousedown', (e) => { state.isDragging = true; handleInput(e); });
+    window.addEventListener('mousemove', (e) => { if(state.isDragging) handleInput(e); });
+    window.addEventListener('mouseup', () => state.isDragging = false);
+    container.addEventListener('touchstart', (e) => { state.isDragging = true; handleInput(e); e.preventDefault(); }, {passive: false});
+    window.addEventListener('touchmove', (e) => { if(state.isDragging) { handleInput(e); e.preventDefault(); } }, {passive: false});
+    window.addEventListener('touchend', () => state.isDragging = false);
+
+    setupCanvas();
+    render();
+</script>
+</body>
+</html>
