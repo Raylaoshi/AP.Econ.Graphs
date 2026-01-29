@@ -3,106 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Production Model</title>
+    <title>Production Function V27: Professional English Titles</title>
     <style>
+        /* --- CSS VARIABLES --- */
         :root {
-            --tp-color: #00695c;
-            --mp-color: #c62828;
+            --tp-color: #00695c; /* Teal */
+            --mp-color: #c62828; /* Red */
             --tangent-color: #c62828;
-            --bg-color: #f4f7f6;
+            --bg-color: #f8f9fa;
             --box-bg: #ffffff;
+            --text-main: #333333;
         }
 
         body {
             font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: #333;
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 10px;
             margin: 0;
-            /* Prevents accidental pull-to-refresh on mobile while dragging */
             touch-action: none;
         }
 
         h2 { margin: 10px 0 5px 0; color: #1a237e; font-size: 1.4em; text-align: center; }
-        p.subtitle { margin-top: 0; color: #546e7a; font-size: 0.9em; margin-bottom: 15px; text-align: center; max-width: 600px; padding: 0 10px;}
+        p.subtitle { margin-top: 0; color: #546e7a; font-size: 0.9em; margin-bottom: 25px; text-align: center; max-width: 600px; }
 
-        /* RESPONSIVE CONTAINER */
-        .canvas-container {
+        /* CONTAINER */
+        .chart-container {
             position: relative;
             background: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border-radius: 8px;
-            width: 95vw; /* Fills most of the mobile screen width */
-            max-width: 750px; /* Limits size on large desktops */
-            aspect-ratio: 1 / 1.05; /* Keeps a consistent shape regardless of size */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            width: 95vw;
+            max-width: 750px;
             user-select: none;
             cursor: ew-resize;
+            overflow: visible;
+        }
+
+        svg {
+            display: block;
+            width: 100%;
+            height: auto;
             overflow: hidden;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+        /* SVG TEXT STYLES */
+        .graph-title { font-size: 16px; font-weight: 800; fill: #000; font-family: "Segoe UI", sans-serif; }
+        .axis-text { font-size: 13px; font-weight: 600; fill: #000; stroke: none; font-family: sans-serif; }
+        .tick-text { font-size: 12px; font-weight: 400; fill: #444; stroke: none; font-family: sans-serif; }
+        .phase-text { font-size: 11px; font-weight: 800; fill: rgba(0,0,0,0.45); stroke: none; letter-spacing: 0.5px; }
+        .curve-label { font-size: 13px; font-weight: 800; stroke: none; font-family: sans-serif; }
+        .label-text { font-family: monospace; font-size: 12px; font-weight: bold; stroke: none; }
 
-        /* The Explanation Box - Responsive Positioned */
+        /* HTML TOOLTIP */
         #smart-tooltip {
             position: absolute;
-            /* Y-position is calculated in JS based on percentage of container height */
+            top: 410px; 
             transform: translate(-50%, -50%); 
-            width: 60%; /* Scales with the container */
-            min-width: 180px;
-            max-width: 240px;
+            width: 65%;
+            min-width: 220px;
+            max-width: 320px;
             background: var(--box-bg);
-            border: 1px solid #ddd;
-            border-top: 3px solid var(--tp-color);
-            border-bottom: 3px solid var(--mp-color);
-            border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            padding: 8px 12px;
-            z-index: 10; 
+            border: 1px solid #ccc;
+            border-top: 4px solid var(--tp-color);
+            border-bottom: 4px solid var(--mp-color);
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 12px;
+            z-index: 100; 
             pointer-events: none; 
             text-align: center;
+            transition: left 0.05s linear;
         }
 
         .stat-grid {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-family: "Menlo", monospace;
-            font-size: 12px;
-            color: #444;
+            font-size: 14px;
+            color: #000;
             border-bottom: 1px solid #eee;
-            padding-bottom: 3px;
+            padding-bottom: 5px;
         }
         
-        .stat-val { font-weight: bold; }
-        .note-title { font-weight: 800; margin-bottom: 2px; display: block; color: #1a237e; font-size: 11px; text-transform: uppercase; }
-        .note-body { color: #37474f; font-size: 11px; line-height: 1.3; }
-        .highlight-text { background: rgba(255, 235, 59, 0.4); padding: 0 3px; border-radius: 2px; color: #000; }
-
-        @media (max-width: 400px) {
-            h2 { font-size: 1.1em; }
-            .note-title { font-size: 10px; }
-            .note-body { font-size: 10px; }
+        .note-title { 
+            font-weight: 800; 
+            margin-bottom: 6px; 
+            display: block; 
+            color: #000000; 
+            font-size: 14px; /* Slightly larger for English titles */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .note-body { 
+            color: #333; 
+            font-size: 13px; 
+            line-height: 1.5; 
+            font-weight: 400; 
+        }
+        
+        /* Subtitle style for Chinese translation */
+        .cn-sub {
+            color: #666;
+            font-weight: normal;
+            font-size: 0.85em;
+            margin-left: 3px;
         }
     </style>
 </head>
 <body>
 
     <h2>Short-Run Production Function</h2>
-    <p class="subtitle">Drag anywhere. The model scales to fit your device.</p>
+    <p class="subtitle">Drag to explore. Key points marked; professional terminology used.</p>
 
-    <div class="canvas-container" id="container">
-        <canvas id="mainCanvas"></canvas>
+    <div class="chart-container" id="container">
+        
+        <svg id="productionSvg" viewBox="0 0 750 800" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <clipPath id="graphAreaClip">
+                    <rect x="70" y="0" width="680" height="350" />
+                    <rect x="70" y="480" width="680" height="320" />
+                </clipPath>
+            </defs>
 
+            <!-- LAYER 1: Background Zones -->
+            <g id="bgZones"></g>
+
+            <!-- LAYER 2: Grid Lines -->
+            <g id="staticGrid"></g>
+
+            <!-- LAYER 3: Phase Labels -->
+            <g id="phaseLabels">
+                <text x="206" y="60" text-anchor="middle" class="phase-text">INCREASING MARGINAL RETURNS</text>
+                <text x="516" y="60" text-anchor="middle" class="phase-text">DIMINISHING MARGINAL RETURNS</text>
+                <text x="206" y="520" text-anchor="middle" class="phase-text">INCREASING MARGINAL RETURNS</text>
+                <text x="516" y="520" text-anchor="middle" class="phase-text">DIMINISHING MARGINAL RETURNS</text>
+            </g>
+
+            <!-- LAYER 4: Connector Line -->
+            <line id="verticalLine" x1="0" y1="40" x2="0" y2="750" stroke="#999" stroke-width="1.5" stroke-dasharray="6,4" />
+
+            <!-- LAYER 5: Curves & Tangents -->
+            <g clip-path="url(#graphAreaClip)">
+                <path id="tpPath" fill="none" stroke="var(--tp-color)" stroke-width="4" stroke-linecap="round" />
+                <path id="mpPath" fill="none" stroke="var(--mp-color)" stroke-width="4" stroke-linecap="round" />
+                <line id="tangentLine" stroke="var(--mp-color)" stroke-width="3" />
+            </g>
+
+            <!-- LAYER 6: Curve Labels -->
+            <text x="680" y="160" text-anchor="end" class="curve-label" fill="var(--tp-color)">Total Product</text>
+            <text x="680" y="680" text-anchor="end" class="curve-label" fill="var(--mp-color)">Marginal Product</text>
+
+            <!-- LAYER 7: Axes (Thinner 1.5px) -->
+            <g stroke="#000" stroke-width="1.5" stroke-linecap="square">
+                <line x1="70" y1="40" x2="70" y2="320" /> 
+                <line x1="70" y1="320" x2="690" y2="320" /> 
+                <line x1="70" y1="500" x2="70" y2="750" />
+                <line id="mpZeroLine" x1="70" y1="0" x2="690" y2="0" /> 
+            </g>
+
+            <!-- LAYER 8: Key Points (Above Axes) -->
+            <g id="keyPoints"></g>
+
+            <!-- LAYER 9: Interactive Points -->
+            <g id="interactiveLayer">
+                <g id="slopeLabelGroup">
+                    <rect id="slopeBg" fill="rgba(255,255,255,0.9)" stroke="#c62828" stroke-width="1" rx="3" />
+                    <text id="slopeText" class="label-text" fill="#c62828" dominant-baseline="middle"></text>
+                </g>
+
+                <circle id="tpPoint" r="6" fill="#fff" stroke="var(--tp-color)" stroke-width="3" />
+                <g id="tpLabelGroup">
+                    <rect id="tpBg" fill="rgba(255,255,255,0.9)" stroke="var(--tp-color)" stroke-width="1" rx="3" />
+                    <text id="tpText" class="label-text" fill="var(--tp-color)" dominant-baseline="middle"></text>
+                </g>
+
+                <circle id="mpPoint" r="6" fill="#fff" stroke="var(--mp-color)" stroke-width="3" />
+                <g id="mpLabelGroup">
+                    <rect id="mpBg" fill="rgba(255,255,255,0.9)" stroke="var(--mp-color)" stroke-width="1" rx="3" />
+                    <text id="mpText" class="label-text" fill="var(--mp-color)" dominant-baseline="middle"></text>
+                </g>
+            </g>
+        </svg>
+
+        <!-- HTML Overlay -->
         <div id="smart-tooltip">
             <div class="stat-grid">
-                <span>Labor: <span class="stat-val" id="disp-l">0</span></span>
+                <span>Labor: <span id="disp-l" style="font-weight:900">0</span></span>
             </div>
             <span class="note-title" id="note-title">Phase</span>
             <div class="note-body" id="note-body">Explanation...</div>
@@ -111,281 +203,249 @@
 
 <script>
     const CONFIG = {
-        minL: 0,
-        maxL: 10,
+        minL: 0, maxL: 10,
         funcTP: (L) => -Math.pow(L, 3) + 12 * Math.pow(L, 2),
         funcMP: (L) => -3 * Math.pow(L, 2) + 24 * L,
         inflectionPoint: 4, 
         maxTotalPoint: 8,
-        colors: {
-            tp: '#00695c',
-            mp: '#c62828',
-            tangent: '#c62828',
-            grid: '#e0e0e0',
-            axis: '#263238',
-            zoneInc: '#e8f5e9', 
-            zoneDim: '#fff8e1'
-        },
-        scales: { maxTP_Y: 300, maxMP_Y: 60, minMP_Y: -70 }
+        layout: { left: 70, right: 690, topY: 40, topH: 280, botY: 500, botH: 250 },
+        scales: { maxTP: 300, maxMP: 60, minMP: -70 }
     };
 
     let state = { L: 3.0, isDragging: false };
-    let dynamicLayout = {};
 
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d');
-    const tooltip = document.getElementById('smart-tooltip');
-    const container = document.getElementById('container');
+    const toX = (L) => CONFIG.layout.left + (L / CONFIG.maxL) * (CONFIG.layout.right - CONFIG.layout.left);
+    const fromX = (px) => ((px - CONFIG.layout.left) / (CONFIG.layout.right - CONFIG.layout.left)) * CONFIG.maxL;
+    const toY = (val, gTop, gH, max, min = 0) => (gTop + gH) - ((val - min) / (max - min)) * gH;
 
-    // DYNAMICALLY CALCULATE DIMENSIONS BASED ON CURRENT SCREEN SIZE
-    function updateLayoutMetrics() {
-        const rect = container.getBoundingClientRect();
-        const w = rect.width;
-        const h = rect.height;
-
-        dynamicLayout = {
-            width: w,
-            height: h,
-            paddingLeft: w * 0.1,  // Proportional padding
-            paddingRight: w * 0.08,
-            topGraphY: h * 0.05,
-            topGraphH: h * 0.38,
-            botGraphY: h * 0.62,
-            botGraphH: h * 0.32,
-            tooltipY: h * 0.51  // Position box at 51% height
-        };
-
-        tooltip.style.top = dynamicLayout.tooltipY + "px";
-        
-        // Handle High DPI scaling
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset
-        ctx.scale(dpr, dpr);
-    }
-
-    const toX = (L) => {
-        const usableW = dynamicLayout.width - dynamicLayout.paddingLeft - dynamicLayout.paddingRight;
-        return dynamicLayout.paddingLeft + (L / CONFIG.maxL) * usableW;
-    };
-    const fromX = (px) => {
-        const usableW = dynamicLayout.width - dynamicLayout.paddingLeft - dynamicLayout.paddingRight;
-        let val = ((px - dynamicLayout.paddingLeft) / usableW) * CONFIG.maxL;
-        return Math.max(0, Math.min(CONFIG.maxL, val));
-    };
-    const toY = (val, graphTop, graphHeight, maxVal, minVal = 0) => {
-        const range = maxVal - minVal;
-        const normalized = (val - minVal) / range;
-        return (graphTop + graphHeight) - (normalized * graphHeight);
-    };
-
-    function drawZones() {
-        const left = dynamicLayout.paddingLeft;
-        const right = dynamicLayout.width - dynamicLayout.paddingRight;
+    function initStaticElements() {
+        const bgGroup = document.getElementById('bgZones');
         const xInflect = toX(CONFIG.inflectionPoint);
-
-        const paint = (y, h) => {
-            ctx.fillStyle = CONFIG.colors.zoneInc;
-            ctx.fillRect(left, y, xInflect - left, h);
-            ctx.fillStyle = CONFIG.colors.zoneDim;
-            ctx.fillRect(xInflect, y, right - xInflect, h);
-        };
-        paint(dynamicLayout.topGraphY, dynamicLayout.topGraphH);
-        paint(dynamicLayout.botGraphY, dynamicLayout.botGraphH);
-    }
-
-    function drawGrid(graphTop, graphHeight, maxVal, minVal, stepY, isBottom) {
-        const left = dynamicLayout.paddingLeft;
-        const right = dynamicLayout.width - dynamicLayout.paddingRight;
-        const bottom = graphTop + graphHeight;
-
-        ctx.lineWidth = 1;
-        ctx.font = dynamicLayout.width < 400 ? "9px Arial" : "11px Arial";
+        const xEnd = CONFIG.layout.right;
         
-        // Y Axis
-        ctx.textAlign = "right"; ctx.textBaseline = "middle";
-        for(let v = minVal; v <= maxVal; v += stepY) {
-            if(v === 0 && minVal !== 0) continue; 
-            const y = toY(v, graphTop, graphHeight, maxVal, minVal);
-            ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.grid; 
-            ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke();
-            ctx.fillStyle = "#78909c";
-            ctx.fillText(v, left - 5, y);
+        // Backgrounds
+        let bgHtml = '';
+        bgHtml += `<rect fill="#e8f5e9" x="${CONFIG.layout.left}" y="${CONFIG.layout.topY}" width="${xInflect - CONFIG.layout.left}" height="${CONFIG.layout.topH}" />`;
+        bgHtml += `<rect fill="#e8f5e9" x="${CONFIG.layout.left}" y="${CONFIG.layout.botY}" width="${xInflect - CONFIG.layout.left}" height="${CONFIG.layout.botH}" />`;
+        bgHtml += `<rect fill="#fff8e1" x="${xInflect}" y="${CONFIG.layout.topY}" width="${xEnd - xInflect}" height="${CONFIG.layout.topH}" />`;
+        bgHtml += `<rect fill="#fff8e1" x="${xInflect}" y="${CONFIG.layout.botY}" width="${xEnd - xInflect}" height="${CONFIG.layout.botH}" />`;
+        bgGroup.innerHTML = bgHtml;
+
+        const g = document.getElementById('staticGrid');
+        let html = "";
+
+        // TOP GRID
+        for(let v = 50; v <= 300; v += 50) {
+            let y = toY(v, CONFIG.layout.topY, CONFIG.layout.topH, CONFIG.scales.maxTP);
+            html += `<line x1="70" y1="${y}" x2="690" y2="${y}" stroke="#e0e0e0" stroke-width="1" />`;
+            html += `<text x="60" y="${y}" dy="4" text-anchor="end" class="tick-text">${v}</text>`;
+        }
+        for(let l = 1; l <= 10; l++) {
+            let x = toX(l);
+            html += `<line x1="${x}" y1="40" x2="${x}" y2="320" stroke="#e0e0e0" stroke-width="1" />`;
+            html += `<text x="${x}" y="320" dy="18" text-anchor="middle" class="tick-text">${l}</text>`;
         }
 
-        // X Axis
-        ctx.textAlign = "center"; ctx.textBaseline = "top";
-        for(let l = 1; l <= CONFIG.maxL; l++) {
-            const x = toX(l);
-            ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.grid;
-            ctx.moveTo(x, graphTop); ctx.lineTo(x, bottom); ctx.stroke();
-            ctx.fillStyle = "#78909c";
-            ctx.fillText(l, x, bottom + 5);
+        // BOTTOM GRID
+        const yZero = toY(0, CONFIG.layout.botY, CONFIG.layout.botH, CONFIG.scales.maxMP, CONFIG.scales.minMP);
+        document.getElementById('mpZeroLine').setAttribute('y1', yZero);
+        document.getElementById('mpZeroLine').setAttribute('y2', yZero);
+
+        for(let v = -60; v <= 60; v += 20) {
+            if(v===0) continue; 
+            let y = toY(v, CONFIG.layout.botY, CONFIG.layout.botH, CONFIG.scales.maxMP, CONFIG.scales.minMP);
+            html += `<line x1="70" y1="${y}" x2="690" y2="${y}" stroke="#e0e0e0" stroke-width="1" />`;
+            html += `<text x="60" y="${y}" dy="4" text-anchor="end" class="tick-text">${v}</text>`;
         }
-    }
+        html += `<text x="60" y="${yZero}" dy="4" text-anchor="end" class="tick-text">0</text>`;
 
-    function drawLabels() {
-        const left = dynamicLayout.paddingLeft;
-        const right = dynamicLayout.width - dynamicLayout.paddingRight;
-        const xInflect = toX(CONFIG.inflectionPoint);
-        ctx.font = dynamicLayout.width < 450 ? "bold 9px sans-serif" : "bold 11px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
-        const txt1 = "INCREASING RETURNS", txt2 = "DIMINISHING RETURNS";
-        ctx.fillText(txt1, (left + xInflect)/2, dynamicLayout.topGraphY + 15);
-        ctx.fillText(txt2, (xInflect + right)/2, dynamicLayout.topGraphY + 15);
-        ctx.fillText(txt1, (left + xInflect)/2, dynamicLayout.botGraphY + 15);
-        ctx.fillText(txt2, (xInflect + right)/2, dynamicLayout.botGraphY + 15);
-    }
-
-    function drawAxes(graphTop, graphHeight, maxVal, minVal, title) {
-        const left = dynamicLayout.paddingLeft;
-        const right = dynamicLayout.width - dynamicLayout.paddingRight;
-        const bottom = graphTop + graphHeight;
-        const yZero = toY(0, graphTop, graphHeight, maxVal, minVal);
-
-        ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.axis; ctx.lineWidth = 1.5;
-        ctx.moveTo(left, graphTop); ctx.lineTo(left, bottom);
-        ctx.moveTo(left, yZero); ctx.lineTo(right, yZero);
-        ctx.stroke();
-
-        ctx.fillStyle = "#263238"; ctx.font = "bold 12px sans-serif";
-        ctx.textAlign = "left"; ctx.fillText(title, left, graphTop - 10);
-        
-        ctx.save();
-        ctx.translate(left - (dynamicLayout.width * 0.07), graphTop + graphHeight/2);
-        ctx.rotate(-Math.PI/2); ctx.textAlign = "center"; ctx.font = "bold 10px sans-serif";
-        ctx.fillText("Output", 0, 0);
-        ctx.restore();
-
-        ctx.textAlign = "right"; ctx.fillText("Labor", right, bottom + 20);
-    }
-
-    function drawCurve(func, graphTop, graphHeight, maxVal, minVal, color) {
-        ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
-        const left = dynamicLayout.paddingLeft, right = dynamicLayout.width - dynamicLayout.paddingRight;
-        for (let px = left; px <= right; px+=1) {
-            const l = fromX(px);
-            const py = toY(func(l), graphTop, graphHeight, maxVal, minVal);
-            if (py >= graphTop && py <= graphTop + graphHeight) {
-                if(px === left) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-            }
+        for(let l = 1; l <= 10; l++) {
+            let x = toX(l);
+            html += `<line x1="${x}" y1="500" x2="${x}" y2="750" stroke="#e0e0e0" stroke-width="1" />`;
+            html += `<text x="${x}" y="750" dy="18" text-anchor="middle" class="tick-text">${l}</text>`;
         }
-        ctx.stroke();
+
+        // TITLES
+        html += `<text x="70" y="25" text-anchor="start" class="graph-title">Total Product Curve</text>`;
+        html += `<text x="70" y="485" text-anchor="start" class="graph-title">Marginal Product Curve</text>`;
+        html += `<text x="30" y="180" transform="rotate(-90, 30, 180)" text-anchor="middle" class="axis-text">Output</text>`;
+        html += `<text x="30" y="625" transform="rotate(-90, 30, 625)" text-anchor="middle" class="axis-text">Output</text>`;
+        html += `<text x="690" y="355" text-anchor="end" class="axis-text">Labor</text>`;
+        html += `<text x="690" y="785" text-anchor="end" class="axis-text">Labor</text>`;
+
+        g.innerHTML = html;
+
+        document.getElementById('tpPath').setAttribute('d', generatePath(CONFIG.funcTP, CONFIG.layout.topY, CONFIG.layout.topH, CONFIG.scales.maxTP));
+        document.getElementById('mpPath').setAttribute('d', generatePath(CONFIG.funcMP, CONFIG.layout.botY, CONFIG.layout.botH, CONFIG.scales.maxMP, CONFIG.scales.minMP));
+
+        drawKeyPoints();
     }
 
-    function drawTangentAndLabel(L, tpVal, slope) {
-        const len = 1.6; 
-        const x1 = L - len, x2 = L + len;
-        const y1 = slope*(x1-L) + tpVal, y2 = slope*(x2-L) + tpVal;
-        const px1 = toX(x1), py1 = toY(y1, dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y);
-        const px2 = toX(x2), py2 = toY(y2, dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(dynamicLayout.paddingLeft, dynamicLayout.topGraphY, dynamicLayout.width - dynamicLayout.paddingLeft - dynamicLayout.paddingRight, dynamicLayout.topGraphH);
-        ctx.clip();
-        ctx.beginPath(); ctx.strokeStyle = CONFIG.colors.tangent; ctx.lineWidth = 2; 
-        ctx.moveTo(px1, py1); ctx.lineTo(px2, py2); ctx.stroke();
-        ctx.restore();
-
-        const pointX = toX(L), pointY = toY(tpVal, dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y);
-        const text = `Slope = MP = ${slope.toFixed(1)}`;
-        ctx.font = "bold 10px monospace";
-        const textWidth = ctx.measureText(text).width;
-        
-        let lx = pointX - 15;
-        ctx.textAlign = "right";
-        if (lx - textWidth < dynamicLayout.paddingLeft) {
-            lx = pointX + 15;
-            ctx.textAlign = "left";
+    function generatePath(func, gTop, gH, gMax, gMin = 0) {
+        let points = [];
+        for (let l = 0; l <= 10; l += 0.05) {
+            let x = toX(l);
+            let y = toY(func(l), gTop, gH, gMax, gMin);
+            points.push(`${x},${y}`);
         }
-        ctx.fillStyle = "rgba(255,255,255,0.9)";
-        ctx.fillRect(ctx.textAlign === "right" ? lx - textWidth - 4 : lx - 4, pointY - 18, textWidth + 8, 14);
-        ctx.fillStyle = CONFIG.colors.tangent;
-        ctx.textBaseline = "middle";
-        ctx.fillText(text, ctx.textAlign === "right" ? lx - 2 : lx + 2, pointY - 11);
+        return "M " + points.join(" L ");
     }
 
-    function drawIndicator(L) {
+    function drawKeyPoints() {
+        const kpGroup = document.getElementById('keyPoints');
+        const points = [
+            { l: 4, val: CONFIG.funcTP(4), type: 'tp' },
+            { l: 4, val: CONFIG.funcMP(4), type: 'mp' },
+            { l: 8, val: CONFIG.funcTP(8), type: 'tp' },
+            { l: 8, val: CONFIG.funcMP(8), type: 'mp' }
+        ];
+        let html = "";
+        points.forEach(p => {
+            let cx = toX(p.l);
+            let cy = (p.type === 'tp') ? 
+                toY(p.val, CONFIG.layout.topY, CONFIG.layout.topH, CONFIG.scales.maxTP) : 
+                toY(p.val, CONFIG.layout.botY, CONFIG.layout.botH, CONFIG.scales.maxMP, CONFIG.scales.minMP);
+            html += `<circle cx="${cx}" cy="${cy}" r="4" fill="#fff" stroke="#000" stroke-width="1.5" />`;
+        });
+        kpGroup.innerHTML = html;
+    }
+
+    function update() {
+        const L = state.L;
+        const TP = CONFIG.funcTP(L);
+        const MP = CONFIG.funcMP(L);
         const x = toX(L);
-        ctx.beginPath(); ctx.setLineDash([5, 5]); ctx.strokeStyle = "#90a4ae"; ctx.lineWidth = 1;
-        ctx.moveTo(x, dynamicLayout.topGraphY); ctx.lineTo(x, dynamicLayout.botGraphY + dynamicLayout.botGraphH); ctx.stroke();
-        ctx.setLineDash([]);
+
+        document.getElementById('verticalLine').setAttribute('x1', x);
+        document.getElementById('verticalLine').setAttribute('x2', x);
+
+        const tpY = toY(TP, CONFIG.layout.topY, CONFIG.layout.topH, CONFIG.scales.maxTP);
+        updatePoint('tp', x, tpY, `TP: ${TP.toFixed(0)}`);
+
+        const mpY = toY(MP, CONFIG.layout.botY, CONFIG.layout.botH, CONFIG.scales.maxMP, CONFIG.scales.minMP);
+        updatePoint('mp', x, mpY, `MP: ${MP.toFixed(0)}`);
+
+        const tLen = 2.0;
+        const x1L = L - tLen; const x2L = L + tLen;
+        const y1V = MP * (x1L - L) + TP; const y2V = MP * (x2L - L) + TP;
+        const tLine = document.getElementById('tangentLine');
+        tLine.setAttribute('x1', toX(x1L)); 
+        tLine.setAttribute('y1', toY(y1V, CONFIG.layout.topY, CONFIG.layout.topH, CONFIG.scales.maxTP));
+        tLine.setAttribute('x2', toX(x2L));
+        tLine.setAttribute('y2', toY(y2V, CONFIG.layout.topY, CONFIG.layout.topH, CONFIG.scales.maxTP));
+
+        const slopeText = `Slope = MP = ${MP.toFixed(1)}`;
+        updateSlopeLabel(slopeText, x, tpY);
+
+        updateTooltip(L);
     }
 
-    function drawPointAndVal(L, val, gTop, gH, gMax, gMin, color, prefix) {
-        const x = toX(L), y = toY(val, gTop, gH, gMax, gMin);
-        if(y < gTop || y > gTop + gH) return;
-        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
-        const text = `${prefix}: ${val.toFixed(0)}`;
-        ctx.font = "bold 10px monospace";
-        const boxW = ctx.measureText(text).width + 8;
-        ctx.fillStyle = "rgba(255,255,255,0.85)";
-        ctx.fillRect(x + 10, y - 16, boxW, 14);
-        ctx.fillStyle = color; ctx.textAlign = "left"; ctx.fillText(text, x + 14, y - 9);
+    function updatePoint(prefix, cx, cy, text) {
+        document.getElementById(prefix + 'Point').setAttribute('cx', cx);
+        document.getElementById(prefix + 'Point').setAttribute('cy', cy);
+        
+        const txtEl = document.getElementById(prefix + 'Text');
+        const bgEl = document.getElementById(prefix + 'Bg');
+        txtEl.textContent = text;
+        const width = txtEl.getComputedTextLength() + 10;
+        
+        txtEl.setAttribute('x', cx + 18);
+        txtEl.setAttribute('y', cy + 1); 
+        bgEl.setAttribute('x', cx + 13);
+        bgEl.setAttribute('y', cy - 10);
+        bgEl.setAttribute('width', width);
+        bgEl.setAttribute('height', 20);
     }
 
-    function updateDOM(L) {
-        tooltip.style.left = toX(L) + "px";
+    function updateSlopeLabel(text, cx, cy) {
+        const txtEl = document.getElementById('slopeText');
+        const bgEl = document.getElementById('slopeBg');
+        txtEl.textContent = text;
+        const width = txtEl.getComputedTextLength() + 10;
+        
+        let boxX = cx - 10 - width;
+        let boxY = cy - 30;
+        if (boxX < CONFIG.layout.left) boxX = cx + 10; 
+
+        bgEl.setAttribute('x', boxX);
+        bgEl.setAttribute('y', boxY);
+        bgEl.setAttribute('width', width);
+        bgEl.setAttribute('height', 20);
+        txtEl.setAttribute('x', boxX + 5);
+        txtEl.setAttribute('y', boxY + 11);
+    }
+
+    function updateTooltip(L) {
+        const tooltip = document.getElementById('smart-tooltip');
+        const containerW = document.getElementById('container').offsetWidth;
+        const xPx = toX(L);
+        const boxW = tooltip.offsetWidth;
+        
+        let leftPos = xPx;
+        if (leftPos < boxW/2) leftPos = boxW/2 + 5;
+        if (leftPos > containerW - boxW/2) leftPos = containerW - boxW/2 - 5;
+        
+        tooltip.style.left = leftPos + "px";
         document.getElementById('disp-l').innerText = L.toFixed(1);
-        const titleEl = document.getElementById('note-title'), bodyEl = document.getElementById('note-body');
+        
+        const titleEl = document.getElementById('note-title');
+        const bodyEl = document.getElementById('note-body');
+        
         if (L < 3.9) {
-            titleEl.innerText = "Increasing Marginal Returns";
-            bodyEl.innerHTML = `Total Product is <span class="highlight-text">convex</span>.<br><b>Marginal Product</b> is rising.`;
+            titleEl.innerHTML = `Increasing Marginal Returns`;
+            bodyEl.innerHTML = `
+                Total Product is becoming <b>steeper</b> <span class="cn-sub">(更陡峭)</span>.<br>
+                Marginal Product is <b>rising</b>.
+            `;
         } else if (L >= 3.9 && L <= 4.1) {
-            titleEl.innerText = "Inflection Point";
-            bodyEl.innerHTML = `Maximum steepness.<br><b>Marginal Product</b> is maximized.`;
+            titleEl.innerHTML = `Inflection Point <span class="cn-sub">(拐点)</span>`;
+            bodyEl.innerHTML = `
+                Total Product is at its <b>steepest</b> <span class="cn-sub">(最陡)</span>.<br>
+                Marginal Product is <b>maximized</b>.
+            `;
         } else if (L > 4.1 && L < 7.9) {
-            titleEl.innerText = "Diminishing Returns";
-            bodyEl.innerHTML = `Total Product is <span class="highlight-text">concave</span>.<br><b>Marginal Product</b> is falling.`;
+            titleEl.innerText = "Diminishing Marginal Returns"; 
+            bodyEl.innerHTML = `
+                Total Product is becoming <b>flatter</b> <span class="cn-sub">(更平坦)</span>.<br>
+                Marginal Product is <b>falling</b>.
+            `;
         } else if (L >= 7.9 && L <= 8.1) {
-            titleEl.innerText = "Maximum Total Product";
-            bodyEl.innerHTML = `Slope = 0.<br><b>Marginal Product is Zero</b>.`;
+            titleEl.innerHTML = `Maximum Output`;
+            bodyEl.innerHTML = `
+                Total Product is <b>flat</b> <span class="cn-sub">(持平)</span>. Slope is zero.<br>
+                Marginal Product is <b>Zero</b>.
+            `;
         } else {
-            titleEl.innerText = "Negative Returns";
-            bodyEl.innerHTML = `Slope is negative.<br><b>Marginal Product</b> is negative.`;
+            titleEl.innerHTML = `Negative Returns`;
+            bodyEl.innerHTML = `
+                Total Product slopes <b>downwards</b> <span class="cn-sub">(向下)</span>.<br>
+                Marginal Product is <b>negative</b>.
+            `;
         }
-    }
-
-    function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const L = state.L, TP = CONFIG.funcTP(L), MP = CONFIG.funcMP(L);
-        drawZones();
-        drawGrid(dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y, 0, 50, false);
-        drawGrid(dynamicLayout.botGraphY, dynamicLayout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, 20, true);
-        drawLabels();
-        drawIndicator(L);
-        drawAxes(dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y, 0, "Total Product");
-        drawAxes(dynamicLayout.botGraphY, dynamicLayout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, "Marginal Product");
-        drawCurve(CONFIG.funcTP, dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y, 0, CONFIG.colors.tp);
-        drawTangentAndLabel(L, TP, MP);
-        drawCurve(CONFIG.funcMP, dynamicLayout.botGraphY, dynamicLayout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, CONFIG.colors.mp);
-        drawPointAndVal(L, TP, dynamicLayout.topGraphY, dynamicLayout.topGraphH, CONFIG.scales.maxTP_Y, 0, CONFIG.colors.tp, "Total Product");
-        drawPointAndVal(L, MP, dynamicLayout.botGraphY, dynamicLayout.botGraphH, CONFIG.scales.maxMP_Y, CONFIG.scales.minMP_Y, CONFIG.colors.mp, "Marginal Product");
-        updateDOM(L);
     }
 
     function handleInput(e) {
-        const rect = container.getBoundingClientRect();
-        const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
-        state.L = fromX(clientX - rect.left);
+        const svg = document.getElementById('productionSvg');
+        const rect = svg.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const xSvg = (clientX - rect.left) * (750 / rect.width);
+        let rawL = fromX(xSvg);
+        state.L = Math.max(0, Math.min(10, rawL));
         if (Math.abs(state.L - Math.round(state.L)) < 0.2) state.L = Math.round(state.L);
-        render();
+        update();
     }
 
-    container.addEventListener('mousedown', (e) => { state.isDragging = true; handleInput(e); });
+    const cont = document.getElementById('container');
+    cont.addEventListener('mousedown', (e) => { state.isDragging = true; handleInput(e); });
     window.addEventListener('mousemove', (e) => { if(state.isDragging) handleInput(e); });
     window.addEventListener('mouseup', () => state.isDragging = false);
-    container.addEventListener('touchstart', (e) => { state.isDragging = true; handleInput(e); e.preventDefault(); }, {passive: false});
+    cont.addEventListener('touchstart', (e) => { state.isDragging = true; handleInput(e); e.preventDefault(); }, {passive: false});
     window.addEventListener('touchmove', (e) => { if(state.isDragging) { handleInput(e); e.preventDefault(); } }, {passive: false});
     window.addEventListener('touchend', () => state.isDragging = false);
 
-    window.addEventListener('resize', () => { updateLayoutMetrics(); render(); });
+    initStaticElements();
+    update();
 
-    updateLayoutMetrics();
-    render();
 </script>
 </body>
 </html>
