@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MP and AP V52: Mathematical Linking</title>
+    <title>MP and AP V53: Calculus-Linked Logic</title>
     <style>
         :root {
             --mp-color: #e63946; --ap-color: #457b9d; --bg-color: #f8f9fa;
@@ -90,7 +90,6 @@
         minL: 0, maxL: 9,
         funcMP: (L) => -3 * Math.pow(L, 2) + 24 * L,
         funcAP: (L) => -Math.pow(L, 2) + 12 * L,
-        // DYNAMICALLY CALCULATED INTERSECTION: MP=AP occurs at -3L^2 + 24L = -L^2 + 12L => 2L^2 - 12L = 0 => L=6
         intersectPoint: 6, 
         layout: { left: 70, right: 690, top: 40, bottom: 500, height: 460 },
         scales: { maxY: 60, minY: -40 },
@@ -106,7 +105,6 @@
         const xStart = CONFIG.layout.left, xEnd = CONFIG.layout.right;
         const xInflect = toX(CONFIG.intersectPoint);
 
-        // Link backgrounds and Phase labels to calculated intersect
         document.getElementById('bgZones').innerHTML = `
             <rect fill="rgba(168, 218, 220, 0.15)" x="${xStart}" y="${CONFIG.layout.top}" width="${xInflect - xStart}" height="${CONFIG.layout.height}" />
             <rect fill="rgba(230, 57, 70, 0.08)" x="${xInflect}" y="${CONFIG.layout.top}" width="${xEnd - xInflect}" height="${CONFIG.layout.height}" />
@@ -126,8 +124,9 @@
         document.getElementById('zeroLine').setAttribute('y1', yZero); document.getElementById('zeroLine').setAttribute('y2', yZero); document.getElementById('zeroLine').setAttribute('x2', xEnd);
         html += `<text x="${xStart - 10}" y="${yZero}" dy="5" text-anchor="end" class="tick-text">0</text>`;
 
+        const lLabel = document.getElementById('laborLabel');
         const labelY = yZero + 20;
-        document.getElementById('laborLabel').setAttribute('x', xEnd); document.getElementById('laborLabel').setAttribute('y', labelY + 22);
+        lLabel.setAttribute('x', xEnd); lLabel.setAttribute('y', labelY + 22);
 
         for(let l = 1; l <= CONFIG.maxL; l++) {
             let xPos = toX(l);
@@ -140,10 +139,12 @@
         document.getElementById('apPath').setAttribute('d', generatePath(CONFIG.funcAP));
         
         const yEndMP = toY(CONFIG.funcMP(CONFIG.maxL)), yEndAP = toY(CONFIG.funcAP(CONFIG.maxL));
-        document.getElementById('lblMP').setAttribute('x', xEnd); document.getElementById('lblMP').setAttribute('y', yEndMP + 20);
-        document.getElementById('lblMP').innerHTML = `<tspan x="${xEnd}" dy="0">Marginal</tspan><tspan x="${xEnd}" dy="16">Product</tspan>`;
-        document.getElementById('lblAP').setAttribute('x', xEnd); document.getElementById('lblAP').setAttribute('y', yEndAP + 20);
-        document.getElementById('lblAP').innerHTML = `<tspan x="${xEnd}" dy="0">Average</tspan><tspan x="${xEnd}" dy="16">Product</tspan>`;
+        const lblMP = document.getElementById('lblMP');
+        lblMP.setAttribute('x', xEnd); lblMP.setAttribute('y', yEndMP + 20);
+        lblMP.innerHTML = `<tspan x="${xEnd}" dy="0">Marginal</tspan><tspan x="${xEnd}" dy="16">Product</tspan>`;
+        const lblAP = document.getElementById('lblAP');
+        lblAP.setAttribute('x', xEnd); lblAP.setAttribute('y', yEndAP + 20);
+        lblAP.innerHTML = `<tspan x="${xEnd}" dy="0">Average</tspan><tspan x="${xEnd}" dy="16">Product</tspan>`;
         document.getElementById('keyPoints').innerHTML = `<circle cx="${toX(CONFIG.intersectPoint)}" cy="${toY(36)}" r="5" fill="#fff" stroke="#1d3557" stroke-width="2.5" />`;
     }
 
@@ -156,12 +157,15 @@
     function update() {
         const L = state.L, MP = CONFIG.funcMP(L), AP = CONFIG.funcAP(L), x = toX(L);
         const yMP = toY(MP), yAP = toY(AP), yZero = toY(0);
-        const isAtIntersection = Math.abs(yMP - yAP) < 1.0;
+        const pixelDistance = Math.abs(yMP - yAP);
+        const isAtIntersection = pixelDistance < 1.0;
 
         document.getElementById('verticalLine').setAttribute('x1', x); document.getElementById('verticalLine').setAttribute('x2', x);
         document.getElementById('verticalLine').setAttribute('y1', Math.min(yMP, yAP)); document.getElementById('verticalLine').setAttribute('y2', yZero); 
-        document.getElementById('mpHLine').setAttribute('x1', 70); document.getElementById('mpHLine').setAttribute('y1', yMP); document.getElementById('mpHLine').setAttribute('x2', x); document.getElementById('mpHLine').setAttribute('y2', yMP);
-        document.getElementById('apHLine').setAttribute('x1', 70); document.getElementById('apHLine').setAttribute('y1', yAP); document.getElementById('apHLine').setAttribute('x2', x); document.getElementById('apHLine').setAttribute('y2', yAP);
+        document.getElementById('mpHLine').setAttribute('x1', 70); document.getElementById('mpHLine').setAttribute('y1', yMP);
+        document.getElementById('mpHLine').setAttribute('x2', x); document.getElementById('mpHLine').setAttribute('y2', yMP);
+        document.getElementById('apHLine').setAttribute('x1', 70); document.getElementById('apHLine').setAttribute('y1', yAP);
+        document.getElementById('apHLine').setAttribute('x2', x); document.getElementById('apHLine').setAttribute('y2', yAP);
 
         document.getElementById('mpPoint').setAttribute('cx', x); document.getElementById('mpPoint').setAttribute('cy', yMP);
         document.getElementById('apPoint').setAttribute('cx', x); document.getElementById('apPoint').setAttribute('cy', yAP);
@@ -201,26 +205,34 @@
     function updateValueBox(pre, cx, cy, val) {
         const t = document.getElementById(pre + 'ValTxt'), b = document.getElementById(pre + 'ValBg');
         t.textContent = val; const w = t.getComputedTextLength() + 18;
-        // Linked to CONFIG.layout.right instead of hardcoded 740
         let tx = (cx + 15 + w > CONFIG.layout.right + 50) ? cx - 15 - w : cx + 15;
         t.setAttribute('x', tx + 9); t.setAttribute('y', cy);
-        b.setAttribute('x', tx); b.setAttribute('y', cy - 14); b.setAttribute('width', w); b.setAttribute('height', 28);
+        b.setAttribute('x', tx); b.setAttribute('y', cy - 14);
+        b.setAttribute('width', w); b.setAttribute('height', 28);
     }
 
     function updateVectorTooltip(L, x, topY, col, isIntersect) {
         const box = document.getElementById('vTooltip'), bg = document.getElementById('vBoxBg');
-        const strip = document.getElementById('vBoxStrip'), vTitle = document.getElementById('vTitle');
+        const shadow = document.getElementById('vBoxShadow'), strip = document.getElementById('vBoxStrip');
+        const clipRect = document.getElementById('clipRect'), vTitle = document.getElementById('vTitle');
         const vBody1 = document.getElementById('vBody1'), vBody2 = document.getElementById('vBody2');
+
+        // CALCULUS-DRIVEN PEAK LOGIC: Slope = -6L + 24
+        const mpSlope = -6 * L + 24;
+        const isAtMPPeak = Math.abs(mpSlope) < 0.6;
 
         let tStr, b1Str, b2Txt, b2Col;
         if (isIntersect) {
             tStr = "MP = AP"; b1Str = "MP equals AP."; b2Txt = "maximum"; b2Col = "#000";
             strip.setAttribute('fill', '#000');
         } else if (L < CONFIG.intersectPoint) {
-            tStr = "MP > AP"; b1Str = (L < 4) ? "MP is rising and above AP." : "MP is falling but still above AP.";
+            tStr = "MP > AP";
+            if (isAtMPPeak) b1Str = "MP is at its maximum.";
+            else if (mpSlope > 0) b1Str = "MP is rising (更陡峭) and above AP.";
+            else b1Str = "MP is falling (更平坦) but still above AP.";
             b2Txt = "up"; b2Col = CONFIG.colors.stage1; strip.setAttribute('fill', CONFIG.colors.stage1);
         } else {
-            tStr = "MP < AP"; b1Str = "MP is falling and below AP."; b2Txt = "down"; b2Col = CONFIG.colors.stage2; strip.setAttribute('fill', CONFIG.colors.stage2);
+            tStr = "MP < AP"; b1Str = "MP is falling (更平坦) and below AP."; b2Txt = "down"; b2Col = CONFIG.colors.stage2; strip.setAttribute('fill', CONFIG.colors.stage2);
         }
 
         vTitle.textContent = tStr; vBody1.textContent = b1Str;
@@ -228,12 +240,12 @@
         if (isIntersect) vBody2.innerHTML = `<tspan>AP is at its </tspan><tspan fill="${b2Col}" font-weight="900">maximum</tspan>`;
 
         const boxW = 250, boxH = 85; 
-        let bx = Math.max(75, Math.min(CONFIG.layout.right - 200, x - boxW/2));
+        let bx = Math.max(75, Math.min(CONFIG.layout.right - boxW, x - boxW/2));
         let by = topY - 40; 
         box.setAttribute('transform', `translate(${bx}, ${by - boxH})`);
         bg.setAttribute('width', boxW); bg.setAttribute('height', boxH);
-        document.getElementById('vBoxShadow').setAttribute('width', boxW); document.getElementById('vBoxShadow').setAttribute('height', boxH);
-        strip.setAttribute('height', boxH); document.getElementById('clipRect').setAttribute('width', boxW); document.getElementById('clipRect').setAttribute('height', boxH);
+        shadow.setAttribute('width', boxW); shadow.setAttribute('height', boxH);
+        strip.setAttribute('height', boxH); clipRect.setAttribute('width', boxW); clipRect.setAttribute('height', boxH);
         vTitle.setAttribute('x', boxW / 2); vTitle.setAttribute('y', 25);
         vBody1.setAttribute('x', boxW / 2); vBody1.setAttribute('y', 48);
         vBody2.setAttribute('x', boxW / 2); vBody2.setAttribute('y', 68);
