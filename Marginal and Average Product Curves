@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP and AP V52: Mathematical Linking</title>
+    <style>
+        :root {
+            --mp-color: #e63946; --ap-color: #457b9d; --bg-color: #f8f9fa;
+            --box-bg: rgba(255, 255, 255, 0.85); --text-primary: #1d3557;
+            --text-secondary: #457b9d; --grid-color: #a8dadc; --axis-color: #1d3557;
+            --stage-1-bg: rgba(168, 218, 220, 0.15); --stage-1-strip: #2a9d8f; 
+            --stage-2-bg: rgba(230, 57, 70, 0.08); --stage-2-strip: #e63946; 
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg-color); color: var(--text-primary);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 10px; margin: 0; touch-action: none;
+        }
+        h2 { margin: 12px 0 6px 0; color: var(--text-primary); font-size: 1.6em; font-weight: 700; }
+        p.subtitle { margin-top: 0; color: var(--text-secondary); font-size: 1em; margin-bottom: 24px; text-align: center; max-width: 600px; }
+        .chart-container {
+            position: relative; background: #fff; box-shadow: 0 6px 24px rgba(29, 53, 87, 0.1);
+            border-radius: 14px; width: 95vw; max-width: 750px; height: 550px;
+            user-select: none; cursor: ew-resize; border: 1px solid #e2e8f0; overflow: visible;
+        }
+        svg { display: block; width: 100%; height: 100%; overflow: visible; }
+        .axis-text { font-size: 14px; font-weight: 700; fill: var(--axis-color); }
+        .tick-text { font-size: 12px; font-weight: 600; fill: var(--text-secondary); }
+        .phase-text { font-size: 12px; font-weight: 800; fill: rgba(29, 53, 87, 0.4); pointer-events: none; letter-spacing: 0.6px; }
+        .curve-label { font-size: 13px; font-weight: 800; }
+        .point-val { font-size: 13px; font-weight: 800; font-family: monospace; }
+        .tooltip-title { font-size: 14px; font-weight: 900; text-anchor: middle; fill: #000; }
+        .tooltip-body { font-size: 13px; font-weight: 600; fill: #1d3557; text-anchor: middle; }
+        .tooltip-keyword { font-weight: 900; }
+    </style>
+</head>
+<body>
+
+    <h2>Marginal and Average Product Curves</h2>
+    <p class="subtitle">Drag to explore. Note the relation between MP and AP.</p>
+
+    <div class="chart-container" id="container">
+        <svg id="productionSvg" viewBox="0 0 750 550" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <clipPath id="tooltipClip"><rect id="clipRect" rx="8" width="250" height="85" /></clipPath>
+            </defs>
+            <g id="bgZones"></g>
+            <g id="gridLayer"></g>
+            <g id="phaseLabels">
+                <text id="phase1Label" y="32" text-anchor="middle" class="phase-text">MP > AP</text>
+                <text id="phase2Label" y="32" text-anchor="middle" class="phase-text">MP < AP</text>
+            </g>
+            <g id="connectors" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4">
+                <line id="verticalLine" /><line id="apHLine" /><line id="mpHLine" />
+            </g>
+            <g stroke="var(--axis-color)" stroke-width="2" stroke-linecap="round">
+                <line x1="70" y1="40" x2="70" y2="500" />
+                <line id="zeroLine" x1="70" y1="0" stroke-width="2.5" />
+            </g>
+            <text x="28" y="275" transform="rotate(-90, 28, 275)" text-anchor="middle" class="axis-text">Output</text>
+            <text id="laborLabel" y="0" text-anchor="end" class="axis-text">Labor</text>
+            <g id="arrowGroup"><line id="arrowLine" stroke-width="4" /><polygon id="arrowHead" /></g>
+            <path id="apPath" fill="none" stroke="var(--ap-color)" stroke-width="4" stroke-linecap="round" />
+            <path id="mpPath" fill="none" stroke="var(--mp-color)" stroke-width="4" stroke-linecap="round" />
+            <text id="lblMP" text-anchor="middle" class="curve-label" fill="var(--mp-color)"></text>
+            <text id="lblAP" text-anchor="middle" class="curve-label" fill="var(--ap-color)"></text>
+            <g id="keyPoints"></g>
+            <g id="interactiveLayer">
+                <rect id="apValBg" fill="rgba(255, 255, 255, 0.95)" rx="4" stroke="#e2e8f0" stroke-width="1" />
+                <text id="apValTxt" class="point-val" fill="var(--ap-color)" dominant-baseline="central"></text>
+                <rect id="mpValBg" fill="rgba(255, 255, 255, 0.95)" rx="4" stroke="#e2e8f0" stroke-width="1" />
+                <text id="mpValTxt" class="point-val" fill="var(--mp-color)" dominant-baseline="central"></text>
+                <circle id="apPoint" r="7" fill="#fff" stroke="var(--ap-color)" stroke-width="3" /><circle id="mpPoint" r="7" fill="#fff" stroke="var(--mp-color)" stroke-width="3" />
+            </g>
+            <g id="vTooltip" pointer-events="none">
+                <g id="vBoxContainer">
+                    <rect id="vBoxShadow" x="2" y="2" rx="8" fill="rgba(0,0,0,0.1)" />
+                    <rect id="vBoxBg" rx="8" fill="rgba(255,255,255,0.85)" stroke="#cbd5e1" stroke-width="1" />
+                    <rect id="vBoxStrip" x="0" y="0" width="7" clip-path="url(#tooltipClip)" />
+                </g>
+                <text id="vTitle" class="tooltip-title"></text><text id="vBody1" class="tooltip-body"></text><text id="vBody2" class="tooltip-body"></text>
+            </g>
+        </svg>
+    </div>
+
+<script>
+    const CONFIG = {
+        minL: 0, maxL: 9,
+        funcMP: (L) => -3 * Math.pow(L, 2) + 24 * L,
+        funcAP: (L) => -Math.pow(L, 2) + 12 * L,
+        // DYNAMICALLY CALCULATED INTERSECTION: MP=AP occurs at -3L^2 + 24L = -L^2 + 12L => 2L^2 - 12L = 0 => L=6
+        intersectPoint: 6, 
+        layout: { left: 70, right: 690, top: 40, bottom: 500, height: 460 },
+        scales: { maxY: 60, minY: -40 },
+        colors: { stage1: '#2a9d8f', stage2: '#e63946', intersect: '#000000' }
+    };
+
+    let state = { L: 3.0, isDragging: false };
+    const toX = (L) => CONFIG.layout.left + (L / CONFIG.maxL) * (CONFIG.layout.right - CONFIG.layout.left);
+    const fromX = (px) => ((px - CONFIG.layout.left) / (CONFIG.layout.right - CONFIG.layout.left)) * CONFIG.maxL;
+    const toY = (val) => CONFIG.layout.bottom - ((val - CONFIG.scales.minY) / (CONFIG.scales.maxY - CONFIG.scales.minY)) * CONFIG.layout.height;
+
+    function initStaticElements() {
+        const xStart = CONFIG.layout.left, xEnd = CONFIG.layout.right;
+        const xInflect = toX(CONFIG.intersectPoint);
+
+        // Link backgrounds and Phase labels to calculated intersect
+        document.getElementById('bgZones').innerHTML = `
+            <rect fill="rgba(168, 218, 220, 0.15)" x="${xStart}" y="${CONFIG.layout.top}" width="${xInflect - xStart}" height="${CONFIG.layout.height}" />
+            <rect fill="rgba(230, 57, 70, 0.08)" x="${xInflect}" y="${CONFIG.layout.top}" width="${xEnd - xInflect}" height="${CONFIG.layout.height}" />
+        `;
+        document.getElementById('phase1Label').setAttribute('x', (xStart + xInflect) / 2);
+        document.getElementById('phase2Label').setAttribute('x', (xInflect + xEnd) / 2);
+
+        const grid = document.getElementById('gridLayer');
+        const yZero = toY(0);
+        let html = '';
+        for(let v = CONFIG.scales.minY; v <= CONFIG.scales.maxY; v += 10) {
+            if(v === 0) continue; 
+            let y = toY(v);
+            html += `<line x1="${xStart}" y1="${y}" x2="${xEnd}" y2="${y}" stroke="#e2e8f0" stroke-width="1" />`;
+            html += `<text x="${xStart - 10}" y="${y}" dy="5" text-anchor="end" class="tick-text">${v}</text>`;
+        }
+        document.getElementById('zeroLine').setAttribute('y1', yZero); document.getElementById('zeroLine').setAttribute('y2', yZero); document.getElementById('zeroLine').setAttribute('x2', xEnd);
+        html += `<text x="${xStart - 10}" y="${yZero}" dy="5" text-anchor="end" class="tick-text">0</text>`;
+
+        const labelY = yZero + 20;
+        document.getElementById('laborLabel').setAttribute('x', xEnd); document.getElementById('laborLabel').setAttribute('y', labelY + 22);
+
+        for(let l = 1; l <= CONFIG.maxL; l++) {
+            let xPos = toX(l);
+            html += `<line x1="${xPos}" y1="${CONFIG.layout.top}" x2="${xPos}" y2="${CONFIG.layout.bottom}" stroke="#e2e8f0" stroke-width="1" />`;
+            html += `<line x1="${xPos}" y1="${yZero}" x2="${xPos}" y2="${yZero + 6}" stroke="var(--axis-color)" stroke-width="2" />`;
+            html += `<text x="${xPos}" y="${labelY}" text-anchor="middle" class="tick-text">${l}</text>`;
+        }
+        grid.innerHTML = html;
+        document.getElementById('mpPath').setAttribute('d', generatePath(CONFIG.funcMP));
+        document.getElementById('apPath').setAttribute('d', generatePath(CONFIG.funcAP));
+        
+        const yEndMP = toY(CONFIG.funcMP(CONFIG.maxL)), yEndAP = toY(CONFIG.funcAP(CONFIG.maxL));
+        document.getElementById('lblMP').setAttribute('x', xEnd); document.getElementById('lblMP').setAttribute('y', yEndMP + 20);
+        document.getElementById('lblMP').innerHTML = `<tspan x="${xEnd}" dy="0">Marginal</tspan><tspan x="${xEnd}" dy="16">Product</tspan>`;
+        document.getElementById('lblAP').setAttribute('x', xEnd); document.getElementById('lblAP').setAttribute('y', yEndAP + 20);
+        document.getElementById('lblAP').innerHTML = `<tspan x="${xEnd}" dy="0">Average</tspan><tspan x="${xEnd}" dy="16">Product</tspan>`;
+        document.getElementById('keyPoints').innerHTML = `<circle cx="${toX(CONFIG.intersectPoint)}" cy="${toY(36)}" r="5" fill="#fff" stroke="#1d3557" stroke-width="2.5" />`;
+    }
+
+    function generatePath(func) {
+        let pts = [];
+        for (let l = 0; l <= CONFIG.maxL; l += 0.05) pts.push(`${toX(l)},${toY(func(l))}`);
+        return "M " + pts.join(" L ");
+    }
+
+    function update() {
+        const L = state.L, MP = CONFIG.funcMP(L), AP = CONFIG.funcAP(L), x = toX(L);
+        const yMP = toY(MP), yAP = toY(AP), yZero = toY(0);
+        const isAtIntersection = Math.abs(yMP - yAP) < 1.0;
+
+        document.getElementById('verticalLine').setAttribute('x1', x); document.getElementById('verticalLine').setAttribute('x2', x);
+        document.getElementById('verticalLine').setAttribute('y1', Math.min(yMP, yAP)); document.getElementById('verticalLine').setAttribute('y2', yZero); 
+        document.getElementById('mpHLine').setAttribute('x1', 70); document.getElementById('mpHLine').setAttribute('y1', yMP); document.getElementById('mpHLine').setAttribute('x2', x); document.getElementById('mpHLine').setAttribute('y2', yMP);
+        document.getElementById('apHLine').setAttribute('x1', 70); document.getElementById('apHLine').setAttribute('y1', yAP); document.getElementById('apHLine').setAttribute('x2', x); document.getElementById('apHLine').setAttribute('y2', yAP);
+
+        document.getElementById('mpPoint').setAttribute('cx', x); document.getElementById('mpPoint').setAttribute('cy', yMP);
+        document.getElementById('apPoint').setAttribute('cx', x); document.getElementById('apPoint').setAttribute('cy', yAP);
+        
+        if (isAtIntersection) {
+            document.getElementById('apValBg').style.display = 'none'; document.getElementById('apValTxt').style.display = 'none';
+            updateValueBox('mp', x, yMP, `MP = AP = ${MP.toFixed(1)}`);
+        } else {
+            document.getElementById('apValBg').style.display = ''; document.getElementById('apValTxt').style.display = '';
+            updateValueBox('mp', x, yMP, `MP: ${MP.toFixed(1)}`); updateValueBox('ap', x, yAP, `AP: ${AP.toFixed(1)}`);
+        }
+
+        const curColor = (L < CONFIG.intersectPoint) ? CONFIG.colors.stage1 : CONFIG.colors.stage2;
+        updateArrow(x, yMP, yAP, MP, AP, curColor, isAtIntersection);
+        updateVectorTooltip(L, x, Math.min(yMP, yAP), curColor, isAtIntersection);
+    }
+
+    function updateArrow(x, yMP, yAP, MP, AP, col, isIntersect) {
+        const line = document.getElementById('arrowLine'), head = document.getElementById('arrowHead');
+        const dist = Math.abs(yMP - yAP), dotR = 8, hH = Math.min(14, dist * 0.45), hW = hH * 0.5;
+        if (dist < 22 || isIntersect) { line.style.display = 'none'; head.style.display = 'none'; } 
+        else {
+            line.style.display = ''; head.style.display = ''; line.setAttribute('x1', x); line.setAttribute('x2', x);
+            line.setAttribute('stroke', col); head.setAttribute('fill', col);
+            if (MP > AP) {
+                let tipY = yMP + dotR, baseY = tipY + hH;
+                line.setAttribute('y1', yAP - dotR); line.setAttribute('y2', baseY);
+                head.setAttribute('points', `${x},${tipY} ${x-hW},${baseY} ${x+hW},${baseY}`);
+            } else {
+                let tipY = yMP - dotR, baseY = tipY - hH;
+                line.setAttribute('y1', yAP + dotR); line.setAttribute('y2', baseY);
+                head.setAttribute('points', `${x},${tipY} ${x-hW},${baseY} ${x+hW},${baseY}`);
+            }
+        }
+    }
+
+    function updateValueBox(pre, cx, cy, val) {
+        const t = document.getElementById(pre + 'ValTxt'), b = document.getElementById(pre + 'ValBg');
+        t.textContent = val; const w = t.getComputedTextLength() + 18;
+        // Linked to CONFIG.layout.right instead of hardcoded 740
+        let tx = (cx + 15 + w > CONFIG.layout.right + 50) ? cx - 15 - w : cx + 15;
+        t.setAttribute('x', tx + 9); t.setAttribute('y', cy);
+        b.setAttribute('x', tx); b.setAttribute('y', cy - 14); b.setAttribute('width', w); b.setAttribute('height', 28);
+    }
+
+    function updateVectorTooltip(L, x, topY, col, isIntersect) {
+        const box = document.getElementById('vTooltip'), bg = document.getElementById('vBoxBg');
+        const strip = document.getElementById('vBoxStrip'), vTitle = document.getElementById('vTitle');
+        const vBody1 = document.getElementById('vBody1'), vBody2 = document.getElementById('vBody2');
+
+        let tStr, b1Str, b2Txt, b2Col;
+        if (isIntersect) {
+            tStr = "MP = AP"; b1Str = "MP equals AP."; b2Txt = "maximum"; b2Col = "#000";
+            strip.setAttribute('fill', '#000');
+        } else if (L < CONFIG.intersectPoint) {
+            tStr = "MP > AP"; b1Str = (L < 4) ? "MP is rising and above AP." : "MP is falling but still above AP.";
+            b2Txt = "up"; b2Col = CONFIG.colors.stage1; strip.setAttribute('fill', CONFIG.colors.stage1);
+        } else {
+            tStr = "MP < AP"; b1Str = "MP is falling and below AP."; b2Txt = "down"; b2Col = CONFIG.colors.stage2; strip.setAttribute('fill', CONFIG.colors.stage2);
+        }
+
+        vTitle.textContent = tStr; vBody1.textContent = b1Str;
+        vBody2.innerHTML = `<tspan>${(L < CONFIG.intersectPoint) ? 'MP pulls AP ' : 'MP drags AP '}</tspan><tspan fill="${b2Col}" font-weight="900">${b2Txt}</tspan>`;
+        if (isIntersect) vBody2.innerHTML = `<tspan>AP is at its </tspan><tspan fill="${b2Col}" font-weight="900">maximum</tspan>`;
+
+        const boxW = 250, boxH = 85; 
+        let bx = Math.max(75, Math.min(CONFIG.layout.right - 200, x - boxW/2));
+        let by = topY - 40; 
+        box.setAttribute('transform', `translate(${bx}, ${by - boxH})`);
+        bg.setAttribute('width', boxW); bg.setAttribute('height', boxH);
+        document.getElementById('vBoxShadow').setAttribute('width', boxW); document.getElementById('vBoxShadow').setAttribute('height', boxH);
+        strip.setAttribute('height', boxH); document.getElementById('clipRect').setAttribute('width', boxW); document.getElementById('clipRect').setAttribute('height', boxH);
+        vTitle.setAttribute('x', boxW / 2); vTitle.setAttribute('y', 25);
+        vBody1.setAttribute('x', boxW / 2); vBody1.setAttribute('y', 48);
+        vBody2.setAttribute('x', boxW / 2); vBody2.setAttribute('y', 68);
+    }
+
+    function handleInput(e) {
+        const rect = document.getElementById('productionSvg').getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        state.L = Math.max(0, Math.min(CONFIG.maxL, fromX((clientX - rect.left) * (750 / rect.width))));
+        if (Math.abs(state.L - Math.round(state.L)) < 0.2) state.L = Math.round(state.L);
+        update();
+    }
+    const cont = document.getElementById('container');
+    cont.addEventListener('mousedown', (e) => { state.isDragging = true; handleInput(e); });
+    window.addEventListener('mousemove', (e) => { if(state.isDragging) handleInput(e); });
+    window.addEventListener('mouseup', () => state.isDragging = false);
+    cont.addEventListener('touchstart', (e) => { state.isDragging = true; handleInput(e); e.preventDefault(); }, {passive: false});
+    window.addEventListener('touchmove', (e) => { if(state.isDragging) { handleInput(e); e.preventDefault(); } }, {passive: false});
+    window.addEventListener('touchend', () => state.isDragging = false);
+    initStaticElements(); update();
+</script>
+</body>
+</html>
