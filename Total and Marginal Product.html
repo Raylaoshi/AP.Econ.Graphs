@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hello World</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+</head>
+<body>
+
+
+<div class="kg-container">
+
+schema: EconSchema
+version: 1
+Name: Hello World - Total and Marginal Product
+
+params:
+- name: x
+  value: 2
+  min: 0
+  max: 10
+  round: 0.1 
+
+calcs:
+  TP: "(-(params.x)^3 + 12*(params.x)^2)"
+  MP: "(-3*(params.x)^2 + 24*(params.x))"
+
+layout:
+  TwoVerticalGraphs:
+    
+    topGraph:
+      xAxis:
+        title: Labor 
+        orient: bottom
+        min: 0
+        max: 10
+        ticks: 10
+      
+      yAxis:
+        title: Output
+        orient: left
+        min: 0
+        max: 300
+        ticks: 5
+      
+      objects:
+       - Curve:
+          fn: "(-(x)^3+12*(x)^2)"
+          samplePoints: 100
+          stroke: blue
+          strokeWidth: 2
+          label:
+            text: Total\ Product
+            x: 9.5            
+
+       - Line:
+          point: [params.x, calcs.TP]
+          color: red
+          slope: calcs.MP
+          min: params.x - 1.5
+          max: params.x + 1.5
+          strokeWidth: 3
+          label:
+            text: "`slope=MP=${calcs.MP.toFixed(2)}`"
+            x: params.x
+            position: br
+
+       - Point:
+          coordinates: [params.x, calcs.TP]
+          fill: blue
+          drag:
+          - horizontal: x
+          droplines:
+            vertical: params.x.toFixed(2)
+            horizontal: calcs.TP.toFixed(2)
+    
+    bottomGraph:
+      xAxis:
+        title: Labor
+        orient: bottom
+        min: 0
+        max: 10
+        ticks: 10
+      
+      yAxis:
+        title: Output
+        orient: left
+        min: -70
+        max: 70
+        ticks: 5
+      
+      objects:
+        - Curve:
+            fn: "(-3*(x)^2 + 24*(x))"
+            samplePoints: 100
+            stroke: red
+            strokeWidth: 2
+            label:
+              text: Marginal\ Product
+              x: 9.5
+        
+        - Point:
+            coordinates: [params.x, calcs.MP]
+            color: red
+            drag:
+            - horizontal: x
+            droplines:
+              vertical: params.x.toFixed(2)
+              horizontal: (calcs.MP).toFixed(2)
+
+
+</div>
+
+</body>
+</html>
