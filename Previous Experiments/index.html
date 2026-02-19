@@ -4,65 +4,137 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Previous Experiments — AP.Econ.Graphs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
   <style>
-    :root{--bg:#fff;--ink:#0d0d0d;--mid:#666;--faint:#f4f4f4;--line:#e8e8e8;--blue:#0057ff;--blue-dim:#e6eeff}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{background:var(--bg);color:var(--ink);font-family:'Outfit','Noto Sans SC',-apple-system,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+    :root {
+      --bg: #fff;
+      --ink: #0d0d0d;
+      --mid: #666;
+      --faint: #f4f4f4;
+      --line: #e8e8e8;
+      --blue: #0057ff;
+      --blue-dim: #e6eeff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-weight: 300; line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    .topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1rem,4vw,2rem);height:56px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.95);backdrop-filter:blur(12px)}
-    .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(.85rem,2vw,1rem);letter-spacing:-.02em;color:var(--ink);text-decoration:none}
-    .logo span{color:var(--blue)}
-    .lang-toggle{display:flex;gap:4px}
-    .lang-btn{background:none;border:1px solid var(--line);border-radius:99px;padding:.3rem .85rem;font-size:.78rem;font-family:inherit;cursor:pointer;color:var(--mid);transition:all .18s;font-weight:400}
-    .lang-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+    /* TOPBAR */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1rem,4vw,2rem); height: 56px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
+    }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(.85rem,2vw,1rem); letter-spacing: -.02em;
+      color: var(--ink); text-decoration: none; }
+    .logo span { color: var(--blue); }
 
-    .page-header{border-bottom:1px solid var(--line);padding:clamp(2.5rem,6vw,4rem) clamp(1rem,4vw,2rem) clamp(1.5rem,4vw,2.5rem);max-width:1040px;margin:0 auto}
-    .breadcrumb{font-size:.75rem;color:var(--mid);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
-    .breadcrumb a{color:var(--blue);text-decoration:none}
-    .breadcrumb a:hover{text-decoration:underline}
-    .page-header h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,6vw,4rem);letter-spacing:-.04em;line-height:1}
-    .page-header h1 .accent{color:var(--blue)}
-    .page-desc{margin-top:.8rem;font-size:.95rem;color:var(--mid)}
+    /* PAGE HEADER */
+    .page-header {
+      border-bottom: 1px solid var(--line);
+      padding: clamp(2.5rem,6vw,4rem) clamp(1rem,4vw,2rem) clamp(1.5rem,4vw,2.5rem);
+      max-width: 1040px; margin: 0 auto;
+    }
+    .breadcrumb { font-size: .75rem; color: var(--mid); margin-bottom: .9rem;
+      display: flex; align-items: center; gap: .4rem; }
+    .breadcrumb a { color: var(--blue); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2rem,6vw,4rem); letter-spacing: -.04em; line-height: 1; }
+    .page-header h1 .accent { color: var(--blue); }
+    .page-desc { margin-top: .8rem; font-size: .95rem; color: var(--mid); }
 
-    main{max-width:1040px;margin:0 auto;padding:clamp(1.5rem,4vw,2.5rem) clamp(1rem,4vw,2rem) clamp(4rem,8vw,6rem)}
+    /* NOTE BANNER */
+    .note-banner {
+      max-width: 1040px; margin: 0 auto;
+      padding: 1rem clamp(1rem,4vw,2rem) 0;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 1rem;
+    }
+    .note-inner {
+      background: var(--faint); border-radius: 6px;
+      padding: .8rem 1.1rem; font-size: .83rem; color: var(--mid);
+      display: flex; align-items: flex-start; gap: .6rem;
+    }
 
-    .controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.8rem}
-    .count-label{font-size:.78rem;color:var(--mid)}
-    .count-label strong{color:var(--ink);font-weight:500}
-    .gh-link{font-size:.78rem;color:var(--mid);text-decoration:none}
-    .gh-link:hover{color:var(--ink)}
+    /* STATS BAR */
+    .stats-bar {
+      max-width: 1040px; margin: 0 auto;
+      padding: .9rem clamp(1rem,4vw,2rem);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: .5rem;
+      border-bottom: 1px solid var(--line);
+      font-size: .78rem; color: var(--mid);
+    }
+    .stats-bar strong { color: var(--ink); font-weight: 500; }
+    .gh-link { color: var(--mid); text-decoration: none; font-size: .78rem; }
+    .gh-link:hover { color: var(--ink); }
 
-    #status{padding:3rem 0;text-align:center;color:var(--mid);font-size:.9rem}
-    .spinner{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;margin-right:.5rem;vertical-align:middle}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    /* MAIN */
+    main {
+      max-width: 1040px; margin: 0 auto;
+      padding: clamp(2rem,5vw,3.5rem) clamp(1rem,4vw,2rem) clamp(4rem,8vw,6rem);
+    }
 
-    .file-list{list-style:none;display:flex;flex-direction:column}
-    .file-list li{border-bottom:1px solid var(--line)}
-    .file-list li:first-child{border-top:1px solid var(--line)}
-    .file-list li a{display:grid;grid-template-columns:2.2rem 1fr auto auto;align-items:center;gap:clamp(.6rem,2vw,1rem);padding:clamp(.85rem,2vw,1rem) .5rem;text-decoration:none;color:var(--ink);transition:background .15s;border-radius:4px}
-    .file-list li a:hover,.file-list li a:active{background:var(--faint);padding-left:1rem}
-    .file-num{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--mid)}
-    .file-name{font-size:clamp(.85rem,2vw,.95rem);font-weight:400;word-break:break-word}
-    .file-name em{font-style:normal;color:var(--mid);font-size:.82rem}
-    .file-badge{font-family:'DM Mono',monospace;font-size:.68rem;background:var(--blue-dim);color:var(--blue);padding:.15rem .5rem;border-radius:3px;white-space:nowrap}
-    .file-arrow{color:var(--blue);opacity:0;font-size:.9rem;transition:opacity .2s}
-    .file-list li a:hover .file-arrow{opacity:1}
+    /* STATUS */
+    #status { padding: 3rem 0; text-align: center; color: var(--mid); font-size: .9rem; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--line);
+      border-top-color: var(--blue); border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block; margin-right: .5rem; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .empty-state{padding:3rem 0;text-align:center;color:var(--mid)}
-    .empty-icon{font-size:2rem;margin-bottom:.6rem}
-    .empty-state p{font-size:.9rem}
-    .empty-state a{color:var(--blue);text-decoration:none}
+    /* GRAPH LIST */
+    .graph-list { list-style: none; }
+    .graph-list li { border-bottom: 1px solid var(--line); }
+    .graph-list li:first-child { border-top: 1px solid var(--line); }
+    .graph-list li a {
+      display: grid;
+      grid-template-columns: 2.8rem 1fr auto;
+      align-items: center; gap: clamp(.6rem,2vw,1.2rem);
+      padding: clamp(.75rem,2vw,.95rem) .4rem;
+      text-decoration: none; color: var(--ink);
+      transition: background .15s, padding-left .15s;
+      border-radius: 4px;
+    }
+    .graph-list li a:hover, .graph-list li a:active {
+      background: var(--faint); padding-left: .9rem;
+    }
+    .graph-label { font-family: 'DM Mono', monospace; font-size: .7rem;
+      background: var(--faint); color: var(--mid);
+      border: 1px solid var(--line);
+      padding: .15rem .45rem; border-radius: 3px; text-align: center;
+      white-space: nowrap; }
+    .graph-title { font-size: clamp(.88rem,2vw,.97rem); font-weight: 400; }
+    .graph-arrow { color: var(--blue); font-size: .9rem;
+      opacity: 0; transition: opacity .2s; }
+    .graph-list li a:hover .graph-arrow { opacity: 1; }
 
-    .footer-wrap{border-top:1px solid var(--line)}
-    footer{max-width:1040px;margin:0 auto;padding:clamp(1.2rem,3vw,1.5rem) clamp(1rem,4vw,2rem);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem;font-size:.78rem;color:var(--mid)}
-    footer a{color:var(--mid);text-decoration:none}
-    footer a:hover{color:var(--ink)}
+    /* EMPTY / ERROR */
+    .empty-state { padding: 3rem 0; text-align: center; color: var(--mid); }
+    .empty-state p { font-size: .9rem; }
+    .empty-state a { color: var(--blue); text-decoration: none; }
 
-    @media(max-width:480px){
-      .file-list li a{grid-template-columns:1.8rem 1fr auto}
-      .file-arrow{display:none}
+    /* FOOTER */
+    .footer-wrap { border-top: 1px solid var(--line); }
+    footer { max-width: 1040px; margin: 0 auto;
+      padding: clamp(1.2rem,3vw,1.5rem) clamp(1rem,4vw,2rem);
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: .5rem; font-size: .78rem; color: var(--mid); }
+    footer a { color: var(--mid); text-decoration: none; }
+    footer a:hover { color: var(--ink); }
+
+    @media (max-width: 480px) {
+      .graph-list li a { grid-template-columns: 2.4rem 1fr; }
+      .graph-arrow { display: none; }
     }
   </style>
 </head>
@@ -70,155 +142,105 @@
 
 <header class="topbar">
   <a class="logo" href="../index.html"><span>AP</span>·Econ·Graphs</a>
-  <div class="lang-toggle">
-    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" id="btn-zh" onclick="setLang('zh')">中文</button>
-  </div>
 </header>
 
 <div class="page-header">
   <div class="breadcrumb">
-    <a href="../index.html" data-i18n="home"></a>
+    <a href="../index.html">← Home</a>
     <span>/</span>
-    <span data-i18n="folderName"></span>
+    <span>Previous Experiments</span>
   </div>
-  <h1><span data-i18n="h1a"></span> <span class="accent" data-i18n="h1b"></span></h1>
-  <p class="page-desc" data-i18n="pageDesc"></p>
+  <h1>Previous <span class="accent">Experiments</span></h1>
+  <p class="page-desc">Earlier prototypes and exploratory graph models. Click any file to open it.</p>
+</div>
 
-<div style="max-width:1040px;margin:0 auto;padding:1.2rem clamp(1rem,4vw,2rem) 0">
-  <div style="background:#f4f4f4;border-radius:6px;padding:.9rem 1.2rem;font-size:.83rem;color:#666;display:flex;align-items:flex-start;gap:.6rem">
+<div class="note-banner">
+  <div class="note-inner">
     <span>🧪</span>
-    <span id="note-text"></span>
+    <span>These are older, experimental files — they show how this project evolved over time.</span>
   </div>
 </div>
 
+<div class="stats-bar">
+  <span id="stats-label">&nbsp;</span>
+  <a class="gh-link" href="https://github.com/Raylaoshi/AP.Econ.Graphs/tree/main/Previous%20Experiments" target="_blank">View folder on GitHub ↗</a>
+</div>
+
 <main>
-  <div class="controls">
-    <span class="count-label" id="count-label">&nbsp;</span>
-    <a class="gh-link" href="https://github.com/Raylaoshi/AP.Econ.Graphs/tree/main/Previous%20Experiments" target="_blank" data-i18n="ghLink"></a>
-  </div>
-  <div id="status"><span class="spinner"></span><span data-i18n="loading"></span></div>
-  <ul class="file-list" id="file-list" style="display:none"></ul>
+  <div id="status"><span class="spinner"></span> Loading…</div>
+  <ul class="graph-list" id="graph-list" style="display:none"></ul>
 </main>
 
 <div class="footer-wrap">
   <footer>
     <span>AP.Econ.Graphs · <a href="https://github.com/Raylaoshi/AP.Econ.Graphs" target="_blank">github.com/Raylaoshi</a></span>
-    <span data-i18n="footerCredit"></span>
+    <span>Built with KineticGraphs by Chris Makler</span>
   </footer>
 </div>
 
 <script>
-const REPO = 'Raylaoshi/AP.Econ.Graphs';
+const REPO   = 'Raylaoshi/AP.Econ.Graphs';
 const FOLDER = 'Previous Experiments';
+const GH_FOLDER_URL = 'https://github.com/Raylaoshi/AP.Econ.Graphs/tree/main/Previous%20Experiments';
 
-const T = {
-  en: {
-    home:'← Home', folderName:'Previous Experiments',
-    h1a:'AP Micro', h1b:'Graphs',
-    pageDesc:'Interactive microeconomics models. Click any file to open.',
-    ghLink:'View on GitHub ↗', loading:'Loading files…',
-    countSingle:'file', countPlural:'files', countPre:'',
-    emptyText:'No HTML files here yet.',
-    errText:'Could not load files.',
-    browseGH:'Browse on GitHub →',
-    noteText:'These are older, experimental files. They may be rough around the edges — that shows how this project evolved.',
-    footerCredit:'Built with KineticGraphs by Chris Makler'
-  },
-  zh: {
-    home:'← 首页', folderName:'早期实验',
-    h1a:'AP微观', h1b:'经济图表',
-    pageDesc:'互动微观经济模型。点击任意文件在浏览器中打开。',
-    ghLink:'在GitHub查看 ↗', loading:'正在加载文件…',
-    countSingle:'个文件', countPlural:'个文件', countPre:'共 ',
-    emptyText:'暂无HTML文件。',
-    errText:'无法加载文件。',
-    browseGH:'在GitHub浏览 →',
-    noteText:'这些是较早期的实验性文件，可能尚不完善——这记录了本项目的成长历程。',
-    footerCredit:'基于KineticGraphs构建'
-  }
-};
-
-let currentLang = 'en';
-
-function render(lang) {
-  currentLang = lang;
-  const t = T[lang];
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key] !== undefined) el.textContent = t[key];
-  });
-  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
-  document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
-  const nt = document.getElementById('note-text'); if(nt) nt.textContent = T[lang].noteText;
-  updateCount();
-}
-
-function updateCount() {
-  const t = T[currentLang];
-  const count = document.getElementById('file-list').querySelectorAll('li').length;
-  if (count === 0) return;
-  const label = document.getElementById('count-label');
-  label.innerHTML = currentLang === 'zh'
-    ? `${t.countPre}<strong>${count}</strong>${t.countPlural}`
-    : `<strong>${count}</strong> ${count === 1 ? t.countSingle : t.countPlural}`;
-}
-
-function setLang(lang) {
-  render(lang);
-  try { localStorage.setItem('econ-lang', lang); } catch(e) {}
-}
-
-function detectLang() {
-  try {
-    const saved = localStorage.getItem('econ-lang');
-    if (saved === 'en' || saved === 'zh') return saved;
-  } catch(e) {}
-  return (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en';
-}
-
-async function loadFiles() {
+async function init() {
   const statusEl = document.getElementById('status');
-  const listEl = document.getElementById('file-list');
+  const listEl   = document.getElementById('graph-list');
+  const statsEl  = document.getElementById('stats-label');
+
   try {
-    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(FOLDER)}`);
+    const res = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(FOLDER)}`
+    );
     if (!res.ok) throw new Error(res.status);
     const files = await res.json();
-    const htmlFiles = files.filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.html') && f.name.toLowerCase() !== 'index.html');
+
+    const htmlFiles = files.filter(f =>
+      f.type === 'file' &&
+      f.name.toLowerCase().endsWith('.html') &&
+      f.name.toLowerCase() !== 'index.html'
+    );
 
     statusEl.style.display = 'none';
 
     if (htmlFiles.length === 0) {
       statusEl.style.display = 'block';
-      statusEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📂</div><p id="emp-txt"></p></div>`;
-      document.getElementById('emp-txt').textContent = T[currentLang].emptyText;
+      statusEl.innerHTML = `<div class="empty-state">
+        <p>No files here yet. <a href="${GH_FOLDER_URL}" target="_blank">Browse on GitHub →</a></p>
+      </div>`;
       return;
     }
 
-    listEl.style.display = 'flex';
+    listEl.style.display = 'block';
+
     htmlFiles.forEach((file, i) => {
-      const cleanName = file.name.replace(/\.html$/i, '').replace(/[-_]/g, ' ');
+      // Clean display name: remove .html extension, replace hyphens/underscores with spaces
+      const displayName = file.name
+        .replace(/\.html$/i, '')
+        .replace(/[-_]/g, ' ');
+
+      const num = String(i + 1).padStart(2, '0');
       const li = document.createElement('li');
-      li.innerHTML = `<a href="${encodeURIComponent(file.name)}" target="_blank">
-        <span class="file-num">${String(i+1).padStart(2,'0')}</span>
-        <span class="file-name">${cleanName} <em>.html</em></span>
-        <span class="file-badge">HTML</span>
-        <span class="file-arrow">→</span>
-      </a>`;
+      li.innerHTML = `
+        <a href="${encodeURIComponent(file.name)}" target="_blank">
+          <span class="graph-label">${num}</span>
+          <span class="graph-title">${displayName}</span>
+          <span class="graph-arrow">→</span>
+        </a>`;
       listEl.appendChild(li);
     });
-    updateCount();
-  } catch(err) {
-    statusEl.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>
-      <p id="err-txt"></p></div>`;
-    document.getElementById('err-txt').innerHTML =
-      `${T[currentLang].errText} <a href="https://github.com/Raylaoshi/AP.Econ.Graphs/tree/main/Previous%20Experiments" target="_blank">${T[currentLang].browseGH}</a>`;
+
+    statsEl.innerHTML = `<strong>${htmlFiles.length}</strong> file${htmlFiles.length !== 1 ? 's' : ''}`;
+
+  } catch (err) {
+    statusEl.innerHTML = `<div class="empty-state">
+      <p>⚠️ Could not load files. <a href="${GH_FOLDER_URL}" target="_blank">Browse on GitHub instead →</a></p>
+    </div>`;
+    console.error(err);
   }
 }
 
-render(detectLang());
-loadFiles();
+init();
 </script>
 </body>
 </html>
