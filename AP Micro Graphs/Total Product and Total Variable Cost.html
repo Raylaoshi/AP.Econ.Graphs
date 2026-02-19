@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Total Product and Total Variable Cost</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+
+<body>
+
+  <div class="kg-container">
+  params:
+  - name: L
+    value: 1
+    min: 0
+    max: 8
+    round: 0.1 
+  - name: W
+    value: 50        
+    min: 20
+    max: 80
+    round: 1
+
+  calcs:
+    # curves
+    TP: "(-(params.L)^3 + 12*(params.L)^2)"
+    MP: "(-3*(params.L)^2 + 24*(params.L))"
+    TFC: 100
+    TVC: "params.W * params.L"
+    TC: TFC + TVC
+
+    # key points
+    XInflectionTP: 4
+    ZeroMP: 8
+    XInflectionTVC: 128
+    
+
+    # key regions
+    StageI: "calcs.XInflectionTP/2"
+    StageII: "((calcs.XInflectionTP + 10)/2)"
+
+  layout:
+    TwoVerticalGraphsPlusSidebar:
+      topGraph:
+        xAxis:
+          title: Labor 
+          orient: bottom
+          min: 0
+          max: 8
+          ticks: 8     
+              
+        yAxis:
+          title: Output
+          orient: left
+          min: 0
+          max: 300
+          ticks: 5
+        
+        objects:
+
+          - Curve:
+              fn: "(-(x)^3+12*(x)^2)"
+              samplePoints: 100
+              stroke: blue
+              strokeWidth: 2
+              label:
+                text: \text{Total Product}
+                x: 7
+                position: t       
+                
+          - Point:
+              coordinates: [params.L, calcs.TP]
+              color: blue
+              drag:
+              - horizontal: L
+              droplines:
+                vertical: params.L.toFixed(1)
+                horizontal: calcs.TP.toFixed(1)         
+          
+          # ------
+
+          # Vertical line at the inflection point
+          - Segment:
+              a: [calcs.XInflectionTP, 300]
+              b: [calcs.XInflectionTP, 0]
+              strokeWidth: 1
+              lineStyle: dotted
+              color: grey
+
+          # Region Labels - left
+          - Label:
+              coordinates: [calcs.StageI, /] 
+              text: \text{Increasing Marginal Returns}
+              color: black
+              fontSize: 10
+          
+          # Region Labels - right
+          - Label:
+              coordinates: [calcs.StageII, /]
+              text: \text{Diminishing Marginal Returns}
+              color: black
+              fontSize: 10
+
+          # add a point at the steepest point
+          - Point:
+              coordinates: [calcs.XInflectionTP,(-(calcs.XInflectionTP)^3+12*(calcs.XInflectionTP)^2)]
+              color: blue
+              label:
+                text: \text{Steepest}
+                position: tl
+              bgcolor: none
+              fontSize: 10
+              r: 5
+          
+          # add a point at the maximum point
+          - Point:
+              coordinates: [calcs.ZeroMP,(-(calcs.ZeroMP)^3+12*(calcs.ZeroMP)^2)]
+              color: blue
+              label:
+                text: \text{Maximum}
+                position: bl
+              bgcolor: none
+              fontSize: 10
+              r: 5          
+
+      bottomGraph:
+        xAxis:
+          title: Output 
+          orient: bottom
+          min: 0
+          max: 280 
+          ticks: 8     
+              
+        yAxis:
+          title: Cost
+          orient: left
+          min: 0
+          max: 500
+          ticks: 5
+        
+        objects:
+          
+          # Cruve shape
+          - Curve:
+              fn: (-((y)/(params.W))^3 + 12*((y)/(params.W))^2)
+              ind: y
+              max: (8*params.W)
+              samplePoints: 300
+              stroke: green
+              strokeWidth: 2
+              label:
+                text: \text{Total Variable Cost}
+                y: 150
+                position: b
+        
+          # Current point       
+          - Point:
+              coordinates: [calcs.TP,calcs.TVC] 
+              color: green
+              droplines:
+                vertical: calcs.TP.toFixed(1)
+                horizontal: calcs.TVC.toFixed(1)
+                
+          # ------
+
+          # Vertical line at the inflection point
+          - Segment:
+              a: [128, 500]
+              b: [128, 0] 
+              strokeWidth: 1
+              lineStyle: dotted
+              color: grey
+
+          # Region Labels - left
+          - Label:
+              coordinates: [64, 500] 
+              text: \text{Increasing Marginal Returns}
+              color: black
+              fontSize: 10
+          
+          # Region Labels - right
+          - Label:
+              coordinates: [214, 500]
+              text: \text{Diminishing Marginal Returns}
+              color: black
+              fontSize: 10
+
+          # add a point at the flattest point
+          - Point:
+              coordinates: [128, (4*params.W)]
+              color: green
+              label:
+                text: \text{Flattest}
+                position: tl
+              bgcolor: none
+              fontSize: 10
+              r: 5
+
+
+      sidebar:
+            controls:
+            - title: Total Product and Total Variable Cost
+              sliders:
+              - param: L
+                label: Labor
+              - param: W
+                label: Wage
+              divs:
+                - html: '`With the production level of $Output = ${calcs.TP.toFixed(1)}$ $units$, the firm requires $Labor = ${params.L.toFixed(1)}$ $units$ of labor.`'
+                - html: '`At a wage rate of $Wage = ${params.W.toFixed(0)}$ $dollars$, the Total Variable Cost is $TVC = ${calcs.TVC.toFixed(1)}$ $dollars$.`' 
+    
+  </div>
+            
+</body>
+</html>

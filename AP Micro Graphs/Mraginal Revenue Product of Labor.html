@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Marginal Revenue Product of Labor</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+
+<body>
+
+  <div class="kg-container">
+
+schema: EconSchema
+params:
+  - name: L
+    value: 4
+    max: 8
+    round: 1
+  - name: ProductivityFactor
+    value: 0.5
+    min: 0.25
+    max: 1
+    round: 0.25
+  - {name: demandShift, value: 0, min: -5, max: 5, round: 1}
+  - {name: supplyShift, value: 0, min: -5, max: 5, round: 0.1}
+
+
+calcs:
+  # Equilibrium Price: Pdemand = 20 + 2 * demandShift
+  Pdemand: (20 + 2 * (params.demandShift))
+
+  # Marginal Product: MP = -3L^2 + 24L
+  mp: (params.ProductivityFactor) * (params.L) * (9 - params.L)^2
+
+  # Marginal Revenue Product: MRP = P × MP
+  mrp: (calcs.Pdemand) * (calcs.mp)
+
+layout:
+  ThreeHorizontalGraphs:
+    leftGraph:
+      xAxis:
+        title: Output (Q)
+        max: 8 
+        ticks: 0
+      yAxis:
+        title: Price (P)
+        max: 40
+        min: 0
+        ticks: 5 
+      objects:
+        - EconLinearEquilibrium:
+            name: ourEquilibrium
+            demand: 
+              name: ourDemand
+              xIntercept: 9.75 + params.demandShift
+              invSlope: -0.25
+              color: blue
+              drag: 
+              - horizontal: demandShift
+              label:
+                text: "`\\\\text{D}`"
+                x: 7
+                position: l
+            supply: 
+              name: ourSupply
+              yIntercept: 1 - params.supplyShift
+              slope: 4
+              label:
+                text: "`\\\\text{S}`"
+                x: 7 
+                position: l
+            equilibrium:
+              color: grey
+              droplines:
+                horizontal: "`MR = P = ${calcs.ourEquilibrium.P.toFixed(1)}`"  
+    leftControls:
+      title: Product Market (Perfect Competition)
+      sliders:
+        - param: demandShift
+          label: \text{Demand Shift}
+      divs:
+      - html: '`A change in product demand affects the product price <b>(Price = $ ${calcs.Pdemand.toFixed(1)})</b>, which in turn affects the marginal revenue product of labor.`'
+
+    middleGraph:
+      xAxis:
+        title: Labor (L)
+        max: 9
+        ticks: 9
+      yAxis:
+        title: "Output (Q)"
+        max: 90
+        min: 0
+        ticks: 5
+      objects:
+        # Marginal Product curve: MP = -3L^2 + 24L
+        - Curve:
+            fn: (params.ProductivityFactor) * (x) * (9 - (x))^2
+            color: green
+            strokeWidth: 2
+            max: 8
+            label:
+              text: MP_L
+              x: 8
+              position: b
+        
+        # Point on MP curve
+        - Point:
+            coordinates: [params.L, calcs.mp]
+            color: green
+            drag:
+              - horizontal: L
+            droplines:
+              vertical: params.L.toFixed(1)
+              horizontal: calcs.mp.toFixed(1)
+        
+        # Maximum MP point (at L=4, MP=48)
+        - Point:
+            coordinates: [3, (params.ProductivityFactor) * (3) * (9 - 3)^2]
+            color: green
+            r: 4
+            label:
+              text: Max MP_L
+              fontSize: 10
+              position: b
+    middleControls:
+      title: Marginal Product of Labor
+      sliders:
+        - param: ProductivityFactor
+          label: \text{Productivity Factor}
+      divs:
+      - html: A change in productivity affects the marginal product of labor, which in turn affects the marginal revenue product of labor.  
+
+    rightGraph:
+      xAxis:
+        title: Labor (L)
+        max: 9
+        ticks: 9
+      yAxis:
+        title: Marginal Revenue Product of Labor (MRPL)
+        max: 1500 
+        min: 0
+        ticks: 6
+
+      objects:
+        # Marginal Revenue Product of Labor curve
+        - Curve:
+            fn: (params.ProductivityFactor) * (calcs.Pdemand) * (x) * (9 - (x))^2
+            strokeWidth: 3
+            max: 8
+            color: blue
+            label:
+              text: "`MRP_L = MR \\\\times MP_L`"
+              x: 8
+              position: b
+        
+        # Point on MRP curve
+        - Point:
+            coordinates: [params.L, calcs.mrp]
+            color: blue
+            drag:
+              - horizontal: L
+            droplines:
+              vertical: params.L.toFixed(1)
+              horizontal: calcs.mrp.toFixed(1)
+        
+        # Show maximum MRP point (at L=4)
+        - Point:
+            coordinates: [3, (params.ProductivityFactor) * (calcs.Pdemand) * (3) * (9 - 3)^2]
+            r: 4
+            label:
+              text: "Max MRP"
+              fontSize: 10
+              position: b
+    
+    rightControls:
+      title: Marginal Revenue Product of Labor
+      sliders:
+        - param: L
+          label: \text{Labor}
+      divs:
+      - html: '`The <b>${params.L}th</b> labor produces a value of <b>$ ${calcs.mrp.toFixed(1)}</b> in marginal revenue product.`'      
+      - html: The marginal revenue product of labor is the value of the additional output produced by an additional unit of labor, which is equal to the price of the output <b> (or marginal revenue) </b> times the marginal product of labor.
+   
+  </div>
+
+            
+</body>
+</html>

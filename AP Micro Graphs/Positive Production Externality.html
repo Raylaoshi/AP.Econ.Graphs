@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Positive Production Externality</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+
+<body>
+
+  <div class="kg-container">
+
+schema: EconSchema
+params:
+  - {name: MEB, value: 40, min: 30, max: 50, round: 1}
+  - {name: showRealizedEB, value: false}
+  - {name: showOptimalEB, value: false}
+  - {name: showSupplyCurve, value: true}
+  - {name: subsidy, value: 0, min: 0, max: 50, round: 1}
+
+calcs:
+  # Social optimum (MSC = MPB): Q - MEB = 120 - Q → Q = (120+MEB)/2
+  socialQ: ((120 + (params.MEB)) / 2)
+  socialP: ((120 - (params.MEB)) / 2)
+
+  # Subsidized market equilibrium: Q - subsidy = 120 - Q → Q = (120+subsidy)/2
+  subsidizedQ: ((120 + (params.subsidy)) / 2)
+  subsidizedP: ((120 - (params.subsidy)) / 2)
+
+  # Producer receives: consumer price + subsidy
+  producerReceives: ((calcs.subsidizedP) + (params.subsidy))
+
+  # MSB and MSC at subsidized market output
+  MSB_at_market: (120 - (calcs.subsidizedQ))
+  MSC_at_market: ((calcs.subsidizedQ) - (params.MEB))
+
+  # Underproduction from subsidized equilibrium to social optimum
+  underproduction: ((calcs.socialQ) - (calcs.subsidizedQ))
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        title: Quantity
+        max: 100
+        ticks: 10
+      yAxis:
+        title: Price
+        max: 120
+        min: 0
+        ticks: 6
+      objects:
+        # Title
+        - Label:
+            coordinates: [50, 115]
+            text: \text{Positive Production Externality with Pigouvian Subsidy}
+            fontSize: 13
+            color: black
+            position: b
+            bgcolor: none
+
+        # Demand = MPB = MSB
+        - Line:
+            yIntercept: 120
+            slope: -1
+            color: blue
+            strokeWidth: 3
+            label:
+              text: "`D = MPB = MSB`"
+              x: 90
+              position: tl
+
+        # Subsidized Supply = MPC - subsidy — draggable, always shown
+        - Line:
+            yIntercept: (0 - (params.subsidy))
+            slope: 1
+            color: orange
+            strokeWidth: 3
+            drag:
+              - vertical: subsidy
+            label:
+              text: "`S_{Sub}`"
+              x: 90
+              position: bl
+            show: params.showSupplyCurve
+
+        # Original Supply = MPC — dotted when subsidy
+        - Line:
+            yIntercept: 0
+            slope: 1
+            color: orange
+            strokeWidth: 2
+            lineStyle: dotted
+            label:
+              text: "`S = MPC`"
+              x: 90
+              position: bl
+            show: params.showSupplyCurve
+
+        # MSC = MPC - MEB — draggable
+        - Line:
+            yIntercept: (0 - (params.MEB))
+            slope: 1
+            color: red
+            strokeWidth: 3
+            drag:
+              - vertical: MEB
+            label:
+              text: MSC
+              x: 90
+              position: bl
+
+        # MEB arrow at subsidizedQ — from MSC up to MPC
+        - Segment:
+            a: [(calcs.subsidizedQ), (calcs.MSC_at_market)]
+            b: [(calcs.subsidizedQ), (calcs.subsidizedQ)]
+            color: green
+            strokeWidth: 2
+            lineStyle: solid
+            endArrow: true
+            startArrow: true
+            trim: 0.05
+            label:
+              text: MEB
+              fontSize: 11
+              position: r
+              bgcolor: none
+
+        # Subsidy arrow at socialQ — from subsidized supply up to original MPC
+        - Segment:
+            a: [(calcs.socialQ), ((calcs.socialQ) - (params.subsidy))]
+            b: [(calcs.socialQ), (calcs.socialQ)]
+            color: purple
+            strokeWidth: 2
+            lineStyle: solid
+            endArrow: true
+            startArrow: true
+            trim: 0.05
+            show: (params.subsidy) > 0
+            label:
+              text: "`Subsidy = ${params.subsidy.toFixed(0)}`"
+              fontSize: 10
+              position: l
+              bgcolor: none
+
+        # Realized EB (0 to subsidizedQ) — between MPC and MSC
+        - Area:
+            fn1: (x)
+            fn2: (x) - (params.MEB)
+            min: 0
+            max: (calcs.subsidizedQ)
+            color: blue
+            opacity: 0.2
+            show: (params.showRealizedEB)
+
+        # Realized EB Label — horizontal midpoint of its own area, vertical midpoint of band
+        - Label:
+            coordinates: [(calcs.subsidizedQ / 2), ((calcs.subsidizedQ / 2) - (params.MEB / 2))]
+            text: \text{Realized EB}
+            color: blue
+            fontSize: 11
+            bgcolor: none
+            show: (params.showRealizedEB)
+
+        # Optimal EB (0 to socialQ) — between MPC and MSC
+        - Area:
+            fn1: (x)
+            fn2: (x) - (params.MEB)
+            min: 0
+            max: (calcs.socialQ)
+            color: green
+            opacity: 0.3
+            show: (params.showOptimalEB)
+
+        # Optimal EB Label — horizontal midpoint of its own area, vertical midpoint of band
+        - Label:
+            coordinates: [(calcs.socialQ / 2), ((calcs.socialQ / 2) - (params.MEB / 2))]
+            text: \text{Optimal EB}
+            color: green
+            fontSize: 11
+            bgcolor: none
+            show: (params.showOptimalEB)
+
+        # DWL triangle (underproduction from subsidizedQ to socialQ)
+        - Area:
+            fn1: 120 - (x)
+            fn2: (x) - (params.MEB)
+            min: (calcs.subsidizedQ)
+            max: (calcs.socialQ)
+            color: red
+            opacity: 0.2
+
+        # DWL Label
+        - Label:
+            coordinates: [((calcs.subsidizedQ + calcs.socialQ) / 2 - 1), (calcs.socialP)]
+            text: DWL
+            color: red
+            fontSize: 11
+            bgcolor: none
+            show: (calcs.subsidizedQ) != (calcs.socialQ)
+
+        # Underproduction arrow (from subsidizedQ to socialQ)
+        - Segment:
+            a: [(calcs.subsidizedQ), 5]
+            b: [(calcs.socialQ), 5]
+            color: grey
+            strokeWidth: 2
+            lineStyle: dotted
+            endArrow: true
+            startArrow: true
+            trim: 0.05
+            show: (calcs.underproduction) > 0.5
+            label:
+              text: "`Underproduction = ${calcs.underproduction.toFixed(0)}`"
+              position: b
+              fontSize: 10
+              bgcolor: none
+
+        # Original private equilibrium — faded when subsidy > 0
+        - Point:
+            coordinates: [60, 60]
+            color: grey
+            opacity: 0.3
+            show: (params.subsidy) > 0
+            droplines:
+              vertical: "`Q_{no sub} = 60`"
+
+        # Market equilibrium with subsidy
+        - Point:
+            coordinates: [(calcs.subsidizedQ), (calcs.subsidizedP)]
+            color: orange
+            droplines:
+              vertical: "`Q_{MKT} = ${calcs.subsidizedQ.toFixed(0)}`"
+              horizontal: "`P_{MKT} = ${calcs.subsidizedP.toFixed(0)}`"
+
+        # Private equilibrium — shown when subsidy = 0
+        - Point:
+            coordinates: [60, 60]
+            color: grey
+            show: (params.subsidy) == 0
+            droplines:
+              vertical: "`Q_{MKT} = 60`"
+              horizontal: "`P_{MKT} = 60`"
+
+        # Social optimum point
+        - Point:
+            coordinates: [(calcs.socialQ), (calcs.socialP)]
+            color: green
+            droplines:
+              vertical: "`Q_{So} = ${calcs.socialQ.toFixed(0)}`"
+
+        # MSB at subsidized market output
+        - Point:
+            coordinates: [(calcs.subsidizedQ), (calcs.MSB_at_market)]
+            color: blue
+            r: 4
+            label:
+              text: "`MSB = ${calcs.MSB_at_market.toFixed(0)}`"
+              position: l
+              fontSize: 10
+              bgcolor: none
+
+        # MSC at subsidized market output
+        - Point:
+            coordinates: [(calcs.subsidizedQ), (calcs.MSC_at_market)]
+            color: red
+            r: 4
+            label:
+              text: "`MSC = ${calcs.MSC_at_market.toFixed(0)}`"
+              position: l
+              fontSize: 10
+              bgcolor: none
+
+    sidebar:
+      controls:
+        - title: Positive Production Externality
+          sliders:
+            - param: MEB
+              label: \text{Marginal External Benefit}
+            - param: subsidy
+              label: \text{Pigouvian Subsidy}
+          checkboxes:
+            - param: showSupplyCurve
+              label: \text{Show Supply Curve}
+            - param: showRealizedEB
+              label: \text{Show Realized External Benefit}
+            - param: showOptimalEB
+              label: \text{Show Optimal External Benefit}
+          divs:
+            - html: "`<hr/><b>Market Equilibrium:</b>`"
+            - html: "`Q<sub>MKT</sub> = ${calcs.subsidizedQ.toFixed(0)}, P<sub>MKT</sub> = ${calcs.subsidizedP.toFixed(0)}`"
+            - html: "`MSB = ${calcs.MSB_at_market.toFixed(0)}, MSC = ${calcs.MSC_at_market.toFixed(0)}`"
+            - html: "`<hr/><b>Social Optimum:</b> Q<sub>So</sub> = ${calcs.socialQ.toFixed(0)}`"
+            - html: "`<hr/><b>Policy:</b>`"
+            - html: "`Current subsidy = $${params.subsidy.toFixed(0)}`"
+            - html: "`Optimal subsidy = $${params.MEB.toFixed(0)}`"
+            - html: "`Remaining underproduction = ${calcs.underproduction.toFixed(0)} units`"
+            - html: <hr/><b>External Benefits:</b>
+            - html: <span style="color:#1F77B4">Blue area</span> - Realized external benefit at Q<sub>MKT</sub>
+            - html: <span style="color:green">Green area</span> - Optimal external benefit at Q<sub>So</sub>
+            - html: <span style="color:red">Red triangle</span> - Deadweight loss from underproduction
+            - html: <hr/><i>Example - R&D spillovers. Set subsidy = MEB to eliminate DWL!</i>
+
+    
+  </div>
+
+            
+</body>
+</html>

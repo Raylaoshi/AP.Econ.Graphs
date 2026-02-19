@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Monopsonoy with Minimum Wage</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+
+<body>
+
+  <div class="kg-container">
+schema: EconSchema
+params:
+  - {name: minimumWage, value: 150, min: 0, max: 250, round: 1}
+  - {name: showPC, value: false}
+  - {name: showM, value: false}
+
+calcs:
+  # Kink point: where minimum wage intersects supply curve
+  # minimumWage = 25*L → L = minimumWage / 25
+  kinkL: ((params.minimumWage) / 25)
+  
+  # Equilibrium with minimum wage
+  # minimumWage = 10 * 1 * (30 - 2.5*L) → L = (300 - minimumWage) / 25
+  MWequilibriumL: ((300 - (params.minimumWage)) / 25)
+  
+  # MRP at MW equilibrium
+  MWequilibriumMRP: (10 * 1 * (30 - 2.5 * (calcs.MWequilibriumL)))
+
+  Labor: (params.minimumWage) / 25
+
+  LaborToMRP: (10 * 1 * (30 - 2.5 * (calcs.Labor)))
+
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        title: Labor (L)
+        max: 10
+        ticks: 10
+      yAxis:
+        title: Wage (W)
+        max: 450
+        min: 0
+        ticks: 7
+      objects:
+             
+        # Labor Supply curve: W = 25*L
+        - Line:
+            yIntercept: 0
+            slope: 25
+            color: orange
+            strokeWidth: 3
+            label:
+              text: "`S_L`"
+              x: 9
+              position: bl
+        
+        # Original MFCL (shown as dashed for reference): W = 50*L
+        - Line:
+            yIntercept: 0
+            slope: 50
+            color: grey
+            strokeWidth: 1
+            lineStyle: dotted
+            label:
+              text: "`Old \\\\ MFC_L`"
+              x: 1
+              position: b
+              fontSize: 10
+              bgcolor: none
+        
+        # Labor Demand (MRP_L): MRP = 10 * 1 * (30 - 2.5*L) = 300 - 25*L
+        - Curve:
+            fn: 10 * 1 * (30 - 2.5 * (x))
+            color: blue
+            strokeWidth: 3
+            label:
+              text: "`D_L = MRP_L`"
+              x: 9
+              position: tl
+
+        # Minimum wage line
+        - Line:
+            yIntercept: (params.minimumWage)
+            slope: 0
+            color: purple
+            strokeWidth: 3
+            lineStyle: dotted
+            drag:
+              - vertical: minimumWage
+            label:
+              text: "`Wage_{MIN} = ${params.minimumWage.toFixed(0)}`"
+              x: 8
+              position: l
+
+        # New MFCL with minimum wage - Horizontal section
+        - Segment:
+            a: [0, (params.minimumWage)]
+            b: [(calcs.kinkL), (params.minimumWage)]
+            color: red
+            strokeWidth: 3
+        # New MFCL with minimum wage - linking section
+        - Segment:
+            a: [(calcs.kinkL), (params.minimumWage)]
+            b: [(calcs.kinkL), (50 * (calcs.Labor))]
+            color: red
+            strokeWidth: 2
+            lineStyle: dashed 
+        # New MFCL with minimum wage - Upward sloping section after kink
+        - Line:
+            yIntercept: 0
+            slope: 50
+            color: red
+            strokeWidth: 3
+            min: (calcs.kinkL)
+            label:
+              text: "`New \\\\ MFC_L`"
+              x: 7
+              position: br
+        
+        # Original monopsony equilibrium (no MW) - shown when MW not binding
+        - Point:
+            coordinates: [4, 200]
+            color: grey
+            r: 5
+            droplines:
+              vertical: "`L_M = 4`"
+            label:
+              text: M
+              position: l
+              fontSize: 10
+            show: params.showM
+        
+        - Point:
+            coordinates: [4, 100]
+            color: grey
+            r: 5
+            droplines:
+              horizontal: "`W_M = 100`"
+            show: params.showM
+        
+        # Original monopsony (grey reference) - always shown
+        - Point:
+            coordinates: [4, 200]
+            color: grey
+            r: 3
+            opacity: 0.5
+        
+        - Point:
+            coordinates: [4, 100]
+            color: grey
+            r: 3
+            opacity: 0.5
+
+        
+        # New equilibrium 1 with binding minimum wage higher than equilibirum
+        - Point:
+            coordinates: [(calcs.MWequilibriumL), (calcs.MWequilibriumMRP)]
+            color: purple
+            r: 5
+            show: ((params.minimumWage) > 150)
+            droplines:
+              vertical: "`L = ${calcs.MWequilibriumL.toFixed(1)}`"
+            label:
+              text: "M"
+              position: b
+              fontSize: 11
+         # New equilibrium 2 with binding minimum wage lower than equilibium
+        - Point:
+            coordinates: [(calcs.Labor), (calcs.LaborToMRP)]
+            color: purple
+            r: 5
+            show: ((params.minimumWage) <= 150 &&  (params.minimumWage) > 100 )
+            droplines:
+              vertical: "`L = ${calcs.Labor.toFixed(1)}`"
+            label:
+              text: "M"
+              position: b
+              fontSize: 11       
+         # New equilibrium 3 with binding minimum wage lower than equilibium
+        - Point:
+            coordinates: [4, 200]
+            color: purple
+            r: 5
+            show: ((params.minimumWage) <= 100)
+            droplines:
+              vertical: "`L = 4.0`"
+            label:
+              text: "M"
+              position: b
+              fontSize: 11     
+        
+        # Competitive equilibrium (for reference)
+        - Point:
+            coordinates: [6, 150]
+            color: green
+            r: 4
+            droplines:
+              vertical: "`L_C = 6`"
+              horizontal: "`W_C = 150`"
+            label:
+              text: PC
+              position: l
+              fontSize: 10
+            show: params.showPC
+    
+    sidebar:
+      controls:
+        - title: Minimum Wage in Monopsony
+          sliders:
+            - param: minimumWage
+              label: Minimum \ Wage
+          checkboxes:
+            - param: showPC
+              label: "\\text{Show Perfect Competition}"
+            - param: showM
+              label: "\\text{Show Original Monopsonoy}"            
+          divs:
+            - html: "`<hr/><b>Original Monopsony (no MW):</b>`"
+            - html: "`Labor: <b>L<sub>M</sub> = 4</b>`"
+            - html: "`Wage: <b>W<sub>M</sub> = $100</b>`"
+            - html: "`<hr/><b>With Minimum Wage = $${params.minimumWage}:</b>`"
+            - html: "`Labor hired: <b>L = ${params.minimumWage > 100 && calcs.MWequilibriumL > 0 ? Math.min(calcs.MWequilibriumL, calcs.kinkL).toFixed(1) : '4.0'}</b>`"            
+            - html: "`Wage paid: <b>W = $${params.minimumWage > 100  ? params.minimumWage : '100'}</b>`"
+            - html: "`<hr/><b>Competitive Benchmark:</b>`"
+            - html: "`Labor: <b>L<sub>C</sub> = 6</b>`"
+            - html: "`Wage: <b>W<sub>C</sub> = $150</b>`"
+            - html: "`<hr/><i>In monopsony, minimum wage can increase both wages AND employment (up to competitive level).</i>`"
+   
+    
+  </div>
+
+            
+</body>
+</html>

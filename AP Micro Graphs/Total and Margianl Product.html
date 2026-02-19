@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Total and Marginal Product</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+
+    <style>
+        /* 1. General Page Styling */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #ffffff; /* Light cream/paper color */
+            margin: 0;
+            padding: 40px;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        /* 2. Header and Intro Container */
+        .content-wrapper {
+            max-width: 900px;  /* Keeps text from being too wide to read */
+            margin: auto ;  
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #263646;
+        }
+
+        .intro-text { 
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+            text-align: left; /* Text usually looks better left-aligned */
+            padding-left: 20px;
+            background: #f0f0f0bd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 4px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* 3. Graph Container Styling */
+        .kg-container {
+            margin: 0 auto;
+            border-radius: 4px;
+            overflow: show;
+            background-color: rgb(255, 255, 255);
+        }
+    </style>
+</head>
+<body>
+
+<div class="content-wrapper">
+    <!-- Centered Header -->
+    <h1>Total & Marginal Product</h1>
+
+    <!-- Brief Introduction -->
+    <div class="intro-text">
+        <strong>TP和MP的关系可以分为3个阶段：</strong>
+        <ol>
+            <li>L = 1~4：MP递增，TP递增,但<strong>增速</strong>递增</li>
+            <li>L = 4~8：MP递减，TP递增,但<strong>减速</strong>递增</li>
+            <li>L > 8：MP为负，TP下降</li>
+        </ol>
+    </div>
+
+
+<div class="kg-container">
+
+schema: EconSchema
+version: 1
+Name: Hello World - Total and Marginal Product
+
+params:
+- name: L
+  value: 1
+  min: 0
+  max: 9.5
+  round: 0.1 
+
+calcs:
+  # curves
+  TP: "(-(params.L)^3 + 12*(params.L)^2)"
+  MP: "(-3*(params.L)^2 + 24*(params.L))"
+  
+  # key points
+  InflectionX: 4
+  ZeroMP: 8
+
+  # key regions
+  StageI: "calcs.InflectionX/2"
+  StageII: "((calcs.InflectionX + 10)/2)"
+
+layout:
+  TwoVerticalGraphs:
+    
+    topGraph:
+      xAxis:
+        title: Labor 
+        orient: bottom
+        min: 0
+        max: 10
+        ticks: 10     
+            
+      yAxis:
+        title: Output
+        orient: left
+        min: 0
+        max: 300
+        ticks: 5
+      
+      objects:
+
+        - Curve:
+            fn: "(-(x)^3+12*(x)^2)"
+            samplePoints: 100
+            stroke: blue
+            strokeWidth: 2
+            label:
+              text: \text{Total Product}
+              x: 10
+              position: t       
+              
+        - Point:
+            coordinates: [params.L, calcs.TP]
+            fill: blue
+            drag:
+            - horizontal: L
+            droplines:
+              vertical: params.L.toFixed(1)
+              horizontal: calcs.TP.toFixed(1)
+        
+        # Vertical line at the inflection point
+        - Segment:
+            a: [calcs.InflectionX, yAxis]
+            b: [calcs.InflectionX, 0] 
+            strokeWidth: 1
+            lineStyle: dashed
+            color: grey
+
+        # Region Labels - left
+        - Label:
+            coordinates: [calcs.StageI, /] 
+            text: \text{Increasing Marginal Returns}
+            color: black
+            fontSize: 10
+        
+        # Region Labels - right
+        - Label:
+            coordinates: [calcs.StageII, /]
+            text: \text{Diminishing Marginal Returns}
+            color: black
+            fontSize: 10
+
+        # add a point at the steepest point
+        - Point:
+            coordinates: [calcs.InflectionX,(-(calcs.InflectionX)^3+12*(calcs.InflectionX)^2)]
+            color: blue
+            label:
+              text: \text{Steepest}
+              position: tl
+            bgcolor: none
+            fontSize: 10
+            r: 5
+        
+        # add a point at the maximum point
+        - Point:
+            coordinates: [calcs.ZeroMP,(-(calcs.ZeroMP)^3+12*(calcs.ZeroMP)^2)]
+            color: blue
+            label:
+              text: \text{Maximum}
+              position: bl
+            bgcolor: none
+            fontSize: 10
+            r: 5
+            
+        - Line:
+            point: [params.L, calcs.TP]
+            color: red
+            slope: calcs.MP
+            min: params.L - 1.5
+            max: params.L + 1.5
+            strokeWidth: 3
+            label:
+              text: "`slope=MP=${calcs.MP.toFixed(1)}`"
+              x: params.L
+              position: br
+
+  
+    bottomGraph:
+      xAxis:
+        title: Labor
+        orient: bottom
+        min: 0
+        max: 10
+        ticks: 10
+      
+      yAxis:
+        title: Output
+        orient: left
+        min: -70
+        max: 70
+        ticks: 5
+      
+      objects:
+        - Curve:
+            fn: "(-3*(x)^2 + 24*(x))"
+            samplePoints: 100
+            stroke: red
+            strokeWidth: 2
+            label:
+              text: \text{Marginal Product}
+              x: 9.5
+              position: t  
+
+        - Point:
+            coordinates: [params.L, calcs.MP]
+            color: red
+            drag:
+            - horizontal: L
+            droplines:
+              vertical: params.L.toFixed(1)
+              horizontal: (calcs.MP).toFixed(1)
+              background: false
+              
+        # fill areas under the MP curve
+        - Area:
+            fn1: "(-3*(x)^2 + 24*(x))"
+            fn2: "0"
+            min: 0
+            max: min(params.L,calcs.ZeroMP)
+            fill: blue
+            fillOpacity: 0.2
+        
+        # fill areas above the MP curve
+        - Area:
+            fn1: "0"
+            fn2: "(-3*(x)^2 + 24*(x))"
+            min: calcs.ZeroMP
+            max: params.L
+            fill: red
+            fillOpacity: 0.2
+            show: (params.L > calcs.ZeroMP)
+        
+        # add a label showing the total product
+        - Label:
+            coordinates: [(params.L-.6), (0.5*calcs.MP)]
+            text: "`TP = ${calcs.TP.toFixed(1)}`"
+            color: blue
+            bgcolor: none
+            fontSize: 10           
+
+        # Vertical line at the inflection point
+        - Segment:
+            a: [calcs.InflectionX, yAxis]
+            b: [calcs.InflectionX, 0] 
+            strokeWidth: 1
+            lineStyle: dashed
+            color: grey
+
+        # Region Labels - left
+        - Label:
+            coordinates: [calcs.StageI, /] 
+            text: \text{Increasing Marginal Returns}
+            color: black
+            fontSize: 10
+        
+        # Region Labels - right
+        - Label:
+            coordinates: [calcs.StageII, /]
+            text: \text{Diminishing Marginal Returns}
+            color: black
+            fontSize: 10
+
+        # add a point at the maximum point
+        - Point:
+            coordinates: [calcs.InflectionX,(-3*(calcs.InflectionX)^2 + 24*(calcs.InflectionX))]
+            color: red
+            label:
+              text: \text{Maximum}
+              position: bl
+            bgcolor: none
+            fontSize: 10
+            r: 5  
+        
+        # add a point at the maximum point
+        - Point:
+            coordinates: [calcs.ZeroMP,(-3*(calcs.ZeroMP)^2 + 24*(calcs.ZeroMP))]
+            color: red
+            bgcolor: none
+            label:
+              text: \text{Zero}
+              position: bl
+            fontSize: 10
+            r: 5
+            
+</body>
+</html>

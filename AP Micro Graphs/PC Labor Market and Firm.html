@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PC Labor Market and Firm</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+<body>
+
+<div class="kg-container">
+schema: EconSchema
+params:
+  - {name: L, value: 1, max: 8, round: 1}
+  - {name: ProductivityFactor, value: 0.5, min: 0.25, max: 1, round: 0.25}
+  - {name: demandShift, value: 0, min: -50, max: 50, round: 5}
+  - {name: supplyShift, value: 0, min: -50, max: 50, round: 5}
+  - {name: ProductPrice, value: 20, min: 10, max: 40, round: 1}
+
+
+calcs:
+  # Marginal Product: MP = -3L^2 + 24L
+  MP: (params.ProductivityFactor) * (30 - 2.5 * (params.L))
+
+  # Marginal Revenue Product: MRP = P × MP
+  MRP: (params.ProductPrice) * (calcs.MP)
+
+  OptimalHiring: (30 - ((calcs.ourEquilibrium.P) / ((params.ProductivityFactor) * (params.ProductPrice)))) / 2.5
+
+  MarginalProfit: (calcs.MRP) - (calcs.ourEquilibrium.P)
+
+  TotalProfit: (calcs.MarginalProfit + (300-calcs.ourEquilibrium.P)) * params.L / 2
+
+layout:
+  TwoHorizontalGraphs:
+    leftGraph:
+      xAxis:
+        title: Labor (L)
+        max: 150
+        ticks: 0
+      yAxis:
+        title: Wage (W)
+        max: 300
+        min: 0
+        ticks: 5 
+      objects:
+        - EconLinearEquilibrium:
+            name: ourEquilibrium
+            demand: 
+              name: ourDemand
+              xIntercept: 145 + params.demandShift
+              invSlope: -0.5
+              color: blue
+              drag: 
+              - horizontal: demandShift
+              label:
+                text: "`\\\\text{D}`"
+                x: 120
+                position: l
+            supply: 
+              name: ourSupply
+              yIntercept: 10 - params.supplyShift
+              slope: 2
+              drag:
+              - horizontal: supplyShift
+              label:
+                text: "`\\\\text{S}`"
+                x: 120
+                position: l
+        
+        # Equilibrium Point only
+        - Point:
+            coordinates: [calcs.ourEquilibrium.Q, calcs.ourEquilibrium.P]
+            color: grey            
+        # Equilibrium Price Line
+        - Line:
+            yIntercept: calcs.ourEquilibrium.P
+            slope: 0
+            color: grey
+            strokeWidth: 2
+            lineStyle: dotted
+        # Equilibiurm Price Label
+        - Label:
+            coordinates: [0, calcs.ourEquilibrium.P]
+            text: "`W_{MKT} = ${calcs.ourEquilibrium.P.toFixed(1)}`"
+            color: grey
+            position: r 
+
+    leftControls:
+      title: Labor Market (Perfect Competition)
+      sliders:
+        - param: demandShift
+          label: Demand \ Shift
+        - param: supplyShift
+          label: Supply \ Shift
+      divs:
+      - html: '`A change in labor market affects the equilibrium wage <b>(Wage = $ ${calcs.ourEquilibrium.P.toFixed(1)})</b>, which in turn affects the marginal factor cost of labor for frims.`'
+
+
+    rightGraph:
+      xAxis:
+        title: Labor (L)
+        max: 9
+        ticks: 9
+      yAxis:
+        title: Wage (W)
+        max: 300 
+        min: 0
+        ticks: 6
+
+      objects:
+        # Marginal Revenue Product of Labor curve
+        - Curve:
+            fn: (params.ProductivityFactor) * (params.ProductPrice) * (30-(2.5*(x)))
+            strokeWidth: 3
+            max: 8
+            color: blue
+            label:
+              text: "`D_L = MRP_L`"
+              x: 8
+              position: t
+
+        # MFCL Curve
+        - Line:
+            yIntercept: calcs.ourEquilibrium.P
+            slope: 0
+            color: red
+            strokeWidth: 3
+            label:
+              text: "`S_L = MFC_L`" 
+              x: 9
+              position: t       
+
+        # Point on MRP curve
+        - Point:
+            coordinates: [params.L, calcs.MRP]
+            color: blue
+            drag:
+              - horizontal: L
+            droplines:
+              vertical: params.L.toFixed(0)
+              horizontal: calcs.MRP.toFixed(1)
+ 
+        # Point on MFCL curve
+        - Point:
+            coordinates: [params.L, calcs.ourEquilibrium.P]
+            color: red
+            drag:
+              - horizontal: L
+            droplines:
+              horizontal: calcs.ourEquilibrium.P.toFixed(1)
+ 
+        # Intersection point
+        - Point:
+            coordinates: [calcs.OptimalHiring, calcs.ourEquilibrium.P]
+            color: grey
+            droplines:
+              vertical: Q*
+
+        - Arrow:
+            begin: [params.L,calcs.MRP]
+            end: [params.L,calcs.ourEquilibrium.P]
+            color: blue
+            trim: 0.1
+            double: true
+            label:
+              text: "`${calcs.MarginalProfit}`"
+              fontSize: 10
+              position: l
+              bgcolor: none
+
+        # fill areas under the MRP curve (profit zone)
+        - Area:
+            fn1: (params.ProductivityFactor) * (params.ProductPrice) * (30-(2.5*(x)))
+            fn2: calcs.ourEquilibrium.P
+            min: 0
+            max: min(params.L, calcs.OptimalHiring)
+            color: blue
+            opacity: 0.2
+
+        # Profit Label 1
+        - Label:
+            coordinates: [params.L/2, ((calcs.MRP) + (calcs.ourEquilibrium.P)) / 2 * 1.1 ]
+            text: "`Profit = ${calcs.TotalProfit}↑`"
+            show: params.L <= calcs.OptimalHiring
+            bgcolor: none
+        # Profit Label 2
+        - Label:
+            coordinates: [(params.L+6)/2, ((calcs.MRP) + (calcs.ourEquilibrium.P)) / 2  ]
+            text: "`Profit = ${calcs.TotalProfit}↓`"
+            show: params.L > calcs.OptimalHiring
+            bgcolor: none
+
+        # fill areas above the MRP curve (loss zone)
+        - Area:
+            fn1: calcs.ourEquilibrium.P
+            fn2: (params.ProductivityFactor) * (params.ProductPrice) * (30-(2.5*(x)))
+            min: calcs.OptimalHiring
+            max: params.L
+            color: red
+            opacity: 0.2
+            show: (params.L > calcs.OptimalHiring)      
+    
+    rightControls:
+      title: Firm's Hiring Decisions
+      sliders:
+        - param: L
+          label: Labor
+        - param: ProductPrice
+          label: Product \ Price
+        - param: ProductivityFactor
+          label: Productivity \ Factor
+      divs:
+      - html: '`MRPL: Worker <b># ${params.L}</b> produces a value of <b>$ ${calcs.MRP.toFixed(1)}</b>.`'      
+      - html: '`MFCL: This worker costs the firm <b>$ ${calcs.ourEquilibrium.P.toFixed(1)}</b>.`'      
+      - html: '`Result: Net value of hiring <b>#${params.L}</b> worker = <b>$${(calcs.MRP - calcs.ourEquilibrium.P).toFixed(1)}</b>. Total profit = <b>$${calcs.TotalProfit.toFixed(1)}</b>.`'
+</div>
+
+</body>
+</html>

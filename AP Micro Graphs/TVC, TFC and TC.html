@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TVC, TFC and TC</title>
+    <link href="https://kineticgraphs.org/css/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.4.0.js"></script>
+    
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
+</head>
+
+<body>
+
+  <div class="kg-container">
+    params:
+      - name: TFC
+        value: 50
+        min: 20
+        max: 80
+      - name: q
+        value: 12
+        max: 20
+        round: 0.1
+
+    calcs:
+      tvc: (1/12)*params.q^3 - 2*params.q^2 + 20*params.q
+      tc: params.TFC + (1/12)*params.q^3 - 2*params.q^2 + 20*params.q
+
+    layout:
+      OneGraphPlusSidebar:
+        graph:
+          xAxis:
+            title: Quantity
+            max: 20
+          yAxis:
+            title: Cost
+            max: 250
+
+          objects:
+            # Total Fixed Cost (TFC) - horizontal line
+            - Line:
+                yIntercept: params.TFC
+                slope: 0
+                color: blue
+                strokeWidth: 2
+                label:
+                  text: TFC
+                  x: 20
+            
+            # Point on TFC
+            - Point:
+                coordinates: [params.q, params.TFC]
+                color: blue
+                drag:
+                  - horizontal: q
+                droplines:
+                  vertical: params.q.toFixed(1)
+
+            # Total Variable Cost (TVC) - cubic function
+            - Curve:
+                fn: (1/12)*(x)^3 - 2*(x)^2 + 20*(x)
+                color: green
+                strokeWidth: 2
+                label:
+                  text: TVC
+                  x: 16
+            
+            # Point on TVC
+            - Point:
+                coordinates: [params.q, calcs.tvc]
+                color: green
+                drag:
+                  - horizontal: q
+                droplines:
+                  vertical:
+                  horizontal: calcs.tvc.toFixed(1)
+            
+            # Total Cost (TC) - TFC + TVC
+            - Curve:
+                fn: params.TFC + (1/12)*(x)^3 - 2*(x)^2 + 20*(x)
+                color: red
+                strokeWidth: 2
+                label:
+                  text: TC
+                  x: 17
+            
+            # Point on TC
+            - Point:
+                coordinates: [params.q, calcs.tc]
+                color: red
+                drag:
+                  - horizontal: q
+                droplines:
+                  vertical: params.q.toFixed(1)
+                  horizontal: calcs.tc.toFixed(1)
+            
+            # Vertical arrow showing TFC distance between TVC and TC
+            - Arrow:
+                begin: [params.q , calcs.tvc]
+                end: [params.q , calcs.tc]
+                color: blue
+                strokeWidth: 1.5
+                double: true
+                trim: 0.1
+            
+            # Label for the distance
+            - Label:
+                coordinates: [params.q + 3, (calcs.tvc + calcs.tc)/2]
+                text: "`TFC = ${params.TFC.toFixed(0)}`"
+                color: blue
+                fontSize: 10
+        
+        sidebar:
+          controls:
+            - title: Total Cost Curves
+              sliders:
+                - param: TFC
+                  label: TFC
+              divs:
+                - html: "`<hr/>$Quantity = ${params.q.toFixed(1)}$`"
+                - html: "`$TVC = ${calcs.tvc.toFixed(1)}$`"
+                - html: "`$TC = ${calcs.tc.toFixed(1)}$`"
+    
+  </div>
+
+            
+</body>
+</html>
