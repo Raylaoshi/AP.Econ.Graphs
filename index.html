@@ -20,16 +20,6 @@
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--ink);font-family: 'Outfit', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;opacity: 0; transition: opacity .35s ease;}
 
-    /* TYPOGRAPHY ADJUSTMENTS FOR CHINESE */
-    :lang(zh) h1 {
-      line-height: 1.4 !important;
-      letter-spacing: 0.05em !important;
-    }
-    :lang(zh) .hero-sub {
-      line-height: 1.8;
-      letter-spacing: 0.02em;
-    }
-
     /* TOPBAR */
     .topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1rem,4vw,2rem);height:64px;border-bottom:1px solid var(--line);background:rgba(252,251,249,0.95);backdrop-filter:blur(12px)}
     .logo{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-weight:800;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:-.02em;color:var(--ink);text-decoration:none}
@@ -365,6 +355,21 @@ function render(lang) {
     const key = el.getAttribute('data-i18n');
     if (t[key] !== undefined) el.textContent = t[key];
   });
+
+  // Apply Chinese-specific typography directly
+  const h1 = document.querySelector('h1');
+  const heroSub = document.querySelector('.hero-sub');
+  if (lang === 'zh') {
+    h1.style.lineHeight = '1.4';
+    h1.style.letterSpacing = '0.05em';
+    heroSub.style.lineHeight = '1.8';
+    heroSub.style.letterSpacing = '0.02em';
+  } else {
+    h1.style.lineHeight = '.92';
+    h1.style.letterSpacing = '-.03em';
+    heroSub.style.lineHeight = '1.6';
+    heroSub.style.letterSpacing = '';
+  }
   
   // Toggle Active State on Buttons
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
