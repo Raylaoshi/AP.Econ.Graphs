@@ -18,7 +18,7 @@
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
-    body{background:var(--bg);color:var(--ink);font-family:'Outfit','Noto Sans SC',-apple-system,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+    body{background:var(--bg);color:var(--ink);font-family: 'Outfit', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;opacity: 0; transition: opacity .35s ease;}
 
     /* TYPOGRAPHY ADJUSTMENTS FOR CHINESE */
     :lang(zh) h1 {
@@ -32,7 +32,7 @@
 
     /* TOPBAR */
     .topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1rem,4vw,2rem);height:64px;border-bottom:1px solid var(--line);background:rgba(252,251,249,0.95);backdrop-filter:blur(12px)}
-    .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:-.02em;color:var(--ink);text-decoration:none}
+    .logo{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-weight:800;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:-.02em;color:var(--ink);text-decoration:none}
     .logo span{color:var(--red)}
     .lang-toggle{display:flex;gap:6px}
     .lang-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:.3rem .85rem;font-size:.78rem;font-family:inherit;cursor:pointer;color:var(--mid);transition:all .18s;font-weight:500}
@@ -43,7 +43,7 @@
     .hero-wrap{border-bottom:1px solid var(--line)}
     .hero{max-width:1100px;margin:0 auto;padding:clamp(4rem,9vw,8rem) clamp(1rem,4vw,2rem) clamp(3rem,6vw,6rem);display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:end}
     .eyebrow{font-size:clamp(.65rem,1.5vw,.75rem);letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:1.5rem;font-weight:600}
-    h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(3rem,10vw,6.8rem);line-height:.92;letter-spacing:-.03em;color:var(--ink)}
+    h1{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-weight:800;font-size:clamp(3rem,10vw,6.8rem);line-height:.92;letter-spacing:-.03em;color:var(--ink)}
     h1 .accent{color:var(--red)}
     .hero-sub{margin-top:2rem;font-size:clamp(1rem,2vw,1.15rem);color:var(--mid);max-width:500px;line-height:1.6}
     .hero-cta{margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap}
@@ -51,7 +51,7 @@
     .btn-primary:hover{background:var(--red); border-color:var(--red); transform:translateY(-2px)}
     .btn-ghost{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--ink);border:1px solid var(--line);text-decoration:none;font-size:.95rem;font-weight:500;padding:.85rem 1.8rem;border-radius:6px;transition:all .18s; cursor: pointer;}
     .btn-ghost:hover{border-color:var(--ink); background: var(--faint);}
-    .hero-deco{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(6rem,18vw,14rem);color:var(--faint);line-height:0.8;letter-spacing:-.05em;user-select:none;align-self:start;padding-top:1rem; opacity: 0.6;}
+    .hero-deco{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-weight:800;font-size:clamp(6rem,18vw,14rem);color:var(--faint);line-height:0.8;letter-spacing:-.05em;user-select:none;align-self:start;padding-top:1rem; opacity: 0.6;}
 
     /* SECTIONS */
     .section{max-width:1100px;margin:0 auto;padding:clamp(4rem,8vw,6rem) clamp(1rem,4vw,2rem)}
@@ -59,9 +59,9 @@
     .sec-header{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:3rem;flex-wrap:wrap}
     
     /* MODIFIED: Larger Numbers */
-    .sec-num{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--red);font-weight:800;letter-spacing:0; opacity: 0.8;}
+    .sec-num{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-size:1.2rem;color:var(--red);font-weight:800;letter-spacing:0; opacity: 0.8;}
     
-    .sec-title{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(1.5rem,4vw,2.2rem);letter-spacing:-.02em}
+    .sec-title{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-weight:700;font-size:clamp(1.5rem,4vw,2.2rem);letter-spacing:-.02em}
 
     /* ABOUT */
     .about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(2rem,5vw,4rem)}
@@ -88,8 +88,8 @@
 
     .folder-card{background:var(--bg);padding:clamp(2rem,5vw,3rem) clamp(1.5rem,4vw,2.5rem);text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:.8rem;transition:background .2s;min-height:220px}
     .folder-card:hover{background:var(--faint)}
-    .folder-num{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--line);line-height:1;margin-bottom:.5rem}
-    .folder-card h3{font-family:'Syne',sans-serif;font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:700;letter-spacing:-.01em}
+    .folder-num{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-size:2.5rem;font-weight:800;color:var(--line);line-height:1;margin-bottom:.5rem}
+    .folder-card h3{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:700;letter-spacing:-.01em}
     .folder-card p{font-size:.9rem;color:var(--mid);margin:0;line-height:1.6}
     .folder-arrow{margin-top:auto;padding-top:1.5rem;font-size:.85rem;color:var(--red);font-weight:600; display:flex; align-items:center; gap:0.5rem;}
 
@@ -97,7 +97,7 @@
     .credit-card{border:1px solid var(--line);border-radius:12px;padding:clamp(2rem,5vw,3rem);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem; color:var(--ink);}
     .credit-left{flex:1;min-width:min(100%,300px)}
     .credit-kicker{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:.5rem;font-weight:600}
-    .credit-name{font-family:'Syne',sans-serif;font-size:clamp(1.2rem,3vw,1.6rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.8rem}
+    .credit-name{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-size:clamp(1.2rem,3vw,1.6rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.8rem}
     .credit-desc{font-size:.95rem;color:var(--mid);line-height:1.6;max-width:500px}
     .credit-link{display:inline-flex;align-items:center;background:var(--faint);color:var(--ink);text-decoration:none;font-size:.9rem;font-weight:500;padding:.8rem 1.5rem;border-radius:6px;transition:all .18s; border:1px solid transparent}
     .credit-link:hover{background:#fff; border-color:var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
@@ -105,7 +105,7 @@
     /* CONTACT */
     .contact-strip{background:var(--ink);border-radius:12px;padding:clamp(2.5rem,5vw,3.5rem) clamp(1.5rem,4vw,3rem);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);}
     .contact-left{flex:1;min-width:min(100%,300px)}
-    .contact-strip h3{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+    .contact-strip h3{font-family: 'Syne', 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
     .contact-strip p{font-size:1rem;color:rgba(255,255,255,.7);margin:0;max-width:450px}
     
     .contact-btn{display:inline-flex;align-items:center;background:var(--red);color:#fff;text-decoration:none;font-size:.95rem;font-weight:500;padding:.85rem 2rem;border-radius:6px;white-space:nowrap;transition:all .18s; border:none; cursor: pointer;}
@@ -433,6 +433,13 @@ function closeOnOverlay(e) {
 document.addEventListener('keydown', e => { 
   if (e.key === 'Escape') closeWechat(); 
 });
+</script>
+
+<script>
+  document.fonts.ready.then(() => {
+    document.body.style.opacity = '1';
+  });
+  setTimeout(() => { document.body.style.opacity = '1'; }, 800);
 </script>
 
 </body>
