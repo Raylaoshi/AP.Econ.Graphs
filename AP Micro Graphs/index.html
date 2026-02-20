@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AP Micro Graphs — AP.Econ.Graphs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #fff;
-      --ink: #0d0d0d;
-      --mid: #666;
-      --faint: #f4f4f4;
-      --line: #e8e8e8;
-      --blue: #0057ff;
-      --blue-dim: #e6eeff;
+      --bg: #fcfbf9;
+      --ink: #050e3c;
+      --mid: #002455;
+      --faint: #f2f0eb;
+      --line: #e6e4e0;
+      --red: #DC0000;
+      --red-dim: #fce8e8;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       background: var(--bg); color: var(--ink);
-      font-family: 'Outfit', -apple-system, sans-serif;
+      font-family: 'Outfit', 'Noto Sans SC', -apple-system, sans-serif;
       font-weight: 300; line-height: 1.7;
       -webkit-font-smoothing: antialiased;
     }
@@ -28,78 +28,109 @@
     .topbar {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 clamp(1rem,4vw,2rem); height: 56px;
+      padding: 0 clamp(1rem,4vw,2rem); height: 64px;
       border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
+      background: rgba(252,251,249,.95); backdrop-filter: blur(12px);
     }
-    .logo { font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: clamp(.85rem,2vw,1rem); letter-spacing: -.02em;
-      color: var(--ink); text-decoration: none; }
-    .logo span { color: var(--blue); }
+    .logo {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(.85rem,2vw,1.1rem); letter-spacing: -.02em;
+      color: var(--ink); text-decoration: none;
+    }
+    .logo span { color: var(--red); }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .lang-toggle { display: flex; gap: 6px; }
+    .lang-btn {
+      background: none; border: 1px solid var(--line); border-radius: 6px;
+      padding: .3rem .85rem; font-size: .78rem; font-family: inherit;
+      cursor: pointer; color: var(--mid); transition: all .18s; font-weight: 500;
+    }
+    .lang-btn:hover { border-color: var(--mid); }
+    .lang-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
     /* PAGE HEADER */
+    .page-header-wrap { border-bottom: 1px solid var(--line); }
     .page-header {
-      border-bottom: 1px solid var(--line);
-      padding: clamp(2.5rem,6vw,4rem) clamp(1rem,4vw,2rem) clamp(1.5rem,4vw,2.5rem);
-      max-width: 1040px; margin: 0 auto;
+      max-width: 1100px; margin: 0 auto;
+      padding: clamp(3rem,7vw,5rem) clamp(1rem,4vw,2rem) clamp(2rem,4vw,3rem);
     }
-    .breadcrumb { font-size: .75rem; color: var(--mid); margin-bottom: .9rem;
-      display: flex; align-items: center; gap: .4rem; }
-    .breadcrumb a { color: var(--blue); text-decoration: none; }
-    .breadcrumb a:hover { text-decoration: underline; }
-    .page-header h1 { font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: clamp(2rem,6vw,4rem); letter-spacing: -.04em; line-height: 1; }
-    .page-header h1 .accent { color: var(--blue); }
-    .page-desc { margin-top: .8rem; font-size: .95rem; color: var(--mid); }
+    .breadcrumb {
+      font-size: .75rem; color: var(--mid);
+      display: flex; align-items: center; gap: .4rem;
+      margin-bottom: 1.2rem;
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--faint); border: 1px solid var(--line);
+      color: var(--ink); text-decoration: none; font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: .85rem; padding: .5rem 1.1rem;
+      border-radius: 6px; transition: all .18s; cursor: pointer;
+    }
+    .back-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .page-eyebrow {
+      font-size: clamp(.65rem,1.5vw,.75rem); letter-spacing: .2em;
+      text-transform: uppercase; color: var(--mid);
+      margin-bottom: 1rem; font-weight: 600;
+    }
+    .page-header h1 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.5rem,8vw,5rem); letter-spacing: -.04em; line-height: .95;
+      color: var(--ink);
+    }
+    .page-header h1 .accent { color: var(--red); }
+    .page-desc {
+      margin-top: 1.2rem; font-size: clamp(.95rem,2vw,1.05rem);
+      color: var(--mid); max-width: 520px; line-height: 1.6;
+    }
 
-    /* STATS BAR */
-    .stats-bar {
-      max-width: 1040px; margin: 0 auto;
-      padding: .9rem clamp(1rem,4vw,2rem);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: .5rem;
-      border-bottom: 1px solid var(--line);
-      font-size: .78rem; color: var(--mid);
-    }
-    .stats-bar strong { color: var(--ink); font-weight: 500; }
-    .gh-link { color: var(--mid); text-decoration: none; font-size: .78rem; }
-    .gh-link:hover { color: var(--ink); }
+
 
     /* MAIN */
     main {
-      max-width: 1040px; margin: 0 auto;
-      padding: clamp(2rem,5vw,3.5rem) clamp(1rem,4vw,2rem) clamp(4rem,8vw,6rem);
+      max-width: 1100px; margin: 0 auto;
+      padding: clamp(2.5rem,6vw,4rem) clamp(1rem,4vw,2rem) clamp(4rem,8vw,6rem);
     }
 
     /* STATUS */
-    #status { padding: 3rem 0; text-align: center; color: var(--mid); font-size: .9rem; }
-    .spinner { width: 18px; height: 18px; border: 2px solid var(--line);
-      border-top-color: var(--blue); border-radius: 50%;
-      animation: spin .7s linear infinite;
-      display: inline-block; margin-right: .5rem; vertical-align: middle; }
+    #status { padding: 4rem 0; text-align: center; color: var(--mid); font-size: .9rem; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--line); border-top-color: var(--red);
+      border-radius: 50%; animation: spin .7s linear infinite;
+      display: inline-block; margin-right: .5rem; vertical-align: middle;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* UNIT */
-    .unit-block { margin-bottom: clamp(2.5rem,6vw,4rem); }
+    /* UNIT BLOCK */
+    .unit-block { margin-bottom: clamp(3rem,7vw,5rem); }
     .unit-block:last-child { margin-bottom: 0; }
+
     .unit-header {
-      display: flex; align-items: baseline; gap: .8rem;
-      margin-bottom: 1.6rem; padding-bottom: .9rem;
+      display: flex; align-items: baseline; gap: 1.2rem;
+      margin-bottom: 2rem; padding-bottom: 1rem;
       border-bottom: 2px solid var(--ink);
     }
-    .unit-num { font-family: 'Syne', sans-serif; font-size: .72rem;
-      font-weight: 700; letter-spacing: .14em; color: var(--blue);
-      text-transform: uppercase; white-space: nowrap; }
-    .unit-title { font-family: 'Syne', sans-serif; font-weight: 700;
-      font-size: clamp(1rem,2.5vw,1.25rem); letter-spacing: -.01em; }
+    .unit-num {
+      font-family: 'Syne', sans-serif; font-size: 1.2rem;
+      font-weight: 800; color: var(--red); opacity: .8; white-space: nowrap;
+    }
+    .unit-title {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: clamp(1.1rem,2.5vw,1.4rem); letter-spacing: -.02em;
+    }
 
-    /* CHAPTER */
-    .chapter-block { margin-bottom: 1.6rem; }
+    /* CHAPTER BLOCK */
+    .chapter-block { margin-bottom: 2rem; }
     .chapter-block:last-child { margin-bottom: 0; }
-    .chapter-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .5rem; }
-    .chapter-code { font-family: 'DM Mono', monospace; font-size: .72rem;
+    .chapter-header {
+      display: flex; align-items: center; gap: .8rem; margin-bottom: .6rem;
+    }
+    .chapter-code {
+      font-family: 'DM Mono', monospace; font-size: .7rem;
       background: var(--faint); color: var(--mid);
-      padding: .18rem .55rem; border-radius: 3px; white-space: nowrap; }
+      padding: .2rem .6rem; border-radius: 4px; white-space: nowrap;
+      border: 1px solid var(--line);
+    }
     .chapter-title { font-size: .88rem; font-weight: 500; color: var(--mid); }
 
     /* GRAPH LIST */
@@ -110,29 +141,36 @@
       display: grid;
       grid-template-columns: 2.8rem 1fr auto;
       align-items: center; gap: clamp(.6rem,2vw,1.2rem);
-      padding: clamp(.75rem,2vw,.95rem) .4rem;
+      padding: clamp(.75rem,2vw,1rem) .4rem;
       text-decoration: none; color: var(--ink);
       transition: background .15s, padding-left .15s;
       border-radius: 4px;
     }
-    .graph-list li a:hover, .graph-list li a:active {
+    .graph-list li a:hover {
       background: var(--faint); padding-left: .9rem;
     }
-    .graph-label { font-family: 'DM Mono', monospace; font-size: .7rem;
-      background: var(--blue-dim); color: var(--blue);
-      padding: .15rem .45rem; border-radius: 3px; text-align: center; }
+    .graph-label {
+      font-family: 'DM Mono', monospace; font-size: .68rem;
+      background: var(--red-dim); color: var(--red);
+      padding: .15rem .45rem; border-radius: 3px;
+      text-align: center; font-weight: 500;
+    }
     .graph-title { font-size: clamp(.88rem,2vw,.97rem); font-weight: 400; }
-    .graph-arrow { color: var(--blue); font-size: .9rem;
-      opacity: 0; transition: opacity .2s; }
+    .graph-arrow {
+      color: var(--red); font-size: .9rem;
+      opacity: 0; transition: opacity .2s;
+    }
     .graph-list li a:hover .graph-arrow { opacity: 1; }
 
     /* FOOTER */
-    .footer-wrap { border-top: 1px solid var(--line); }
-    footer { max-width: 1040px; margin: 0 auto;
-      padding: clamp(1.2rem,3vw,1.5rem) clamp(1rem,4vw,2rem);
+    .footer-wrap { border-top: 1px solid var(--line); background: #fff; }
+    footer {
+      max-width: 1100px; margin: 0 auto;
+      padding: clamp(1.5rem,3vw,2rem) clamp(1rem,4vw,2rem);
       display: flex; flex-wrap: wrap; justify-content: space-between;
-      align-items: center; gap: .5rem; font-size: .78rem; color: var(--mid); }
-    footer a { color: var(--mid); text-decoration: none; }
+      align-items: center; gap: 1rem; font-size: .8rem; color: var(--mid);
+    }
+    footer a { color: var(--mid); text-decoration: none; transition: color .2s; }
     footer a:hover { color: var(--ink); }
 
     @media (max-width: 480px) {
@@ -145,100 +183,182 @@
 
 <header class="topbar">
   <a class="logo" href="../index.html"><span>AP</span>·Econ·Graphs</a>
+  <div class="topbar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btn-zh" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
 </header>
 
-<div class="page-header">
-  <div class="breadcrumb">
-    <a href="../index.html">← Home</a>
-    <span>/</span>
-    <span>AP Micro Graphs</span>
+<div class="page-header-wrap">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a class="back-btn" href="../index.html" data-i18n="backHome">← Home</a>
+      <span style="color:var(--line);font-size:.9rem">/</span>
+      <span style="color:var(--mid);font-size:.85rem;font-weight:400" data-i18n="breadcrumbCurrent">AP Micro Graphs</span>
+    </div>
+    <div class="page-eyebrow" data-i18n="eyebrow">AP Microeconomics · Interactive Models</div>
+    <h1><span data-i18n="h1a">AP Micro</span> <span class="accent" data-i18n="h1b">Graphs</span></h1>
+    <p class="page-desc" data-i18n="pageDesc">Interactive models organized by unit and chapter. Click any graph to open it.</p>
   </div>
-  <h1>AP Micro <span class="accent">Graphs</span></h1>
-  <p class="page-desc">Interactive models organized by unit and chapter. Click any graph to open it.</p>
 </div>
 
-<div class="stats-bar">
-  <span id="stats-label">&nbsp;</span>
-  <a class="gh-link" href="https://github.com/Raylaoshi/AP.Econ.Graphs/tree/main/AP%20Micro%20Graphs" target="_blank">View folder on GitHub ↗</a>
-</div>
+
 
 <main>
-  <div id="status"><span class="spinner"></span> Loading…</div>
+  <div id="status"><span class="spinner"></span> <span data-i18n="loading">Loading…</span></div>
   <div id="content"></div>
 </main>
 
 <div class="footer-wrap">
   <footer>
     <span>AP.Econ.Graphs · <a href="https://github.com/Raylaoshi/AP.Econ.Graphs" target="_blank">github.com/Raylaoshi</a></span>
-    <span>Built with KineticGraphs by Chris Makler</span>
+    <span data-i18n="footerCredit">Built with KineticGraphs by Chris Makler</span>
   </footer>
 </div>
 
 <script>
-async function init() {
-  const statusEl  = document.getElementById('status');
+// ── Translations ──
+const T = {
+  en: {
+    backHome:         '← Home',
+    breadcrumbCurrent:'AP Micro Graphs',
+    eyebrow:          'AP Microeconomics · Interactive Models',
+    h1a:              'AP Micro',
+    h1b:              'Graphs',
+    pageDesc:         'Interactive models organized by unit and chapter. Click any graph to open it.',
+    ghLink:           'View folder on GitHub ↗',
+    loading:          'Loading…',
+    openFolder:       'Open',
+    footerCredit:     'Built with KineticGraphs by Chris Makler',
+    errorMsg:         '⚠️ Could not load content.json — make sure it\'s uploaded to the same folder as this index.html.',
+  },
+  zh: {
+    backHome:         '← 返回首页',
+    breadcrumbCurrent:'AP微观经济图表',
+    eyebrow:          'AP微观经济学 · 互动图表模型',
+    h1a:              'AP微观',
+    h1b:              '图表',
+    pageDesc:         '按单元与章节整理的互动图表模型，点击任意图表即可打开。',
+    ghLink:           '在 GitHub 上查看 ↗',
+    loading:          '加载中…',
+    openFolder:       '打开',
+    footerCredit:     '基于Chris Makler的KineticGraphs构建',
+    errorMsg:         '⚠️ 无法加载 content.json，请确保该文件已上传至与 index.html 相同的文件夹中。',
+  }
+};
+
+let currentLang = 'en';
+let loadedData   = null;
+
+function render(lang) {
+  const t = T[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (typeof t[key] === 'string') el.textContent = t[key];
+  });
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+
+  // Update stats bar if data is loaded
+  if (loadedData) {
+    document.getElementById('stats-label').innerHTML =
+      t.statsUnits(totalUnits, totalChapters, totalGraphs);
+  }
+
+  // Re-render content with new language if data is loaded
+  if (loadedData) {
+    buildContent(loadedData, lang);
+  }
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  render(lang);
+  try { localStorage.setItem('econ-lang', lang); } catch(e) {}
+}
+
+function detectLang() {
+  try {
+    const saved = localStorage.getItem('econ-lang');
+    if (saved === 'en' || saved === 'zh') return saved;
+  } catch(e) {}
+  const nav = (navigator.language || '').toLowerCase();
+  return nav.startsWith('zh') ? 'zh' : 'en';
+}
+
+function buildContent(data, lang) {
+  const t = T[lang];
   const contentEl = document.getElementById('content');
-  const statsEl   = document.getElementById('stats-label');
+  contentEl.innerHTML = '';
+
+  data.units.forEach(unit => {
+    const unitDiv = document.createElement('div');
+    unitDiv.className = 'unit-block';
+
+    // Support optional zh translations in JSON
+    const unitTitle = (lang === 'zh' && unit.title_zh) ? unit.title_zh : unit.title;
+
+    unitDiv.innerHTML = `
+      <div class="unit-header">
+        <span class="unit-num">${unit.number}</span>
+        <span class="unit-title">${unitTitle}</span>
+      </div>`;
+
+    unit.chapters.forEach(ch => {
+      const chDiv = document.createElement('div');
+      chDiv.className = 'chapter-block';
+
+      const chTitle = (lang === 'zh' && ch.title_zh) ? ch.title_zh : ch.title;
+
+      chDiv.innerHTML = `
+        <div class="chapter-header">
+          <span class="chapter-code">${ch.code}</span>
+          <span class="chapter-title">${chTitle}</span>
+        </div>`;
+
+      const ul = document.createElement('ul');
+      ul.className = 'graph-list';
+
+      ch.graphs.forEach(graph => {
+        const li = document.createElement('li');
+        const graphTitle = (lang === 'zh' && graph.title_zh) ? graph.title_zh : graph.title;
+        li.innerHTML = `
+          <a href="${encodeURIComponent(graph.file)}" target="_blank">
+            <span class="graph-label">${graph.label}</span>
+            <span class="graph-title">${graphTitle}</span>
+            <span class="graph-arrow">→</span>
+          </a>`;
+        ul.appendChild(li);
+      });
+
+      chDiv.appendChild(ul);
+      unitDiv.appendChild(chDiv);
+    });
+
+    contentEl.appendChild(unitDiv);
+  });
+}
+
+async function init() {
+  const statusEl = document.getElementById('status');
+
+  currentLang = detectLang();
+  render(currentLang);
 
   try {
     const res = await fetch('content.json?v=' + Date.now());
     if (!res.ok) throw new Error('content.json not found');
     const data = await res.json();
 
+    loadedData = data;
     statusEl.style.display = 'none';
-
-    let totalGraphs = 0, totalChapters = 0;
-
-    data.units.forEach(unit => {
-      const unitDiv = document.createElement('div');
-      unitDiv.className = 'unit-block';
-
-      unitDiv.innerHTML = `
-        <div class="unit-header">
-          <span class="unit-num">${unit.number}</span>
-          <span class="unit-title">${unit.title}</span>
-        </div>`;
-
-      unit.chapters.forEach(ch => {
-        totalChapters++;
-        const chDiv = document.createElement('div');
-        chDiv.className = 'chapter-block';
-        chDiv.innerHTML = `
-          <div class="chapter-header">
-            <span class="chapter-code">${ch.code}</span>
-            <span class="chapter-title">${ch.title}</span>
-          </div>`;
-
-        const ul = document.createElement('ul');
-        ul.className = 'graph-list';
-
-        ch.graphs.forEach(graph => {
-          totalGraphs++;
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <a href="${encodeURIComponent(graph.file)}" target="_blank">
-              <span class="graph-label">${graph.label}</span>
-              <span class="graph-title">${graph.title}</span>
-              <span class="graph-arrow">→</span>
-            </a>`;
-          ul.appendChild(li);
-        });
-
-        chDiv.appendChild(ul);
-        unitDiv.appendChild(chDiv);
-      });
-
-      contentEl.appendChild(unitDiv);
-    });
-
-    statsEl.innerHTML =
-      `<strong>${data.units.length}</strong> units &nbsp;·&nbsp; ` +
-      `<strong>${totalChapters}</strong> chapters &nbsp;·&nbsp; ` +
-      `<strong>${totalGraphs}</strong> graphs`;
+    buildContent(data, currentLang);
 
   } catch (err) {
-    statusEl.innerHTML = `<p style="color:#c00;font-size:.9rem">
-      ⚠️ Could not load content.json — make sure it's uploaded to the same folder as this index.html.</p>`;
+    statusEl.innerHTML = `<p style="color:var(--red);font-size:.9rem">${T[currentLang].errorMsg}</p>`;
     console.error(err);
   }
 }
