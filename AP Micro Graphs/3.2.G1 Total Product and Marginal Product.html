@@ -1,21 +1,34 @@
 <!DOCTYPE html>
 <html>
-<!DOCTYPE html>
-<html>
 <head>
     <meta charset="utf-8">
-    <!-- The title stays here because it is unique for every page -->
     <title>Total Product and Marginal Product</title>
+    <link href="https://raylaoshi.github.io/AP.Econ.Graphs/lib/kg.0.4.0.css" rel="stylesheet" type="text/css">
+    <script src="https://raylaoshi.github.io/AP.Econ.Graphs/lib/kg.0.4.0.js"></script>
     
-    <!-- This one line replaces all the code you pasted above -->
-    <script src="https://raylaoshi.github.io/AP.Econ.Graphs/lib/graph-common.js"></script>
+    <style>
+      .kg-container {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Only disable pointer events on non-draggable decorative elements */
+      svg text {
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.kg-container');
+        if (container) {
+          container.addEventListener('mousedown', function(e) {
+            if (e.target.closest('svg')) {
+              e.preventDefault();
+            }
+          }, true);
+        }
+      });
+    </script>
 </head>
-<body>
-    <div class="kg-container">
-        <!-- Your YAML Code Here -->
-    </div>
-</body>
-</html>
 
     <style>
         /* 1. General Page Styling */
