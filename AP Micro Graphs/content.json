@@ -16,7 +16,16 @@
           "title": "Cost Functions",
           "graphs": [
             "3.3.G1.Total.Product.and.Total.Variable.Cost",
-            "3.3.G2.TVC.TFC.and.TC"
+            "3.3.G2.TVC.TFC.and.TC",
+            "3.3.G3.Marginal.Cost.and.Average.Variable.Cost",
+            "3.3.G4.MP.AP.MC.AVC"
+          ]
+        },
+        {
+          "code": "3.4",
+          "title": "Perfect Competition",
+          "graphs": [
+            "3.4.G2.PC.Firm's.Profit-Maximizing.Behaviour"
           ]
         }
       ]
