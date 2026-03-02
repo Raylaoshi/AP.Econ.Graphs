@@ -1,28 +1,25 @@
 title: PC Firm's Profit-Maximizing Behaviour
-title_zh: 完全竞争：市场与企业分析
+title_zh: 完全竞争企业的利润最大化行为
 label: 3.4.G2
 eyebrow: Unit 3 — Production, Cost, and Perfect Competition
 eyebrow_zh:
 description: |
-  <p>In a perfectly competitive market, the firm is a <strong>price taker</strong>. The market equilibrium on the left dictates the horizontal demand curve ($d_f = MR = AR$) on the right. To maximize profit, the firm produces where $MR = MC$.</p>
-  <strong>Interactive elements:</strong>
+  <p>In a perfectly competitive market, the representative firm is a <strong>price taker</strong>. The market equilibrium on the left dictates the perfectly elastic demand curve (d<sub>f</sub> = MR = AR) for the individual firm on the right. To maximize economic profit, the firm produces where <strong>MR = MC</strong>.</p>
+  <p><strong>Interactive features:</strong></p>
   <ol>
-    <li><strong>Market Curves</strong> — Drag Demand or Supply to see how price changes instantly synchronize with the firm's revenue line.</li>
-    <li><strong>Cost Shifters</strong> — Use sliders to simulate <strong>Variable Cost</strong> shifts (Wage/Per-Unit Tax) which move MC, AVC, and ATC, or <strong>Fixed Cost</strong> shifts (Lump-Sum) which only affect ATC.</li>
-    <li><strong>Quantity ($Q_{firm}$)</strong> — Drag the green point to explore different output levels and see the resulting totals.</li>
+    <li><strong>Market Shifts:</strong> Drag the Market Demand or Supply curves to see how the "handshake" of price instantly synchronizes with the firm's revenue line.</li>
+    <li><strong>Cost Shifters:</strong> Use the sliders to simulate <strong>per-unit taxes/subsidies</strong> (which shift MC, AVC, and ATC) or <strong>lump-sum interventions</strong> (which shift only fixed costs and ATC).</li>
+    <li><strong>Output Choice:</strong> Drag the green point on the firm's demand curve to explore the relationship between marginal and total values.</li>
   </ol>
-  <strong>Visualization Toggles:</strong>
-  <p>Use the buttons to display cost and revenue rectangles. The <strong>TFC area</strong> highlights the "AFC gap" between ATC and AVC. The <strong>Profit/Loss area</strong> dynamically changes color based on the firm's bottom line.</p>
 description_zh: |
-  <p>在完全竞争市场中，企业是典型的<strong>价格接受者</strong>。左侧的市场均衡直接决定了右侧企业的水平需求曲线（$d_f = MR = AR$）。为了实现利润最大化，企业会根据 $MR = MC$ 原则确定产量 $Q^*$。</p>
-  <strong>可调节元素：</strong>
+  <p>在完全竞争市场中，典型企业是<strong>价格的接受者</strong>。左侧的市场均衡直接决定了右侧企业的完全弹性需求曲线（d<sub>f</sub> = MR = AR）。为了实现利润最大化，企业会遵循 <strong>MR = MC</strong> 的原则来确定产量 Q*。</p>
+  <p><strong>可调节元素：</strong></p>
   <ol>
-    <li><strong>市场曲线</strong> — 拖动需求或供给曲线，观察价格变动如何瞬间同步到企业的收益线上。</li>
-    <li><strong>成本变频器</strong> — 利用滑动条模拟<strong>可变成本</strong>（工资/从量税）的位移，这会同时影响 MC、AVC 和 ATC；或者模拟<strong>固定成本</strong>（一次性税收）的位移，它仅会改变 ATC。</li>
-    <li><strong>产量选择 ($Q_{firm}$)</strong> — 左右拖动绿色点来尝试不同的产量，观察各项总量指标的变化。</li>
+    <li><strong>产量选择：</strong> 拖动右图灰色垂线，实时观察总利润与边际利润的变化。</li>
+    <li><strong>总量变化：</strong> 在下面的框框里勾选总收入、成本等变量，观察他们的面积构成。</li>
+    <li><strong>市场变化：</strong> 拖动左侧市场的需求或供给曲线，观察均衡价格对企业收入的影响。</li>
+    <li><strong>税收和补贴：</strong> 利用滑动条模拟<strong>一次性税/补贴</strong>（同步影响 MC、AVC 和 ATC）或<strong>总额税/补贴</strong>（仅影响固定成本和 ATC）。观察固定成本的变化如何影响盈亏，却不影响利润最大化产量 Q*。
   </ol>
-  <strong>可视化开关：</strong>
-  <p>点击按钮可显示成本与收益矩形。<strong>TFC 区域</strong>清晰地展示了 ATC 与 AVC 之间的“平均固定成本缺口”。<strong>利润/亏损区</strong>会根据盈亏状态自动切换红绿底色。</p>
 
 schema: EconSchema
 params:
@@ -34,11 +31,11 @@ params:
 - {name: perUnitTaxSub, value: 0, min: -10, max: 10, round: 1}
 - {name: lumpSumTaxSub, value: 0, min: -50, max: 150, round: 5}
 - {name: showProfit, value: true}
-- {name: showTR, value: true}
+- {name: showQstar, value: true}
+- {name: showTR, value: false}
 - {name: showTC, value: false}
 - {name: showTVC, value: false}
 - {name: showTFC, value: false}
-- {name: showQstar, value: false}
 
 calcs:
   # Net variable shift affects MC, AVC, and ATC [3, 10]
