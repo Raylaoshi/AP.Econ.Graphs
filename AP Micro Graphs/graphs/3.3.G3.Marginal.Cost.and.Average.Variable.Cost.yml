@@ -1,0 +1,97 @@
+title: Marginal Cost and Average Variable Cost
+title_zh: 边际与平均成本
+label: 3.3.G3
+eyebrow: Unit 3 — Production, Cost, and Perfect Competition
+eyebrow_zh:
+description: |
+
+description_zh: |
+
+schema: EconSchema
+params:
+- name: x
+  value: 6
+  min: 0
+  max: 14
+  round: 0.1 
+
+calcs:
+  # MC = 16 - 4x + 0.5(x)^2
+  mc: (16 - 4 * (params.x) + (0.5 * ((params.x)^2)))
+  
+  # AVC = 16 - 2x + (1/6)(x)^2
+  avc: (16 - 2 * (params.x) + (1/6) * ((params.x)^2))
+
+layout:
+  OneGraph:
+    graph:
+      xAxis:
+        title: Quantity
+        min: 0
+        max: 14
+        ticks: 14
+      yAxis:
+        title: Cost
+        min: 0
+        max: 50
+        ticks: 10
+      
+      objects:
+        # MC Curve: Orange
+        - Curve:
+            fn: 16 - 4*(x) + 0.5*((x)^2)
+            color: orange
+            strokeWidth: 3
+            label:
+              text: MC
+              x: 13
+              position: t
+        
+        # AVC Curve: Blue
+        - Curve:
+            fn: 16 - 2*(x) + (1/6)*((x)^2)
+            color: blue
+            strokeWidth: 3
+            label:
+              text: AVC
+              x: 13
+
+        # Intersection Point at x=6 (Shutdown Point)
+        - Point:
+            coordinates: [6, 10]
+            color: grey
+            r: 4
+            label:
+              text: \text{Min AVC}
+              position: b
+              fontSize: 11
+
+        # Vertical Dashed Line at Intersection
+        - Segment:
+            a: [6, 0]
+            b: [6, 50]
+            color: grey
+            lineStyle: dotted
+            strokeWidth: 1
+
+        # Draggable Point on MC
+        - Point:
+            coordinates: [params.x, calcs.mc]
+            color: orange
+            r: 5
+            drag:
+              - horizontal: x
+            droplines:
+              vertical: params.x.toFixed(1)
+              horizontal: calcs.mc.toFixed(1)
+
+        # Point on AVC following x
+        - Point:
+            coordinates: [params.x, calcs.avc]
+            color: blue
+            r: 5
+            drag:
+              - horizontal: x
+            droplines:
+              vertical:
+              horizontal: calcs.avc.toFixed(1)

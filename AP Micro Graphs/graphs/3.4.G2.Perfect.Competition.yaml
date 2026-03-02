@@ -1,0 +1,232 @@
+title: Perfect Competition - Firm's Profit-Maximizing Behaviour
+title_zh: 完全竞争：市场与企业分析
+label: 3.4.G2
+eyebrow: Unit 3 — Production, Cost, and Perfect Competition
+eyebrow_zh:
+description: |
+  <p>In a perfectly competitive market, the firm is a <strong>price taker</strong>. The market equilibrium on the left dictates the horizontal demand curve ($d_f = MR = AR$) on the right. To maximize profit, the firm produces where $MR = MC$.</p>
+  <strong>Interactive elements:</strong>
+  <ol>
+    <li><strong>Market Curves</strong> — Drag Demand or Supply to see how price changes instantly synchronize with the firm's revenue line.</li>
+    <li><strong>Cost Shifters</strong> — Use sliders to simulate <strong>Variable Cost</strong> shifts (Wage/Per-Unit Tax) which move MC, AVC, and ATC, or <strong>Fixed Cost</strong> shifts (Lump-Sum) which only affect ATC.</li>
+    <li><strong>Quantity ($Q_{firm}$)</strong> — Drag the green point to explore different output levels and see the resulting totals.</li>
+  </ol>
+  <strong>Visualization Toggles:</strong>
+  <p>Use the buttons to display cost and revenue rectangles. The <strong>TFC area</strong> highlights the "AFC gap" between ATC and AVC. The <strong>Profit/Loss area</strong> dynamically changes color based on the firm's bottom line.</p>
+description_zh: |
+  <p>在完全竞争市场中，企业是典型的<strong>价格接受者</strong>。左侧的市场均衡直接决定了右侧企业的水平需求曲线（$d_f = MR = AR$）。为了实现利润最大化，企业会根据 $MR = MC$ 原则确定产量 $Q^*$。</p>
+  <strong>可调节元素：</strong>
+  <ol>
+    <li><strong>市场曲线</strong> — 拖动需求或供给曲线，观察价格变动如何瞬间同步到企业的收益线上。</li>
+    <li><strong>成本变频器</strong> — 利用滑动条模拟<strong>可变成本</strong>（工资/从量税）的位移，这会同时影响 MC、AVC 和 ATC；或者模拟<strong>固定成本</strong>（一次性税收）的位移，它仅会改变 ATC。</li>
+    <li><strong>产量选择 ($Q_{firm}$)</strong> — 左右拖动绿色点来尝试不同的产量，观察各项总量指标的变化。</li>
+  </ol>
+  <strong>可视化开关：</strong>
+  <p>点击按钮可显示成本与收益矩形。<strong>TFC 区域</strong>清晰地展示了 ATC 与 AVC 之间的“平均固定成本缺口”。<strong>利润/亏损区</strong>会根据盈亏状态自动切换红绿底色。</p>
+
+schema: EconSchema
+params:
+- {name: demandShift, value: 0, min: -10, max: 10, round: 0.5}
+- {name: supplyShift, value: 0, min: -10, max: 10, round: 0.5}
+- {name: Q_firm, value: 10, min: 0.5, max: 20, round: 0.1}
+- {name: tfc_base, value: 50, min: 25, max: 75, round: 5}
+- {name: wageChange, value: 0, min: -5, max: 10, round: 0.5}
+- {name: perUnitTaxSub, value: 0, min: -10, max: 10, round: 1}
+- {name: lumpSumTaxSub, value: 0, min: -50, max: 150, round: 5}
+- {name: showProfit, value: true}
+- {name: showTR, value: true}
+- {name: showTC, value: false}
+- {name: showTVC, value: false}
+- {name: showTFC, value: false}
+- {name: showQstar, value: false}
+
+calcs:
+  # Net variable shift affects MC, AVC, and ATC [3, 10]
+  varShift: (params.wageChange + params.perUnitTaxSub)
+  # Net fixed shift affects only ATC [5, 6]
+  fixShift: (params.lumpSumTaxSub)
+  
+  # Cost Functions with Shifts [2, 11, 12]
+  MC: (16 - 4 * (params.Q_firm) + 0.5 * ((params.Q_firm)^2)) + calcs.varShift
+  AVC: (16 - 2 * (params.Q_firm) + (1/6) * ((params.Q_firm)^2)) + calcs.varShift
+  TFC_total: (params.tfc_base + calcs.fixShift)
+  ATC: (calcs.AVC + calcs.TFC_total / params.Q_firm)
+  
+  # Totals [2, 13, 14]
+  TR: (calcs.ourEquilibrium.P * params.Q_firm)
+  TVC: (calcs.AVC * params.Q_firm)
+  TC: (calcs.ATC * params.Q_firm)
+  profit: (calcs.TR - calcs.TC)
+
+  # One-line calculation for Q where MR = MC (upward sloping portion)
+  qStar: (4 + sqrt(max(0, 2 * (calcs.ourEquilibrium.P) - 2 * (calcs.varShift) - 16)))
+
+layout:
+  TwoHorizontalGraphs:
+    leftGraph:
+      xAxis: {title: Market Quantity, max: 200, ticks: 0}
+      yAxis: {title: Price, max: 50, min: 0, ticks: 10}
+      objects:
+      - EconLinearEquilibrium:
+          name: ourEquilibrium
+          demand:
+            name: ourDemand
+            xIntercept: 235 + 10 * (params.demandShift)
+            invSlope: -5
+            color: blue
+            drag: [{vertical: demandShift}]
+            label: {text: D, x: 180}
+          supply:
+            name: ourSupply
+            yIntercept: 5 + params.supplyShift
+            slope: 0.2
+            drag: [{vertical: supplyShift}]
+            label: {text: S, x: 180}
+          equilibrium:
+            droplines:
+              vertical: "`Q_m = ${calcs.ourEquilibrium.Q.toFixed(1)}`"
+              horizontal: "`P_m = ${calcs.ourEquilibrium.P.toFixed(1)}`"
+    leftControls:
+      title: Market Controls
+      sliders:
+      - {param: demandShift, label: Demand Shift}
+      - {param: supplyShift, label: Supply Shift}
+      divs:
+      - html: "`Market Price (P) = $${calcs.ourEquilibrium.P.toFixed(1)}`"
+
+    rightGraph:
+      xAxis: {title: Firm Quantity, max: 20, ticks: 10}
+      yAxis: {title: Costs/Price, max: 50, min: 0, ticks: 10}
+      objects:
+      # Cost Curves [15, 16]
+      - Curve:
+          fn: (16 - 4 * (x) + 0.5 * ((x)^2)) + calcs.varShift
+          min: 0.5
+          color: red
+          label: {text: MC, x: 13, position: t}
+      - Curve:
+          fn: (16 - 2 * (x) + (1/6) * ((x)^2)) + calcs.varShift
+          min: 0.5
+          color: blue
+          label: {text: AVC, x: 18, position: t}
+      - Curve:
+          fn: (16 - 2 * (x) + (1/6) * ((x)^2)) + calcs.varShift + (params.tfc_base + calcs.fixShift)/(x)
+          color: purple
+          min: 0.5
+          label: {text: ATC, x: 19, position: tr}
+      
+      # Individual Firm Demand [17-19]
+      - Line:
+          yIntercept: calcs.ourEquilibrium.P
+          slope: 0
+          color: green
+          label: {text: '`d_f = MR`', x: 18}
+####          
+      # Total Revenue Rectangle
+      - Rectangle:
+          x1: 0
+          y1: calcs.ourEquilibrium.P
+          x2: params.Q_firm
+          y2: 0
+          color: green
+          opacity: 0.1
+          show: params.showTR
+          label:
+            text: "`\\\\text{TR = ${calcs.TR.toFixed(1)}}`"
+
+      # Total Cost Rectangle
+      - Rectangle:
+          x1: 0
+          y1: calcs.ATC
+          x2: params.Q_firm
+          y2: 0
+          color: purple
+          opacity: 0.1
+          show: params.showTC
+          label:
+            text: "`\\\\text{TC = ${calcs.TC.toFixed(1)}}`"
+
+      # Total Variable Cost Rectangle
+      - Rectangle:
+          x1: 0
+          y1: calcs.AVC
+          x2: params.Q_firm
+          y2: 0
+          color: blue
+          opacity: 0.1
+          show: params.showTVC
+          label:
+            text: "`\\\\text{TVC = ${calcs.TVC.toFixed(1)}}`"
+
+      # Total Fixed Cost Rectangle (The gap between ATC and AVC)
+      - Rectangle:
+          x1: 0
+          y1: calcs.ATC
+          x2: params.Q_firm
+          y2: calcs.AVC
+          color: grey
+          opacity: 0.1
+          show: params.showTFC
+          label:
+            text: "`\\\\text{TFC = ${calcs.TFC_total.toFixed(1)}}`"
+
+      # Profit / Loss Rectangle
+      - Rectangle:
+          x1: 0
+          y1: calcs.ourEquilibrium.P
+          x2: params.Q_firm
+          y2: calcs.ATC
+          color: "`${calcs.profit >= 0 ? 'green' : 'red'}`"
+          opacity: 0.4
+          show: params.showProfit
+          label:
+            text: "`${calcs.profit >= 0 ? '\\\\text{Profit = }' : '\\\\text{Loss = }'} ${Math.abs(calcs.profit).toFixed(1)}`"
+###
+      - Point:
+          coordinates: [calcs.qStar, calcs.ourEquilibrium.P]
+          color: grey
+          label: {text: "Opt", position: "br"}
+          droplines: {vertical: '`Q_{*}`'}
+          show: params.showQstar
+      - Point:
+          coordinates: [params.Q_firm, calcs.ourEquilibrium.P]
+          color: green
+      - Point:
+          coordinates: [params.Q_firm, calcs.ATC]
+          r: 4
+          color: purple
+          droplines: {horizontal: '`${calcs.ATC.toFixed(1)}`'}
+      - Point:
+          coordinates: [params.Q_firm, calcs.AVC]
+          r: 4
+          color: blue
+          droplines: {horizontal: '`${calcs.AVC.toFixed(1)}`'}
+      - Point:
+          coordinates: [params.Q_firm, "max(calcs.MC, calcs.ATC, calcs.ourEquilibrium.P)"]
+          r: 0
+          color: grey
+          drag: [{horizontal: Q_firm}]
+          droplines: {vertical: '`${params.Q_firm.toFixed(1)}`'}
+      - Point:
+          coordinates: [params.Q_firm, calcs.MC]
+          color: red
+          droplines: {horizontal: '`${calcs.MC.toFixed(1)}`'}
+
+    rightControls:
+      title: Firm Controls
+      sliders:
+      - {param: Q_firm, label: "`Q`"}
+      - {param: wageChange, label: "`Wage`"}
+      - {param: perUnitTaxSub, label: "`Per-Unit \\\\ T/S`"}
+      - {param: lumpSumTaxSub, label: "`Lump-Sum \\\\ T/S`"}
+      checkboxes:
+      - {param: showProfit, label: "`Show \\\\ Profit / Loss`"}
+      - {param: showQstar, label:  "`Show \\\\ Q_*`"}
+      - {param: showTR, label:  "`Show \\\\ TR`"}
+      - {param: showTC, label:  "`Show \\\\ TC`"}
+      - {param: showTVC, label:  "`Show \\\\ TVC`"}
+      - {param: showTFC, label:  "`Show \\\\ TFC`"}
+      divs:
+      - html: "`Profit/Loss = $${calcs.profit.toFixed(1)}`"
+      - html: "`Total Revenue = $${calcs.TR.toFixed(1)}`"
+      - html: "`Total Cost = $${calcs.TC.toFixed(1)}`"

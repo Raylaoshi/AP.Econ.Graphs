@@ -1,0 +1,224 @@
+title: MP, AP, MC and AVC
+title_zh: 边际与平均产量和成本
+label: 3.3.G4
+eyebrow: Unit 3 — Production, Cost, and Perfect Competition
+eyebrow_zh:
+description: |
+description_zh: |
+
+schema: EconSchema
+version: 1
+
+params:
+  - name: x
+    value: 2
+    min: 0.1
+    max: 11.9
+    round: 0.1
+
+calcs:
+  # Using your exact Cost formulas
+  mc: (16 - 4 * (params.x) + (0.5 * ((params.x)^2)))
+  avc: (16 - 2 * (params.x) + (1/6) * ((params.x)^2))
+  
+  # Deriving Productivity as the inverse (Assuming Wage = 150 for clean scaling)
+  mp: (150 / (calcs.mc))
+  ap: (150 / (calcs.avc))
+
+layout:
+  TwoVerticalGraphs:
+    topGraph:
+      xAxis:
+        title: Labor
+        min: 0
+        max: 9
+        ticks: 0
+      yAxis:
+        title: Output
+        min: 0
+        max: 20
+        ticks: 0
+      objects:
+        # AP Curve
+        - Curve:
+            fn: (150 / (16 - 2 * (x) + (1/6) * ((x)^2)))
+            color: blue
+            strokeWidth: 3
+            label: { text: AP, x: 8.5}
+            
+        # MP Curve
+        - Curve:
+            fn: (150 / (16 - 4 * (x) + (0.5 * ((x)^2))))
+            color: red
+            strokeWidth: 3
+            label: { text: MP, x: 8.5}
+
+        # Guide Line: Max MP
+        - Segment:
+            a: [4, 0]
+            b: [4, 20]
+            color: lightgrey
+            lineStyle: dotted
+        - Point:
+            coordinates: [4, 18.75]
+            color: red
+            r: 4
+            label:  
+              text: MP_{max}
+              position: bl
+              fontSize: 11 
+
+        # Guide Line: Max AP
+        - Segment:
+            a: [6, 0]
+            b: [6, 20]
+            color: grey
+            lineStyle: dotted
+
+        - Point:
+            coordinates: [6, 15]
+            color: blue
+            r: 4
+            label:  
+              text: AP_{max}
+              position: bl
+              fontSize: 11 
+              
+        # Interactive Sync Line
+        - Segment:
+            a: [params.x, 0]
+            b: [params.x, 20]
+            color: grey
+            lineStyle: dashed
+            strokeWidth: 1
+            drag: [{horizontal: x}]
+            label:
+              text: "L"
+              location: 1
+
+        # Arrow: MP pulling AP up (when MP > AP)
+        - Arrow:
+            begin: [(params.x), (calcs.ap)]
+            end: [(params.x), (calcs.mp)]
+            color: green
+            strokeWidth: 2
+            trim: 0.1
+            show: (calcs.mp) > (calcs.ap)
+
+        # Arrow: MP pulling AP down (when MP < AP)
+        - Arrow:
+            begin: [(params.x), (calcs.ap)]
+            end: [(params.x), (calcs.mp)]
+            color: orange
+            strokeWidth: 2
+            trim: 0.1
+            show: (calcs.mp) < (calcs.ap)
+
+
+        # Interactive Points
+        - Point:
+            coordinates: [params.x, calcs.mp]
+            color: red
+            droplines: { horizontal: MP }
+        - Point:
+            coordinates: [params.x, calcs.ap]
+            color: blue
+            droplines: { horizontal: AP }
+
+    bottomGraph:
+      xAxis:
+        title: Output
+        min: 0
+        max: 9
+        ticks: 0
+      yAxis:
+        title: Cost
+        min: 0
+        max: 20
+        ticks: 0
+      objects:
+        # AVC Curve
+        - Curve:
+            fn: (16 - 2 * (x) + (1/6) * ((x)^2))
+            color: blue
+            strokeWidth: 3
+            label: { text: AVC, x: 8.5 }
+            
+        # MC Curve
+        - Curve:
+            fn: (16 - 4 * (x) + (0.5 * ((x)^2)))
+            color: red
+            strokeWidth: 3
+            label: { text: MC, x: 8.5}
+
+        # Guide Line: Min MC
+        - Segment:
+            a: [4, 0]
+            b: [4, 40]
+            color: lightgrey
+            lineStyle: dotted
+        - Point:
+            coordinates: [4, 8]
+            color: red
+            r: 4
+            label:  
+              text: MC_{min}
+              position: tl
+              fontSize: 11 
+
+        # Guide Line: Min AVC
+        - Segment:
+            a: [6, 0]
+            b: [6, 40]
+            color: grey
+            lineStyle: dotted
+        - Point:
+            coordinates: [6, 10]
+            color: blue
+            r: 4
+            label: 
+              text: AVC_{min}
+              position: tl
+              fontSize: 11 
+
+        # Interactive Sync Line
+        - Segment:
+            a: [params.x, 0]
+            b: [params.x, 40]
+            color: grey
+            lineStyle: dashed
+            strokeWidth: 1
+            drag: [{horizontal: x}]
+            label:
+              text: "Q"
+              location: 1
+
+        # Arrow: MC pulling AVC down (when MC < AVC)
+        - Arrow:
+            begin: [(params.x), (calcs.avc)]
+            end: [(params.x), (calcs.mc)]
+            color: orange
+            strokeWidth: 2
+            trim: 0.1
+            show: (calcs.mc) < (calcs.avc)
+            label:
+
+        # Arrow: MC pulling AVC up (when MC > AVC)
+        - Arrow:
+            begin: [(params.x), (calcs.avc)]
+            end: [(params.x), (calcs.mc)]
+            color: green
+            strokeWidth: 2
+            trim: 0.1
+            show: (calcs.mc) > (calcs.avc)
+
+        # Interactive Points
+        - Point:
+            coordinates: [params.x, calcs.mc]
+            color: red
+            droplines: { horizontal: MC }
+        
+        - Point:
+            coordinates: [params.x, calcs.avc]
+            color: blue
+            droplines: { horizontal: AVC }
