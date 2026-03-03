@@ -34,8 +34,8 @@ description_zh: |
   
 schema: EconSchema
 params:
-  - {name: L, value: 1, max: 8, round: 1}
-  - {name: ProductivityFactor, value: 2, min: 1, max: 3, round: 1}
+  - {name: L, value: 1, max: 8, round: 0.1}
+  - {name: ProductivityFactor, value: 2, min: 1, max: 3, round: 0.1}
   - {name: demandShift, value: 0, min: -50, max: 50, round: 5}
   - {name: supplyShift, value: 0, min: -50, max: 50, round: 5}
   - {name: ProductPrice, value: 20, min: 10, max: 40, round: 1}
@@ -183,11 +183,11 @@ layout:
         - Arrow:
             begin: [params.L,calcs.MRP]
             end: [params.L,calcs.ourEquilibrium.P]
-            color: blue
+            color: "`${calcs.MarginalProfit > 0 ? 'green' : 'red'}`"
             trim: 0.1
             double: true
             label:
-              text: "`${calcs.MarginalProfit}`"
+              text: "`${calcs.MarginalProfit.toFixed(1)}`"
               fontSize: 10
               position: l
               bgcolor: none
@@ -198,19 +198,21 @@ layout:
             fn2: calcs.ourEquilibrium.P
             min: 0
             max: min(params.L, calcs.OptimalHiring)
-            color: blue
+            color: green
             opacity: 0.2
 
         # Profit Label 1
         - Label:
             coordinates: [params.L/2, ((calcs.MRP) + (calcs.ourEquilibrium.P)) / 2 * 1.1 ]
-            text: "`Profit = ${calcs.TotalProfit}↑`"
+            text: "`{Profit ↑}`"
+            color: green
             show: params.L <= calcs.OptimalHiring
             bgcolor: none
         # Profit Label 2
         - Label:
             coordinates: [(params.L+6)/2, ((calcs.MRP) + (calcs.ourEquilibrium.P)) / 2  ]
-            text: "`Profit = ${calcs.TotalProfit}↓`"
+            color: red
+            text: "`Profit ↓`"
             show: params.L > calcs.OptimalHiring
             bgcolor: none
 
@@ -234,6 +236,6 @@ layout:
         - param: ProductivityFactor
           label: Productivity
       divs:
-      - html: '`MRPL: Worker <b># ${params.L}</b> produces a value of <b>$ ${calcs.MRP.toFixed(1)}</b>.`'      
+      - html: '`MRPL: Worker <b># ${params.L.toFixed(1)}</b> produces a value of <b>$ ${calcs.MRP.toFixed(1)}</b>.`'      
       - html: '`MFCL: This worker costs the firm <b>$ ${calcs.ourEquilibrium.P.toFixed(1)}</b>.`'      
-      - html: '`Result: Net value of hiring <b>#${params.L}</b> worker = <b>$${(calcs.MRP - calcs.ourEquilibrium.P).toFixed(1)}</b>. Total profit = <b>$${calcs.TotalProfit.toFixed(1)}</b>.`'
+      - html: '`Result: Net value of hiring <b>#${params.L.toFixed(1)}</b> worker = <b>$${(calcs.MRP - calcs.ourEquilibrium.P).toFixed(1)}</b>. Total profit = <b>$${calcs.TotalProfit.toFixed(1)}</b>.`'
