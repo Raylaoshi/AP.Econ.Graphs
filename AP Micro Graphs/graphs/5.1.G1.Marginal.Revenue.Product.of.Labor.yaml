@@ -25,13 +25,13 @@ params:
   - name: L
     value: 4
     max: 8
-    round: 1
+    round: 0.1
   - name: ProductivityFactor
     value: 2
     min: 1
     max: 3
-    round: 1
-  - {name: demandShift, value: 0, min: -5, max: 5, round: 1}
+    round: 0.1
+  - {name: demandShift, value: 0, min: -5, max: 5, round: 0.1}
   - {name: supplyShift, value: 0, min: -5, max: 5, round: 0.1}
 
 
@@ -188,4 +188,4 @@ layout:
         - param: L
           label: \text{Labor}
       divs:
-      - html: '`The <b># ${params.L}</b> labor produces a value of <b>$ ${calcs.mrp.toFixed(1)}</b> for an employer.`'      
+      - html: '`The <b># ${params.L.toFixed(1)}</b> labor produces a value of <b>$ ${calcs.mrp.toFixed(1)}</b> for an employer.`'      
