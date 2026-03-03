@@ -237,7 +237,11 @@
 
         vTitle.textContent = tStr; vBody1.textContent = b1Str;
         vBody2.innerHTML = `<tspan>${(L < CONFIG.intersectPoint) ? 'MP pulls AP ' : 'MP drags AP '}</tspan><tspan fill="${b2Col}" font-weight="900">${b2Txt}</tspan>`;
-        if (isIntersect) vBody2.innerHTML = `<tspan>AP is at its </tspan><tspan fill="${b2Col}" font-weight="900">maximum</tspan>`;
+        if (isIntersect && L > 0) {
+            vBody2.innerHTML = `<tspan>AP is at its </tspan><tspan fill="${b2Col}" font-weight="900">maximum</tspan>`;
+        } else if (isIntersect && L === 0) {
+            vBody2.innerHTML = `<tspan>AP starts at </tspan><tspan fill="${b2Col}" font-weight="900">zero</tspan>`;
+        }
 
         const boxW = 250, boxH = 85; 
         let bx = Math.max(75, Math.min(CONFIG.layout.right - boxW, x - boxW/2));
