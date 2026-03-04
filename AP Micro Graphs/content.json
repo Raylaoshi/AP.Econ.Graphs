@@ -2,74 +2,140 @@
   "units": [
     {
       "number": "Unit 3",
-      "title": "Production, Cost, and Perfect Competition",
+      "title": "Unit 3 — Production, Cost, and the Perfect Competition Model",
+      "title_zh": "第三单元 — 生产、成本与完全竞争模型",
       "chapters": [
         {
           "code": "3.2",
-          "title": "Production Functions",
+          "title": "The Production Function",
+          "title_zh": "生产函数",
           "graphs": [
-            "3.2.G1.Total.Product.and.Marginal.Product"
+            {
+              "id": "3.2.G1",
+              "title": "Total Product and Marginal Product",
+              "title_zh": "总产量与边际产量"
+            }
           ]
         },
         {
           "code": "3.3",
-          "title": "Cost Functions",
+          "title": "Short-Run Production Costs",
+          "title_zh": "短期生产成本",
           "graphs": [
-            "3.3.G1.Total.Product.and.Total.Variable.Cost",
-            "3.3.G2.TVC.TFC.and.TC",
-            "3.3.G3.Marginal.Cost.and.Average.Variable.Cost",
-            "3.3.G4.MP.AP.MC.AVC"
+            {
+              "id": "3.3.G1",
+              "title": "Total Product and Total Variable Cost",
+              "title_zh": "总产量与边际产量"
+            },
+            {
+              "id": "3.3.G2",
+              "title": "TVC, TFC and TC",
+              "title_zh": "总可变成本，总固定成本与总成本"
+            },
+            {
+              "id": "3.3.G3",
+              "title": "Marginal Cost and Average Variable Cost",
+              "title_zh": "边际与平均成本"
+            },
+            {
+              "id": "3.3.G4",
+              "title": "MP, AP, MC and AVC",
+              "title_zh": "边际与平均产量和成本"
+            }
           ]
         },
         {
           "code": "3.4",
           "title": "Perfect Competition",
+          "title_zh": "完全竞争",
           "graphs": [
-            "3.4.G2.PC.Firm's.Profit-Maximizing.Behaviour"
+            {
+              "id": "3.4.G2",
+              "title": "PC Firm's Profit-Maximizing Behaviour",
+              "title_zh": "完全竞争企业的利润最大化行为"
+            }
           ]
         }
       ]
     },
     {
       "number": "Unit 5",
-      "title": "Factor Markets",
+      "title": "Unit 5 — Factor Markets",
+      "title_zh": "第五单元 — 要素市场",
       "chapters": [
         {
           "code": "5.1",
-          "title": "Labor Demand and Supply",
+          "title": "Introduction to Factor Markets",
+          "title_zh": "要素市场导论",
           "graphs": [
-            "5.1.G1.Marginal.Revenue.Product.of.Labor"
+            {
+              "id": "5.1.G1",
+              "title": "Marginal Revenue Product of Labor",
+              "title_zh": "劳动力边际收益产品"
+            }
           ]
         },
         {
           "code": "5.2",
-          "title": "Firm's Behaviour in PC Labor Markets",
+          "title": "Changes in Factor Demand and Factor Supply",
+          "title_zh": "要素需求与供给的变动",
           "graphs": [
-            "5.2.G1.PC.Labor.Market.and.Firm"
+            {
+              "id": "5.2.G1",
+              "title": "PC Labor Market and Firm",
+              "title_zh": "完全竞争劳动力市场与企业雇佣决策"
+            }
           ]
         },
         {
           "code": "5.4",
           "title": "Monopsony",
+          "title_zh": "买方垄断",
           "graphs": [
-            "5.4.G1.Monopsony",
-            "5.4.G2.Monopsony.with.Minimum.Wage"
+            {
+              "id": "5.4.G1",
+              "title": "Monopsony",
+              "title_zh": "买方垄断"
+            },
+            {
+              "id": "5.4.G2",
+              "title": "Monopsony with Minimum Wage",
+              "title_zh": "买方垄断与最低工资"
+            }
           ]
         }
       ]
     },
     {
       "number": "Unit 6",
-      "title": "Market Failure and the Role of Government",
+      "title": "Unit 6 — Market Failure and the Role of Government",
+      "title_zh": "第六单元 — 市场失灵与政府治理",
       "chapters": [
         {
           "code": "6.2",
           "title": "Externalities",
+          "title_zh": "外部性",
           "graphs": [
-            "6.2.G1.Negative.Production.Externality",
-            "6.2.G2.Negative.Consumption.Externality",
-            "6.2.G3.Positive.Consumption.Externality",
-            "6.2.G4.Positive.Production.Externality"
+            {
+              "id": "6.2.G1",
+              "title": "Negative Production Externality",
+              "title_zh": "生产负外部性"
+            },
+            {
+              "id": "6.2.G2",
+              "title": "Negative Consumption Externality",
+              "title_zh": "消费负外部性"
+            },
+            {
+              "id": "6.2.G3",
+              "title": "Positive Consumption Externality",
+              "title_zh": "消费正外部性"
+            },
+            {
+              "id": "6.2.G4",
+              "title": "Positive Production Externality",
+              "title_zh": "生产正外部性"
+            }
           ]
         }
       ]

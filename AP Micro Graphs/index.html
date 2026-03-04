@@ -136,7 +136,9 @@
 
     /* GRAPH LIST */
     .graph-list { list-style: none; }
-    .graph-list li { border-bottom: 1px solid var(--line); }
+    .graph-list li { 
+      border-bottom: 1px solid var(--line); 
+    }
     .graph-list li:first-child { border-top: 1px solid var(--line); }
     .graph-list li a {
       display: grid;
@@ -155,6 +157,8 @@
       background: var(--red-dim); color: var(--red);
       padding: .15rem .45rem; border-radius: 3px;
       text-align: center; font-weight: 500;
+      width: fit-content;
+      margin-left: 0.9rem;
     }
     .graph-title { font-size: clamp(.88rem,2vw,.97rem); font-weight: 400; }
     .graph-arrow {
@@ -261,12 +265,6 @@ function render(lang) {
   document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
   document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
 
-  // Update stats bar if data is loaded
-  if (loadedData) {
-    document.getElementById('stats-label').innerHTML =
-      t.statsUnits(totalUnits, totalChapters, totalGraphs);
-  }
-
   // Re-render content with new language if data is loaded
   if (loadedData) {
     buildContent(loadedData, lang);
@@ -286,17 +284,6 @@ function detectLang() {
   } catch(e) {}
   const nav = (navigator.language || '').toLowerCase();
   return nav.startsWith('zh') ? 'zh' : 'en';
-}
-
-// Parse a graph ID string like "3.2.G1.Total.Product.and.Marginal.Product"
-// Returns { label: "3.2.G1", title: "Total Product and Marginal Product" }
-function parseGraphId(id) {
-  const parts = id.split('.');
-  const gIndex = parts.findIndex(p => /^G\d+$/i.test(p));
-  if (gIndex < 0) return { label: id, title: id };
-  const label = parts[gIndex];                           // e.g. "G1"
-  const title = parts.slice(gIndex + 1).join(' ');      // e.g. "Total Product and Marginal Product"
-  return { label, title };
 }
 
 function buildContent(data, lang) {
@@ -330,17 +317,17 @@ function buildContent(data, lang) {
       const ul = document.createElement('ul');
       ul.className = 'graph-list';
 
-      // graphs is now an array of ID strings e.g. "3.2.G1.Total.Product.and.Marginal.Product"
-      ch.graphs.forEach(graphId => {
-        const { label, title } = parseGraphId(graphId);
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a href="viewer.html?graph=${encodeURIComponent(graphId)}" target="_self">
-            <span class="graph-label">${label}</span>
-            <span class="graph-title">${title}</span>
-            <span class="graph-arrow">→</span>
-          </a>`;
-        ul.appendChild(li);
+      ch.graphs.forEach(graph => {
+          const title = (lang === 'zh' && graph.title_zh)
+              ? graph.title_zh : graph.title;
+          const li = document.createElement('li');
+          li.innerHTML = `
+              <a href="viewer.html?graph=${encodeURIComponent(graph.id)}" target="_self">
+              <span class="graph-label">${graph.id.split('.').find(p => /^G\d+$/i.test(p)) || graph.id}</span>
+                <span class="graph-title">${title}</span>
+                  <span class="graph-arrow">→</span>
+              </a>`;
+          ul.appendChild(li);
       });
 
       chDiv.appendChild(ul);
@@ -352,24 +339,21 @@ function buildContent(data, lang) {
 }
 
 async function init() {
-  const statusEl = document.getElementById('status');
+    const statusEl = document.getElementById('status');
+    currentLang = detectLang();
+    render(currentLang);
 
-  currentLang = detectLang();
-  render(currentLang);
-
-  try {
-    const res = await fetch('content.json?v=' + Date.now());
-    if (!res.ok) throw new Error('content.json not found');
-    const data = await res.json();
-
-    loadedData = data;
-    statusEl.style.display = 'none';
-    buildContent(data, currentLang);
-
-  } catch (err) {
-    statusEl.innerHTML = `<p style="color:var(--red);font-size:.9rem">${T[currentLang].errorMsg}</p>`;
-    console.error(err);
-  }
+    try {
+        const res = await fetch('content.json?v=' + Date.now());
+        if (!res.ok) throw new Error('content.json not found');
+        const data = await res.json();
+        loadedData = data;
+        statusEl.style.display = 'none';
+        buildContent(data, currentLang);
+    } catch (err) {
+        statusEl.innerHTML = `<p style="color:var(--red);font-size:.9rem">${T[currentLang].errorMsg}</p>`;
+        console.error(err);
+    }
 }
 
 init();
