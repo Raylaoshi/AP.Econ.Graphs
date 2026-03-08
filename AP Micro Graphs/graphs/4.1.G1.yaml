@@ -37,7 +37,8 @@ colors:
 
 params:
 - {name: Q_firm, value: 7, min: 0, max: 15, round: 0.1}
-- {name: demandInt, value: 30, min: 10, max: 40, round: 1}
+- {name: demandShift, value: 0, min: -20, max: 20, round: 1}
+
 # ── Category views ──
 - {name: showOptimal, value: false}
 - {name: showMarginal, value: false}
@@ -56,6 +57,7 @@ params:
 calcs:
   varShift: (params.perUnitTax)
   TFC_total: (50 + params.lumpSumTax)
+  demandInt: (30 + params.demandShift)
 
   # Cost functions at current Q
   MC:  (16 - 4*(params.Q_firm) + 0.5*((params.Q_firm)^2) + calcs.varShift)
@@ -63,8 +65,8 @@ calcs:
   ATC: (calcs.AVC + calcs.TFC_total/(params.Q_firm))
 
   # Revenue — demand slope = -1.25, MR slope = -2.5
-  P_firm: ((params.demandInt) - 1.25*(params.Q_firm))
-  MR:     ((params.demandInt) - 2.5*(params.Q_firm))
+  P_firm: ((calcs.demandInt) - 1.25*(params.Q_firm))
+  MR:     ((calcs.demandInt) - 2.5*(params.Q_firm))
 
   # Totals at current Q
   TR:     (calcs.P_firm * (params.Q_firm))
@@ -74,15 +76,15 @@ calcs:
   profit: (calcs.TR - calcs.TC)
 
   # Q* where MR = MC
-  qStar:   (1.5 + sqrt(max(0, 2*(params.demandInt) - 2*calcs.varShift - 29.75)))
-  pStar:   ((params.demandInt) - 1.25*(calcs.qStar))
+  qStar:   (1.5 + sqrt(max(0, 2*(calcs.demandInt) - 2*calcs.varShift - 29.75)))
+  pStar:   ((calcs.demandInt) - 1.25*(calcs.qStar))
   atcStar: (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + calcs.varShift + calcs.TFC_total/(calcs.qStar))
   mcStar:  (16 - 4*(calcs.qStar) + 0.5*((calcs.qStar)^2) + calcs.varShift)
   profitStar: ((calcs.pStar - calcs.atcStar) * (calcs.qStar))
 
   # Competitive outcome P = MC
-  qComp: (2.75 + sqrt(max(0, 2*(params.demandInt) - 2*calcs.varShift - 24.4375)))
-  pComp: ((params.demandInt) - 1.25*(calcs.qComp))
+  qComp: (2.75 + sqrt(max(0, 2*(calcs.demandInt) - 2*calcs.varShift - 24.4375)))
+  pComp: ((calcs.demandInt) - 1.25*(calcs.qComp))
 
 layout:
   OneGraphPlusSidebar:
@@ -174,7 +176,7 @@ layout:
         # ══════════════════════════════════════════════════════════════
 
         - Area:
-            fn1: (params.demandInt) - 1.25*(x)
+            fn1: (calcs.demandInt) - 1.25*(x)
             fn2: 16 - 4*(x) + 0.5*((x)^2) + calcs.varShift
             min: params.Q_firm
             max: calcs.qComp
@@ -198,20 +200,20 @@ layout:
 
         # Demand
         - Line:
-            yIntercept: params.demandInt
+            yIntercept: calcs.demandInt
             slope: -1.25
-            max: "(params.demandInt / 1.25)"
+            max: "(calcs.demandInt / 1.25)"
             color: demandBlue
             strokeWidth: 2.5
             label: {text: 'D = AR', x: 13}
-            drag: [{vertical: demandInt}]
+            drag: [{vertical: demandShift}]
 
         # MR — solid, lighter blue
         - Line:
-            yIntercept: params.demandInt
+            yIntercept: calcs.demandInt
             slope: -2.5
             min: 0
-            max: "(params.demandInt / 2.5)"
+            max: "(calcs.demandInt / 2.5)"
             color: cadetblue
             strokeWidth: 2
             label: {text: MR, x: 11}
@@ -486,7 +488,7 @@ layout:
           description: Drag the grey point or use the slider to choose Q.
           sliders:
           - {param: Q_firm, label: '`\\text{Q}`'}
-          - {param: demandInt, label: '`\\text{Demand}`'}
+          - {param: demandShift, label: '`\\text{Demand}`'}
           checkboxes:
           - {param: showOptimal,     label: '`\\text{Optimal}`'}
           - {param: showMarginal,    label: '`\\text{Marginal Profit}`'}
