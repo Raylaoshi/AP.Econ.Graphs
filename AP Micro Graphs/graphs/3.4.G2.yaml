@@ -23,8 +23,8 @@ description_zh: |
 
 schema: EconSchema
 params:
-- {name: demandShift, value: 0, min: -10, max: 10, round: 0.5}
-- {name: supplyShift, value: 0, min: -10, max: 10, round: 0.5}
+- {name: demandShift, value: 0, min: -20, max: 20, round: 0.5}
+- {name: supplyShift, value: 0, min: -20, max: 20, round: 0.5}
 - {name: Q_firm, value: 10, min: 0.5, max: 20, round: 0.1}
 - {name: tfc_base, value: 50, min: 25, max: 75, round: 5}
 - {name: wageChange, value: 0, min: -5, max: 10, round: 0.5}
