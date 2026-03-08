@@ -59,6 +59,25 @@
       ]
     },
     {
+      "number": "Unit 4",
+      "title": "Unit 4 — Imperfect Competition",
+      "title_zh": "第四单元 — 不完全竞争",
+      "chapters": [
+        {
+          "code": "4.1",
+          "title": "Monopoly",
+          "title_zh": "垄断",
+          "graphs": [
+            {
+              "id": "4.1.G1",
+              "title": "Typical Monopoly",
+              "title_zh": "典型垄断"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "number": "Unit 5",
       "title": "Unit 5 — Factor Markets",
       "title_zh": "第五单元 — 要素市场",
