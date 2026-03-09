@@ -1,0 +1,252 @@
+title: Price Ceiling
+title_zh: 价格上限
+label: 2.5.G1
+eyebrow: Unit 2 — Supply and Demand
+eyebrow_zh: 第二单元 — 供给与需求
+description: |
+  <p>A <strong>price ceiling</strong> is a legal maximum price set by the government. To have an impact on the market, it must be <strong>binding</strong>—meaning it is set <em>below</em> the free-market equilibrium price.</p>
+  <p><strong>Interactive features:</strong></p>
+  <ol>
+    <li><strong>Binding vs. Non-Binding:</strong> Drag the P<sub>c</sub> line. If it is set above P<sub>e</sub>, it is non-binding and the market clears normally. If it drops below P<sub>e</sub>, it becomes binding, creating a shortage.</li>
+    <li><strong>Welfare Effects:</strong> Toggle the Welfare Analysis box. A binding price ceiling transfers some producer surplus to consumers, but because the quantity traded falls to Q<sub>s</sub>, it destroys total surplus, creating a <strong>Deadweight Loss (DWL)</strong>.</li>
+    <li><strong>Market Shifts:</strong> Shift Demand or Supply. Notice how a previously non-binding price ceiling can suddenly become binding if the equilibrium price rises!</li>
+  </ol>
+description_zh: |
+  <p><strong>价格上限 (Price Ceiling)</strong> 是政府设定的法定最高价格。要对市场产生实际影响，它必须是<strong>有约束力的 (Binding)</strong>——即设定在自由市场均衡价格<em>之下</em>。</p>
+  <p><strong>动一动：</strong></p>
+  <ol>
+    <li><strong>约束力：</strong> 上下拖动 P<sub>c</sub> 线。如果设定在 P<sub>e</sub> 之上，它没有约束力，市场正常出清。一旦降至 P<sub>e</sub> 之下，它就变得有约束力，并引发市场短缺。</li>
+    <li><strong>福利效应：</strong> 勾选福利分析框。有约束力的价格上限会将部分生产者剩余转移给消费者，但由于实际交易量下降至 Q<sub>s</sub>，总福利受损，从而产生<strong>无谓损失 (DWL)</strong>。</li>
+    <li><strong>市场调节：</strong> 拖动需求或供给滑块。你会发现，如果均衡价格由于市场变动而上升，原本没有约束力的价格上限可能会突然变得“咬人”！</li>
+  </ol>
+
+schema: EconSchema
+version: 1
+
+params:
+  - {name: priceCeiling, value: 35, min: 10, max: 90, round: 1}
+  - {name: demandShift, value: 0, min: -30, max: 30, round: 1}
+  - {name: supplyShift, value: 0, min: -30, max: 30, round: 1}
+  - {name: showWelfare, value: true}
+
+calcs:
+  # Base Intercepts
+  demandInt: (90 + (params.demandShift))
+  supplyInt: (10 - (params.supplyShift))
+  
+  # Disequilibrium Quantities at Pc
+  Qd_safe: (max(0, (calcs.demandInt) - (params.priceCeiling)))
+  Qs_safe: (max(0, (params.priceCeiling) - (calcs.supplyInt)))
+  gap: ((calcs.Qd_safe) - (calcs.Qs_safe))
+  
+  # Binding Logic
+  isBinding: ((params.priceCeiling) < (calcs.mktEq.P))
+  
+  # Actual Traded Price and Quantity
+  P_act: (min((params.priceCeiling), (calcs.mktEq.P)))
+  Q_act: (min((calcs.Qs_safe), (calcs.mktEq.Q)))
+  
+  # Values at Q_act for precise area calculations
+  demandAtQact: ((calcs.demandInt) - (calcs.Q_act))
+  supplyAtQact: ((calcs.supplyInt) + (calcs.Q_act))
+  minPS: (max(0, -(calcs.supplyInt)))
+  
+  # Universal Welfare Area Math (Perfectly handles negative supply intercepts)
+  CS_val: (0.5 * (calcs.Q_act) * (((calcs.demandInt) - (calcs.P_act)) + ((calcs.demandAtQact) - (calcs.P_act))))
+  PS_val: (((calcs.minPS) * (calcs.P_act)) + 0.5 * ((calcs.Q_act) - (calcs.minPS)) * ((calcs.P_act) - (max(0, calcs.supplyInt))))
+  DWL_val: (0.5 * ((calcs.mktEq.Q) - (calcs.Q_act)) * ((calcs.demandAtQact) - (calcs.supplyAtQact)))
+
+  # Geometric Centroids for Labels (Midpoint at 1/3 of Q_act)
+  csLabelX: ((calcs.Q_act) / 3)
+  csLabelY: (((calcs.P_act) + ((calcs.demandInt) - (calcs.csLabelX))) / 2)
+  
+  psLabelX: ((calcs.Q_act) / 3)
+  psLabelY: (((calcs.P_act) + max(0, (calcs.supplyInt) + (calcs.psLabelX))) / 2)
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        title: Quantity
+        max: 80
+        ticks: 10
+      yAxis:
+        title: Price
+        max: 100
+        min: 0
+        ticks: 10
+      objects:
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE AREAS (Drawn first to stay in background)
+        # ══════════════════════════════════════════════════════════════
+        
+        # CS AREA
+        - Area:
+            fn1: (calcs.demandInt) - (x)
+            fn2: (calcs.P_act)
+            min: 0
+            max: (calcs.Q_act)
+            color: dodgerblue
+            opacity: 0.2
+            show: params.showWelfare
+            
+        # PS AREA (Bounded at 0 to safely handle negative supply intercepts)
+        - Area:
+            fn1: (calcs.P_act)
+            fn2: max(0, (calcs.supplyInt) + (x))
+            min: 0
+            max: (calcs.Q_act)
+            color: darkorange
+            opacity: 0.2
+            show: params.showWelfare
+            
+        # DWL AREA (Only appears if Binding)
+        - Area:
+            fn1: (calcs.demandInt) - (x)
+            fn2: max(0, (calcs.supplyInt) + (x))
+            min: (calcs.Q_act)
+            max: (calcs.mktEq.Q)
+            color: firebrick
+            opacity: 0.2
+            show: (params.showWelfare && calcs.isBinding)
+
+        # ══════════════════════════════════════════════════════════════
+        # MARKET EQUILIBRIUM ENGINE
+        # ══════════════════════════════════════════════════════════════
+        - EconLinearEquilibrium:
+            name: mktEq
+            demand:
+              name: demandCurve
+              xIntercept: (calcs.demandInt)
+              invSlope: -1
+              color: dodgerblue
+              drag:
+                - horizontal: demandShift
+              label:
+                text: D
+                x: 70
+            supply:
+              name: supplyCurve
+              yIntercept: (calcs.supplyInt)
+              slope: 1
+              color: darkorange
+              drag:
+                - horizontal: supplyShift
+              label:
+                text: S
+                x: 70
+            equilibrium:
+              color: green
+              droplines:
+                vertical: "`Q_e = ${calcs.mktEq.Q.toFixed(0)}`"
+                horizontal: "`P_e = ${calcs.mktEq.P.toFixed(0)}`"
+
+        # ══════════════════════════════════════════════════════════════
+        # PRICE CEILING LINE
+        # ══════════════════════════════════════════════════════════════
+        - Line:
+            yIntercept: (params.priceCeiling)
+            slope: 0
+            color: grey
+            lineStyle: solid
+            strokeWidth: 2
+            drag:
+              - vertical: priceCeiling
+            label:
+              text: "`P_c`"
+              x: 70
+
+        # ══════════════════════════════════════════════════════════════
+        # BINDING SHORTAGE POINTS AND ARROW
+        # ══════════════════════════════════════════════════════════════
+        - Point:
+            coordinates: [(calcs.Qs_safe), (params.priceCeiling)]
+            color: darkorange
+            r: 6
+            droplines:
+              vertical: "`Q_s = ${calcs.Qs_safe.toFixed(0)}`"
+            show: calcs.isBinding
+
+        - Point:
+            coordinates: [(calcs.Qd_safe), (params.priceCeiling)]
+            color: dodgerblue
+            r: 6
+            droplines:
+              vertical: "`Q_d = ${calcs.Qd_safe.toFixed(0)}`"
+            show: calcs.isBinding
+
+        - Segment:
+            a: [(calcs.Qs_safe), (params.priceCeiling)]
+            b: [(calcs.Qd_safe), (params.priceCeiling)]
+            color: firebrick
+            startArrow: true
+            endArrow: true
+            strokeWidth: 3
+            trim: 0.05
+            show: calcs.isBinding
+            label:
+              text: "`\\t{Shortage = ${calcs.gap.toFixed(0)}}`"
+              position: b
+              fontSize: 11
+              bgcolor: none
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE LABELS (Anchored to dynamic centroids)
+        # ══════════════════════════════════════════════════════════════
+        - Label:
+            coordinates: [calcs.csLabelX, calcs.csLabelY]
+            text: "`\\t{CS}`"
+            color: dodgerblue
+            fontSize: 14
+            bgcolor: none
+            show: params.showWelfare
+
+        - Label:
+            coordinates: [calcs.psLabelX, calcs.psLabelY]
+            text: PS
+            color: darkorange
+            fontSize: 14
+            bgcolor: none
+            show: params.showWelfare
+
+        - Label:
+            coordinates: [((calcs.Q_act) + ((calcs.mktEq.Q) - (calcs.Q_act)) / 3), (calcs.mktEq.P)]
+            text: "`\\t{DWL}`"
+            color: firebrick
+            fontSize: 10
+            bgcolor: none
+            show: (params.showWelfare && calcs.isBinding)
+
+    sidebar:
+      controls:
+        - title: Market Controls
+          sliders:
+            - param: priceCeiling
+              label: \text{Price Ceiling}
+            - param: demandShift
+              label: \text{Demand Shift}
+            - param: supplyShift
+              label: \text{Supply Shift}
+          checkboxes:
+            - param: showWelfare
+              label: \text{Show Welfare Analysis}
+          divs:
+            - html: "`<b>Free Market:</b> P<sub>e</sub> = $${calcs.mktEq.P.toFixed(0)}, Q<sub>e</sub> = ${calcs.mktEq.Q.toFixed(0)}`"
+            
+            - html: "`<hr/><b>Current Price Control:</b> P<sub>c</sub> = $${params.priceCeiling.toFixed(0)}`"
+            
+            - html: "`<span style=\"color:firebrick\"><b>Binding Ceiling:</b> Creates a shortage of ${calcs.gap.toFixed(0)} units.</span>`"
+              show: calcs.isBinding
+              
+            - html: "`<span style=\"color:seagreen\"><b>Non-Binding:</b> The ceiling is above equilibrium. Market clears at P<sub>e</sub>.</span>`"
+              show: "(!calcs.isBinding)"              
+              
+            - html: "`<span style=\"color:dodgerblue\"><b>Consumer Surplus:</b> $${calcs.CS_val.toFixed(0)}</span>`"
+              show: params.showWelfare
+              
+            - html: "`<span style=\"color:darkorange\"><b>Producer Surplus:</b> $${calcs.PS_val.toFixed(0)}</span>`"
+              show: params.showWelfare
+              
+            - html: "`<span style=\"color:firebrick\"><b>Deadweight Loss:</b> $${calcs.DWL_val.toFixed(0)}</span>`"
+              show: (params.showWelfare && calcs.isBinding)

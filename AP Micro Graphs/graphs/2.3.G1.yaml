@@ -23,8 +23,8 @@ version: 1
 
 params:
   - {name: currentPrice, value: 50, min: 20, max: 100, round: 1}
-  - {name: demandShift, value: 0, min: -30, max: 30, round: 1}
-  - {name: supplyShift, value: 0, min: -30, max: 30, round: 1}
+  - {name: demandShift, value: 0, min: -30, max: 30, round: 2}
+  - {name: supplyShift, value: 0, min: -30, max: 30, round: 2}
   - {name: showPriceLine, value: true}
 
 calcs:
