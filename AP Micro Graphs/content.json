@@ -38,6 +38,18 @@
               "title_zh": "个人供给 → 市场供给"
             }
           ]
+        },
+        {
+          "code": "2.3",
+          "title": "Market Equilibrium, Disequilibrium, and Changes in Equilibrium",
+          "title_zh": "市场均衡、非均衡与均衡变动",
+          "graphs": [
+            {
+              "id": "2.3.G1",
+              "title": "Market Equilibrium and Disequilibrium",
+              "title_zh": "市场均衡与非均衡"
+            }
+          ]
         }
       ]
     },
