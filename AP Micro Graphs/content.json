@@ -79,6 +79,11 @@
               "id": "2.5.G1",
               "title": "Price Ceiling",
               "title_zh": "价格上限"
+            },
+            {
+              "id": "2.5.G2",
+              "title": "Price Floor",
+              "title_zh": "价格下限"
             }
           ]
         }

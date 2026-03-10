@@ -1,30 +1,30 @@
-title: Price Ceiling
-title_zh: 价格上限
-label: 2.5.G1
+title: Price Floor
+title_zh: 价格下限
+label: 2.5.G2
 eyebrow: Unit 2 — Supply and Demand
 eyebrow_zh: 第二单元 — 供给与需求
 description: |
-  <p>A <strong>price ceiling</strong> is a legal maximum price set by the government. To have an impact on the market, it must be <strong>binding</strong>—meaning it is set <em>below</em> the free-market equilibrium price.</p>
+  <p>A <strong>price floor</strong> is a legal minimum price set by the government (such as a minimum wage). To have an impact on the market, it must be <strong>binding</strong>—meaning it is set <em>above</em> the free-market equilibrium price.</p>
   <p><strong>Interactive features:</strong></p>
   <ol>
-    <li><strong>Binding vs. Non-Binding:</strong> Drag the P<sub>c</sub> line. If it is set above P<sub>e</sub>, it is non-binding and the market clears normally. If it drops below P<sub>e</sub>, it becomes binding, creating a shortage.</li>
-    <li><strong>Welfare Effects:</strong> Toggle the Welfare Analysis box. A binding price ceiling transfers some producer surplus to consumers, but because the quantity traded falls to Q<sub>s</sub>, it destroys total surplus, creating a <strong>Deadweight Loss (DWL)</strong>.</li>
-    <li><strong>Market Shifts:</strong> Shift Demand or Supply. Notice how a previously non-binding price ceiling can suddenly become binding if the equilibrium price rises!</li>
+    <li><strong>Binding vs. Non-Binding:</strong> Drag the P<sub>f</sub> line. If it drops below P<sub>e</sub>, it is non-binding and the market clears normally. If it rises above P<sub>e</sub>, it becomes binding, creating a surplus.</li>
+    <li><strong>Welfare Effects:</strong> Toggle the Welfare Analysis box. A binding price floor transfers some consumer surplus to producers, but because the quantity traded falls to Q<sub>d</sub>, it destroys total surplus, creating a <strong>Deadweight Loss (DWL)</strong>.</li>
+    <li><strong>Market Shifts:</strong> Shift Demand or Supply to see how changing market conditions can render a previously binding price floor obsolete.</li>
   </ol>
 description_zh: |
-  <p><strong>价格上限 (Price Ceiling)</strong> 是政府设定的法定最高价格。要对市场产生实际影响，它必须是<strong>有约束力的 (Binding)</strong>——即设定在自由市场均衡价格<em>之下</em>。</p>
+  <p><strong>价格下限 (Price Floor)</strong> 是政府设定的法定最低价格（例如最低工资）。要对市场产生实际影响，它必须是<strong>有约束力的 (Binding)</strong>——即设定在自由市场均衡价格<em>之上</em>。</p>
   <p><strong>动一动：</strong></p>
   <ol>
-    <li><strong>约束力：</strong> 上下拖动 P<sub>c</sub> 线。如果设定在 P<sub>e</sub> 之上，它没有约束力，市场正常出清。一旦降至 P<sub>e</sub> 之下，它就变得有约束力，并引发市场短缺。</li>
-    <li><strong>福利效应：</strong> 勾选福利分析框。有约束力的价格上限会将部分生产者剩余转移给消费者，但由于实际交易量下降至 Q<sub>s</sub>，总福利受损，从而产生<strong>无谓损失 (DWL)</strong>。</li>
-    <li><strong>市场调节：</strong> 拖动需求或供给滑块。你会发现，如果均衡价格由于市场变动而上升，原本没有约束力的价格上限可能会突然变得“咬人”！</li>
+    <li><strong>约束力：</strong> 上下拖动 P<sub>f</sub> 线。如果设定在 P<sub>e</sub> 之下，它没有约束力，市场正常出清。一旦升至 P<sub>e</sub> 之上，它就变得有约束力，并引发市场过剩。</li>
+    <li><strong>福利效应：</strong> 勾选福利分析框。有约束力的价格下限会将部分消费者剩余转移给生产者，但由于实际交易量下降至 Q<sub>d</sub>，总福利受损，从而产生<strong>无谓损失 (DWL)</strong>。</li>
+    <li><strong>市场调节：</strong> 拖动需求或供给滑块，观察市场条件的变化如何让原本有约束力的价格下限突然失效。</li>
   </ol>
 
 schema: EconSchema
 version: 1
 
 params:
-  - {name: priceCeiling, value: 35, min: 10, max: 90, round: 1}
+  - {name: priceFloor, value: 70, min: 10, max: 90, round: 1}
   - {name: demandShift, value: 0, min: -30, max: 30, round: 1}
   - {name: supplyShift, value: 0, min: -30, max: 30, round: 1}
   - {name: showWelfare, value: true}
@@ -34,31 +34,31 @@ calcs:
   demandInt: (90 + (params.demandShift))
   supplyInt: (10 - (params.supplyShift))
   
-  # Disequilibrium Quantities at Pc
-  Qd_safe: (max(0, (calcs.demandInt) - (params.priceCeiling)))
-  Qs_safe: (max(0, (params.priceCeiling) - (calcs.supplyInt)))
-  gap: ((calcs.Qd_safe) - (calcs.Qs_safe))
+  # Disequilibrium Quantities at Pf
+  Qd_safe: (max(0, (calcs.demandInt) - (params.priceFloor)))
+  Qs_safe: (max(0, (params.priceFloor) - (calcs.supplyInt)))
+  gap: ((calcs.Qs_safe) - (calcs.Qd_safe))
   
   # Binding Logic
-  isBinding: ((params.priceCeiling) < (calcs.mktEq.P))
+  isBinding: ((params.priceFloor) > (calcs.mktEq.P))
   
-  # Actual Traded Price and Quantity
-  P_act: (min((params.priceCeiling), (calcs.mktEq.P)))
-  Q_act: (min((calcs.Qs_safe), (calcs.mktEq.Q)))
+  # Actual Traded Price and Quantity (Demand is the short side)
+  P_act: (max((params.priceFloor), (calcs.mktEq.P)))
+  Q_act: (min((calcs.Qd_safe), (calcs.mktEq.Q)))
   
   # Values at Q_act for precise area calculations
   demandAtQact: ((calcs.demandInt) - (calcs.Q_act))
   supplyAtQact: ((calcs.supplyInt) + (calcs.Q_act))
   minPS: (max(0, -(calcs.supplyInt)))
   
-  # Universal Welfare Area Math (Perfectly handles negative supply intercepts)
-  CS_val: (0.5 * (calcs.Q_act) * (((calcs.demandInt) - (calcs.P_act)) + ((calcs.demandAtQact) - (calcs.P_act))))
-  PS_val: (((calcs.minPS) * (calcs.P_act)) + 0.5 * ((calcs.Q_act) - (calcs.minPS)) * ((calcs.P_act) - (max(0, calcs.supplyInt))))
+  # Universal Welfare Area Math
+  CS_val: (0.5 * (calcs.Q_act) * ((calcs.demandInt) - (calcs.P_act)))
+  PS_val: (((calcs.minPS) * (calcs.P_act)) + 0.5 * ((calcs.Q_act) - (calcs.minPS)) * (((calcs.P_act) - (max(0, calcs.supplyInt))) + ((calcs.P_act) - (calcs.supplyAtQact))))
   DWL_val: (0.5 * ((calcs.mktEq.Q) - (calcs.Q_act)) * ((calcs.demandAtQact) - (calcs.supplyAtQact)))
 
-  # Geometric Centroids for Labels (Midpoint at 1/3 of Q_act)
+  # Geometric Centroids for Labels
   csLabelX: ((calcs.Q_act) / 3)
-  csLabelY: (((calcs.P_act) + ((calcs.demandInt) - (calcs.csLabelX))) / 2)
+  csLabelY: (((calcs.demandInt) + 2 * (calcs.P_act)) / 3)
   
   psLabelX: ((calcs.Q_act) / 3)
   psLabelY: (((calcs.P_act) + max(0, (calcs.supplyInt) + (calcs.psLabelX))) / 2)
@@ -78,10 +78,10 @@ layout:
       objects:
 
         # ══════════════════════════════════════════════════════════════
-        # WELFARE AREAS (Drawn first to stay in background)
+        # WELFARE AREAS
         # ══════════════════════════════════════════════════════════════
         
-        # CS AREA
+        # CS AREA (Always a triangle in a Price Floor)
         - Area:
             fn1: (calcs.demandInt) - (x)
             fn2: (calcs.P_act)
@@ -91,7 +91,7 @@ layout:
             opacity: 0.2
             show: params.showWelfare
             
-        # PS AREA (Bounded at 0 to safely handle negative supply intercepts)
+        # PS AREA (Trapezoid if binding, Triangle if non-binding)
         - Area:
             fn1: (calcs.P_act)
             fn2: max(0, (calcs.supplyInt) + (x))
@@ -143,56 +143,56 @@ layout:
                 horizontal: "`P_e = ${calcs.mktEq.P.toFixed(0)}`"
 
         # ══════════════════════════════════════════════════════════════
-        # PRICE CEILING LINE
+        # PRICE FLOOR LINE
         # ══════════════════════════════════════════════════════════════
         - Line:
-            yIntercept: (params.priceCeiling)
+            yIntercept: (params.priceFloor)
             slope: 0
             color: grey
             lineStyle: solid
             strokeWidth: 2
             drag:
-              - vertical: priceCeiling
+              - vertical: priceFloor
             label:
-              text: "`P_c`"
+              text: "`P_f`"
               x: 70
 
         # ══════════════════════════════════════════════════════════════
-        # BINDING SHORTAGE POINTS AND ARROW
+        # BINDING SURPLUS POINTS AND ARROW
         # ══════════════════════════════════════════════════════════════
         - Point:
-            coordinates: [(calcs.Qs_safe), (params.priceCeiling)]
-            color: darkorange
-            r: 6
-            droplines:
-              vertical: "`Q_s = ${calcs.Qs_safe.toFixed(0)}`"
-            show: calcs.isBinding
-
-        - Point:
-            coordinates: [(calcs.Qd_safe), (params.priceCeiling)]
+            coordinates: [(calcs.Qd_safe), (params.priceFloor)]
             color: dodgerblue
             r: 6
             droplines:
               vertical: "`Q_d = ${calcs.Qd_safe.toFixed(0)}`"
             show: calcs.isBinding
 
+        - Point:
+            coordinates: [(calcs.Qs_safe), (params.priceFloor)]
+            color: darkorange
+            r: 6
+            droplines:
+              vertical: "`Q_s = ${calcs.Qs_safe.toFixed(0)}`"
+            show: calcs.isBinding
+
         - Segment:
-            a: [(calcs.Qs_safe), (params.priceCeiling)]
-            b: [(calcs.Qd_safe), (params.priceCeiling)]
-            color: firebrick
+            a: [(calcs.Qd_safe), (params.priceFloor)]
+            b: [(calcs.Qs_safe), (params.priceFloor)]
+            color: purple
             startArrow: true
             endArrow: true
             strokeWidth: 3
             trim: 0.05
             show: calcs.isBinding
             label:
-              text: "`\\t{Shortage = ${calcs.gap.toFixed(0)}}`"
+              text: "`\\t{Surplus = ${calcs.gap.toFixed(0)}}`"
               position: b
               fontSize: 11
               bgcolor: none
 
         # ══════════════════════════════════════════════════════════════
-        # WELFARE LABELS (Anchored to dynamic centroids)
+        # WELFARE LABELS
         # ══════════════════════════════════════════════════════════════
         - Label:
             coordinates: [calcs.csLabelX, calcs.csLabelY]
@@ -204,7 +204,7 @@ layout:
 
         - Label:
             coordinates: [calcs.psLabelX, calcs.psLabelY]
-            text: PS
+            text: "`\\t{PS}`"
             color: darkorange
             fontSize: 14
             bgcolor: none
@@ -222,25 +222,28 @@ layout:
       controls:
         - title: Market Controls
           sliders:
-            - param: priceCeiling
-              label: \text{P_C}
+            - param: priceFloor
+              label: "`\\t{P_f}`"
             - param: demandShift
-              label: \text{Demand}
+              label: "`\\t{Demand}`"
             - param: supplyShift
-              label: \text{Supply}
+              label: "`\\t{Supply}`"
           checkboxes:
             - param: showWelfare
-              label: \text{Show Welfare Analysis}
+              label: "`\\t{Show Welfare Analysis}`"
           divs:
             - html: "`<b>Free Market:</b> P<sub>e</sub> = $${calcs.mktEq.P.toFixed(0)}, Q<sub>e</sub> = ${calcs.mktEq.Q.toFixed(0)}`"
             
-            - html: "`<hr/><b>Current Price Control:</b> P<sub>c</sub> = $${params.priceCeiling.toFixed(0)}`"
+            - html: "`<hr/><b>Current Price Control:</b> P<sub>f</sub> = $${params.priceFloor.toFixed(0)}`"
             
-            - html: "`<span style=\"color:firebrick\"><b>Binding Ceiling:</b> Creates a shortage of ${calcs.gap.toFixed(0)} units.</span>`"
+            - html: "`<span style=\"color:purple\"><b>Binding Floor:</b> Creates a surplus of ${calcs.gap.toFixed(0)} units.</span>`"
               show: calcs.isBinding
               
-            - html: "`<span style=\"color:seagreen\"><b>Non-Binding:</b> The ceiling is above equilibrium. Market clears at P<sub>e</sub>.</span>`"
-              show: "(!calcs.isBinding)"              
+            - html: "`<span style=\"color:seagreen\"><b>Non-Binding:</b> The floor is below equilibrium. Market clears at P<sub>e</sub>.</span>`"
+              show: "(!calcs.isBinding)"
+              
+            - html: "`<hr/>`"
+              show: params.showWelfare
               
             - html: "`<span style=\"color:dodgerblue\"><b>Consumer Surplus:</b> $${calcs.CS_val.toFixed(0)}</span>`"
               show: params.showWelfare
