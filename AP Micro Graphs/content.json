@@ -161,6 +161,11 @@
               "id": "4.1.G1",
               "title": "Typical Monopoly",
               "title_zh": "典型垄断"
+            },
+            {
+              "id": "4.1.G2",
+              "title": "Natural Monopoly",
+              "title_zh": "自然垄断"
             }
           ]
         },
@@ -171,8 +176,8 @@
           "graphs": [
             {
               "id": "4.3.G1",
-              "title": "Monopolistic Competition in the Long Run",
-              "title_zh": "垄断竞争的长期均衡"
+              "title": "Monopolistic Competition (Long Run)",
+              "title_zh": "垄断竞争（长期均衡）"
             }
           ]
         }

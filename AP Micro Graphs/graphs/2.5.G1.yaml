@@ -223,7 +223,7 @@ layout:
         - title: Market Controls
           sliders:
             - param: priceCeiling
-              label: \text{P_C}
+              label: "`\\t{P_c}`"
             - param: demandShift
               label: \text{Demand}
             - param: supplyShift

@@ -1,0 +1,337 @@
+title: Natural Monopoly
+title_zh: 自然垄断
+label: 4.1.G2
+eyebrow: Unit 4 — Imperfect Competition
+eyebrow_zh: 第四单元 — 不完全竞争
+description: |
+  <p>A <strong>Natural Monopoly</strong> occurs when a single firm can supply the entire market at a lower cost than two or more firms, characterized by continuously downward-sloping Long-Run Average Total Cost (LRATC) and Marginal Cost (MC) curves.</p>
+  <p><strong>The Regulatory Dilemma:</strong></p>
+  <ol>
+    <li><strong>Unregulated:</strong> The firm produces where MR = MC. This maximizes profit but severely underproduces, creating a massive Deadweight Loss (DWL).</li>
+    <li><strong>Fair-Return Pricing (P = ATC):</strong> The government sets a price ceiling where Demand intersects ATC. The firm earns exactly zero economic profit. DWL is reduced, but not entirely eliminated.</li>
+    <li><strong>Socially Optimal Pricing (P = MC):</strong> The price ceiling is set where Demand intersects MC, eliminating DWL. However, because ATC > MC, the firm suffers an economic loss and will exit the market unless given a <strong>lump-sum subsidy</strong>.</li>
+  </ol>
+description_zh: |
+  <p>当一家企业能够以比两家或多家企业更低的成本供应整个市场时，就会出现<strong>自然垄断</strong>。其特征是长期平均总成本 (LRATC) 和边际成本 (MC) 曲线持续向下倾斜。</p>
+  <p><strong>监管困境：</strong></p>
+  <ol>
+    <li><strong>无监管：</strong> 企业在 MR = MC 处生产。这虽然实现了利润最大化，但严重生产不足，产生了巨大的无谓损失 (DWL)。</li>
+    <li><strong>公平回报定价 (P = ATC)：</strong> 政府在需求曲线与 ATC 相交处设定价格上限。企业刚好获得零经济利润。DWL 减少，但并未完全消除。</li>
+    <li><strong>社会最优定价 (P = MC)：</strong> 价格上限设定在需求与 MC 相交处，消除了 DWL。然而，由于此时 ATC > MC，企业将遭受经济亏损，除非政府提供<strong>一次性总额补贴</strong>，否则企业将退出市场。</li>
+  </ol>
+
+schema: EconSchema
+version: 1
+
+colors:
+  demandBlue: rgb(41, 128, 185)
+  avcDarkOrange: rgb(230, 140, 30)
+
+params:
+  - {name: policy, value: 0}
+
+calcs:
+  # Unregulated State (MR = MC)
+  Qm: 10
+  Pm: 70
+  MCm: 60
+  ATCm: 68.5
+  
+  # Fair Return State (P = ATC)
+  Qfr: 14.47
+  Pfr: 65.53
+  MR_at_Qfr: 51.06
+  
+  # Socially Optimal State (P = MC)
+  Qc: 30
+  Pc: 50
+  ATCc: 59.5
+  MR_at_Qc: 20
+  
+  # Per-Unit Subsidy State (Shifted MC and ATC)
+  ATCsub: 29.5
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis: {title: Quantity, max: 45, ticks: 9}
+      yAxis: {title: Price / Cost, max: 90, min: 10, ticks: 8}
+      objects:
+
+        # ══════════════════════════════════════════════════════════════
+        # AREAS (DWL, Profit, Loss, Subsidies)
+        # ══════════════════════════════════════════════════════════════
+        
+        # 0. Unregulated DWL
+        - Area:
+            fn1: 80 - (x)
+            fn2: 65 - 0.5 * (x)
+            min: (calcs.Qm)
+            max: (calcs.Qc)
+            color: firebrick
+            opacity: 0.2
+            show: (params.policy == 0)
+
+        # 0. Unregulated Profit Rectangle
+        - Rectangle:
+            x1: 0
+            y1: (calcs.Pm)
+            x2: (calcs.Qm)
+            y2: (calcs.ATCm)
+            color: green
+            opacity: 0.2
+            show: (params.policy == 0)
+
+        # 1. Fair Return DWL
+        - Area:
+            fn1: 80 - (x)
+            fn2: 65 - 0.5 * (x)
+            min: (calcs.Qfr)
+            max: (calcs.Qc)
+            color: firebrick
+            opacity: 0.2
+            show: (params.policy == 1)
+
+        # 2. Socially Optimal Loss / Lump-Sum Subsidy Rectangle
+        - Rectangle:
+            x1: 0
+            y1: (calcs.ATCc)
+            x2: (calcs.Qc)
+            y2: (calcs.Pc)
+            color: gold
+            opacity: 0.3
+            show: (params.policy == 2)
+            label:
+              text: "`\\t{Lump-Sum Subsidy}`"
+
+        # 3. Per-Unit Subsidy Profit Rectangle
+        - Rectangle:
+            x1: 0
+            y1: (calcs.Pc)
+            x2: (calcs.Qc)
+            y2: (calcs.ATCsub)
+            color: green
+            opacity: 0.2
+            show: (params.policy == 3)
+            label:
+              text: "`\\t{Firm Profit}`"
+
+        # ══════════════════════════════════════════════════════════════
+        # BASE CURVES (Always visible)
+        # ══════════════════════════════════════════════════════════════
+        
+        - Line:
+            yIntercept: 80
+            slope: -1
+            color: dodgerblue
+            strokeWidth: 3
+            label: {text: "`\\t{D = AR}`", x: 38}
+
+        - Line:
+            yIntercept: 80
+            slope: -2
+            color: cadetblue
+            lineStyle: dashed
+            strokeWidth: 2
+            label: {text: "`\\t{MR}`", x: 19}
+
+        - Curve:
+            fn: 65 - 0.5 * (x)
+            color: darkorange
+            strokeWidth: 3
+            label: {text: "`\\t{MC}`", x: 40}
+
+        - Curve:
+            fn: 60 / (x) + 65 - 0.25 * (x)
+            min: 2
+            color: seagreen
+            strokeWidth: 3
+            label: {text: "`\\t{LRATC}`", x: 40, position: tr}
+
+        # ══════════════════════════════════════════════════════════════
+        # SHIFTED CURVES (Per-Unit Subsidy)
+        # ══════════════════════════════════════════════════════════════
+        
+        - Curve:
+            fn: 35 - 0.5 * (x)
+            color: darkorange
+            lineStyle: dashed
+            strokeWidth: 2
+            show: (params.policy == 3)
+            label: {text: "`\\t{MC}_{sub}`", x: 35}
+
+        - Curve:
+            fn: 60 / (x) + 35 - 0.25 * (x)
+            min: 2
+            color: seagreen
+            lineStyle: dashed
+            strokeWidth: 2
+            show: (params.policy == 3)
+            label: {text: "`\\t{LRATC}_{sub}`", x: 35, position: tr}
+
+        # ══════════════════════════════════════════════════════════════
+        # DYNAMIC 'NEW MR' SEGMENTS (Due to Price Ceilings)
+        # ══════════════════════════════════════════════════════════════
+        
+        # Policy 1: Fair Return New MR
+        - Segment:
+            a: [0, calcs.Pfr]
+            b: [calcs.Qfr, calcs.Pfr]
+            color: purple
+            strokeWidth: 4
+            show: (params.policy == 1)
+            
+        - Segment:
+            a: [calcs.Qfr, calcs.Pfr]
+            b: [calcs.Qfr, calcs.MR_at_Qfr]
+            color: purple
+            strokeWidth: 4
+            lineStyle: dotted
+            show: (params.policy == 1)
+
+        # Policy 2: Socially Optimal New MR
+        - Segment:
+            a: [0, calcs.Pc]
+            b: [calcs.Qc, calcs.Pc]
+            color: purple
+            strokeWidth: 4
+            show: (params.policy == 2)
+            
+        - Segment:
+            a: [calcs.Qc, calcs.Pc]
+            b: [calcs.Qc, calcs.MR_at_Qc]
+            color: purple
+            strokeWidth: 4
+            lineStyle: dotted
+            show: (params.policy == 2)
+
+        # ══════════════════════════════════════════════════════════════
+        # EQUILIBRIUM POINTS & DROPLINES
+        # ══════════════════════════════════════════════════════════════
+        
+        # 0. Unregulated Point
+        - Point:
+            coordinates: [calcs.Qm, calcs.Pm]
+            color: dodgerblue
+            r: 5
+            show: (params.policy == 0)
+            droplines:
+              vertical: "`Q_m = 10`"
+              horizontal: "`P_m = 70`"
+              
+        - Point:
+            coordinates: [calcs.Qm, calcs.MCm]
+            color: darkorange
+            r: 4
+            show: (params.policy == 0)
+            
+        - Point:
+            coordinates: [calcs.Qm, calcs.ATCm]
+            color: seagreen
+            r: 4
+            show: (params.policy == 0)
+
+        # 1. Fair Return Point
+        - Point:
+            coordinates: [calcs.Qfr, calcs.Pfr]
+            color: purple
+            r: 6
+            show: (params.policy == 1)
+            droplines:
+              vertical: "`Q_{fr} = 14.5`"
+              horizontal: "`P_{fr} = 65.5`"
+
+        # 2. Socially Optimal Point
+        - Point:
+            coordinates: [calcs.Qc, calcs.Pc]
+            color: purple
+            r: 6
+            show: (params.policy == 2)
+            droplines:
+              vertical: "`Q_c = 30`"
+              horizontal: "`P_c = 50`"
+              
+        - Point:
+            coordinates: [calcs.Qc, calcs.ATCc]
+            color: seagreen
+            r: 5
+            show: (params.policy == 2)
+            droplines:
+              horizontal: "`ATC = 59.5`"
+
+        # 3. Per-Unit Subsidy Point
+        - Point:
+            coordinates: [calcs.Qc, calcs.Pc]
+            color: dodgerblue
+            r: 6
+            show: (params.policy == 3)
+            droplines:
+              vertical: "`Q = 30`"
+              horizontal: "`P = 50`"
+              
+        - Point:
+            coordinates: [calcs.Qc, calcs.ATCsub]
+            color: seagreen
+            r: 5
+            show: (params.policy == 3)
+            droplines:
+              horizontal: "`ATC = 29.5`"
+
+        # ══════════════════════════════════════════════════════════════
+        # LABELS
+        # ══════════════════════════════════════════════════════════════
+        
+        - Label:
+            coordinates: [16, 61]
+            text: "`\\t{DWL}`"
+            color: firebrick
+            fontSize: 12
+            bgcolor: none
+            show: (params.policy == 0)
+            
+        - Label:
+            coordinates: [19, 58]
+            text: "`\\t{DWL}`"
+            color: firebrick
+            fontSize: 11
+            bgcolor: none
+            show: (params.policy == 1)
+
+        - Label:
+            coordinates: [10, 65.5]
+            text: "`\\t{New MR}`"
+            color: purple
+            position: t
+            show: (params.policy == 1)
+
+        - Label:
+            coordinates: [15, 50]
+            text: "`\\t{New MR}`"
+            color: purple
+            position: t
+            show: (params.policy == 2)
+
+    sidebar:
+      controls:
+        - title: Regulatory Policy
+          radioGroup:
+            param: policy
+            options:
+              - "`\\t{Unregulated Monopoly}`"
+              - "`\\t{Fair-Return Pricing } (P = ATC)`"
+              - "`\\t{Socially Optimal } (P = MC)`"
+              - "`\\t{Per-Unit Subsidy}`"
+          divs:
+            - html: "`<hr/>`"
+            
+            - html: "`<b>Unregulated:</b> The firm maximizes profit where MR = MC. Because it has market power, it charges a high price ($70) and restricts output (10 units), creating a large Deadweight Loss.`"
+              show: (params.policy == 0)
+              
+            - html: "`<b>Fair-Return Pricing:</b> A price ceiling is set at $65.5. The firm's <b>New MR</b> curve becomes horizontal up to the ceiling. The firm earns exactly normal profit (P = ATC). DWL shrinks but still exists.`"
+              show: (params.policy == 1)
+              
+            - html: "`<b>Socially Optimal Pricing:</b> A price ceiling is set at $50 to eliminate DWL. The firm's <b>New MR</b> curve forces it to produce 30 units. However, at Q=30, ATC ($59.5) > P ($50). The firm requires a <b>Lump-Sum Subsidy</b> to survive.`"
+              show: (params.policy == 2)
+              
+            - html: "`<b>Per-Unit Subsidy:</b> The government subsidizes the firm $30 per unit, shifting MC and ATC downward. The firm voluntarily produces Q<sub>c</sub> (30 units) where MR = new MC, earning a massive profit at taxpayer expense.`"
+              show: (params.policy == 3)

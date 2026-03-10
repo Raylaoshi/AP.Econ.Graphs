@@ -1,6 +1,6 @@
 title: Monopolistic Competition (Long Run)
 title_zh: 垄断竞争（长期均衡）
-label: 4.5.G1
+label: 4.3.G1
 eyebrow: Unit 4 — Imperfect Competition
 eyebrow_zh: 第四单元 — 不完全竞争
 description: |
@@ -144,7 +144,7 @@ layout:
         - Point:
             coordinates: [(params.Q_firm), (calcs.ATC)]
             color: orange
-            r: 4
+            r: 5
             droplines: {horizontal: '`${calcs.ATC.toFixed(1)}`'}
             show: params.showTotalProfit
 
@@ -221,14 +221,13 @@ layout:
             - {param: demandShift, label: '`\\text{Demand}`'}
           checkboxes:
             - {param: showOptimal, label: '`\\text{Show Optimal (MR=MC)}`'}
-            - {param: showTotalProfit, label: '`\\text{Show Total Profit / Loss}`'}
+            - {param: showTotalProfit, label: '`\\text{Show Profit / Loss}`'}
             - {param: showDWL, label: '`\\text{Show DWL}`'}
             - {param: showExcess, label: '`\\text{Show Excess Capacity}`'}
           divs:
             - html: "`<b>Firm Output:</b> Q = ${params.Q_firm.toFixed(1)}, P = $${calcs.P_firm.toFixed(1)}`"
             - html: "`<b>Optimal Target:</b> Q* = ${calcs.qStar.toFixed(1)}, P* = $${calcs.pStar.toFixed(1)}`"
               show: params.showOptimal
-            - html: "`<hr/>`"
             
             - html: "`<span style=\"color:green\"><b>Short-Run Profit:</b> $${calcs.profit.toFixed(1)}</span>`"
               show: (params.showTotalProfit && (calcs.profit > 0.05))
