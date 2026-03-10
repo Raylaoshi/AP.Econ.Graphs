@@ -1,0 +1,188 @@
+title: Market Equilibrium and Disequilibrium
+title_zh: 市场均衡与非均衡
+label: 2.4.G1
+eyebrow: Unit 2 — Supply and Demand
+eyebrow_zh: 第二单元 — 供给与需求
+description: |
+  <p>A market is in <strong>equilibrium</strong> when the quantity demanded equals the quantity supplied (Q<sub>d</sub> = Q<sub>s</sub>). Any other price creates a <strong>disequilibrium</strong>, resulting in either a shortage or a surplus.</p>
+  <p><strong>Interactive features:</strong></p>
+  <ol>
+    <li><strong>Price Controls:</strong> Drag the dashed Current Price line up or down. Notice how P > P* creates a surplus (Q<sub>s</sub> > Q<sub>d</sub>), while P < P* creates a shortage (Q<sub>d</sub> > Q<sub>s</sub>).</li>
+    <li><strong>Market Adjustment:</strong> Shift Demand or Supply using the sliders. The Current Price line stays at its original position, revealing the immediate shortage or surplus that occurs <em>before</em> the price has time to adjust to the new equilibrium!</li>
+  </ol>
+description_zh: |
+  <p>当需求量等于供给量（Q<sub>d</sub> = Q<sub>s</sub>）时，市场处于<strong>均衡</strong>状态。偏离该点的任何价格都会导致<strong>非均衡</strong>，从而产生短缺或过剩。</p>
+  <p><strong>动一动：</strong></p>
+  <ol>
+    <li><strong>价格控制：</strong> 上下拖动绿色的当前价格虚线。观察当 P > P* 时如何产生过剩（Q<sub>s</sub> > Q<sub>d</sub>），而 P < P* 时如何产生短缺（Q<sub>d</sub> > Q<sub>s</sub>）。</li>
+    <li><strong>市场调节过程：</strong> 拖动需求或供给滑块。此时当前价格线会停留在原处，完美展示出在价格来得及调节到新均衡点<strong>之前</strong>，市场在原价格下瞬间产生的短缺或过剩！</li>
+  </ol>
+
+schema: EconSchema
+version: 1
+
+params:
+  - {name: currentPrice, value: 50, min: 20, max: 100, round: 1}
+  - {name: demandShift, value: 0, min: -30, max: 30, round: 2}
+  - {name: supplyShift, value: 0, min: -30, max: 30, round: 2}
+  - {name: showPriceLine, value: true}
+
+calcs:
+  # Qd = 90 + demandShift - P
+  Qd_safe: (max(0, 90 + (params.demandShift) - (params.currentPrice)))
+  
+  # Qs = P - 10 + supplyShift
+  Qs_safe: (max(0, (params.currentPrice) - 10 + (params.supplyShift)))
+  
+  # Gap between Qd and Qs (Positive = Shortage, Negative = Surplus)
+  gap: ((calcs.Qd_safe) - (calcs.Qs_safe))
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        title: Quantity
+        max: 80
+        ticks: 10
+      yAxis:
+        title: Price
+        max: 100
+        min: 0
+        ticks: 10
+      objects:
+
+        # ══════════════════════════════════════════════════════════════
+        # MARKET EQUILIBRIUM ENGINE
+        # ══════════════════════════════════════════════════════════════
+        - EconLinearEquilibrium:
+            name: mktEq
+            demand:
+              name: demandCurve
+              xIntercept: 90 + params.demandShift
+              invSlope: -1
+              color: dodgerblue
+              drag:
+                - horizontal: demandShift
+              label:
+                text: D
+                x: 70
+            supply:
+              name: supplyCurve
+              yIntercept: 10 - params.supplyShift
+              slope: 1
+              color: darkorange
+              drag:
+                - horizontal: supplyShift
+              label:
+                text: S
+                x: 70
+            equilibrium:
+              color: green
+              droplines:
+                vertical: "`Q_e = ${calcs.mktEq.Q.toFixed(0)}`"
+                horizontal: "`P_e = ${calcs.mktEq.P.toFixed(0)}`"
+
+        # ══════════════════════════════════════════════════════════════
+        # DISEQUILIBRIUM PRICE LINE
+        # ══════════════════════════════════════════════════════════════
+        - Line:
+            yIntercept: (params.currentPrice)
+            slope: 0
+            color: grey
+            lineStyle: dashed
+            strokeWidth: 2
+            drag:
+              - vertical: currentPrice
+            label:
+              text: "`P`"
+              x: 70
+            show: (params.showPriceLine)
+        # ══════════════════════════════════════════════════════════════
+        # QUANTITY DEMANDED POINT
+        # ══════════════════════════════════════════════════════════════
+        - Point:
+            coordinates: [(calcs.Qd_safe), (params.currentPrice)]
+            color: dodgerblue
+            r: 6
+            droplines:
+              vertical: "`${calcs.Qd_safe.toFixed(0)}`"
+            show: (params.showPriceLine && ((params.currentPrice != 50) || (calcs.gap != 0)))
+
+
+        # ══════════════════════════════════════════════════════════════
+        # QUANTITY SUPPLIED POINT
+        # ══════════════════════════════════════════════════════════════
+        - Point:
+            coordinates: [(calcs.Qs_safe), (params.currentPrice)]
+            color: darkorange
+            r: 6
+            droplines:
+              vertical: "`${calcs.Qs_safe.toFixed(0)}`"
+            show: (params.showPriceLine && ((params.currentPrice != 50) || (calcs.gap != 0)))
+
+        # ══════════════════════════════════════════════════════════════
+        # SHORTAGE ARROW (Red: Qd > Qs)
+        # ══════════════════════════════════════════════════════════════
+        - Segment:
+            a: [(calcs.Qs_safe), (params.currentPrice)]
+            b: [(calcs.Qd_safe), (params.currentPrice)]
+            color: firebrick
+            startArrow: true
+            endArrow: true
+            strokeWidth: 3
+            trim: 0.05
+            show: ((params.showPriceLine) && (calcs.gap > 0))
+            label:
+              text: "`\\t{Shortage = ${calcs.gap.toFixed(0)}}`"
+              position: b
+              fontSize: 11
+              bgcolor: none
+
+        # ══════════════════════════════════════════════════════════════
+        # SURPLUS ARROW (Purple: Qs > Qd)
+        # ══════════════════════════════════════════════════════════════
+        - Segment:
+            a: [(calcs.Qd_safe), (params.currentPrice)]
+            b: [(calcs.Qs_safe), (params.currentPrice)]
+            color: purple
+            startArrow: true
+            endArrow: true
+            strokeWidth: 3
+            trim: 0.05
+            show: ((params.showPriceLine) && (calcs.gap < 0))
+            label:
+              text: "`\\t{Surplus = ${Math.abs(calcs.gap).toFixed(0)}}`"
+              position: t
+              fontSize: 11
+              bgcolor: none
+
+    sidebar:
+      controls:
+        - title: Market Controls
+          sliders:
+            - param: currentPrice
+              label: \text{Current Price}
+            - param: demandShift
+              label: \text{Demand Shift}
+            - param: supplyShift
+              label: \text{Supply Shift}
+          checkboxes:
+            - param: showPriceLine
+              label: \text{Show Current Price Analysis}
+          divs:
+            - html: "`<b>Equilibrium:</b> P* = $${calcs.mktEq.P.toFixed(0)}, Q* = ${calcs.mktEq.Q.toFixed(0)}`"
+            
+            - html: "`<hr/><b>Current Market:</b> P = $${params.currentPrice.toFixed(0)}`"
+              show: params.showPriceLine
+              
+            - html: "`$Q_d = ${calcs.Qd_safe.toFixed(0)}$, $Q_s = ${calcs.Qs_safe.toFixed(0)}$`"
+              show: params.showPriceLine
+              
+            - html: "`<span style=\"color:firebrick\"><b>Shortage:</b> ${calcs.gap.toFixed(0)} units</span>`"
+              show: (params.showPriceLine && (calcs.gap > 0))
+              
+            - html: "`<span style=\"color:purple\"><b>Surplus:</b> ${Math.abs(calcs.gap).toFixed(0)} units</span>`"
+              show: (params.showPriceLine && (calcs.gap < 0))
+              
+            - html: "`<span style=\"color:seagreen\"><b>Market Cleared</b> ($Q_d = Q_s$)</span>`"
+              show: (params.showPriceLine && (calcs.gap == 0))

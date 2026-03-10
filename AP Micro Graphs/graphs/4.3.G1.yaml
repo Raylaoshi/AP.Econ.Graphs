@@ -1,0 +1,240 @@
+title: Monopolistic Competition (Long Run)
+title_zh: 垄断竞争（长期均衡）
+label: 4.5.G1
+eyebrow: Unit 4 — Imperfect Competition
+eyebrow_zh: 第四单元 — 不完全竞争
+description: |
+  <p>In a monopolistically competitive market, free entry and exit ensure that firms earn zero economic profit in the <strong>Long Run</strong>. This means the downward-sloping Demand curve must be perfectly tangent to the Average Total Cost (ATC) curve at the profit-maximizing output (Q*).</p>
+  <p><strong>Interactive features to explore:</strong></p>
+  <ol>
+    <li><strong>Explore Output:</strong> Drag the grey point to change the firm's output. Notice how any deviation from Q* results in an economic loss.</li>
+    <li><strong>Excess Capacity:</strong> Check the box to see the gap between the firm's profit-maximizing output (Q*) and the productively efficient output (Q<sub>p</sub>) where ATC is minimized.</li>
+    <li><strong>Short-Run Dynamics:</strong> Shift the Demand curve. If demand rises (P > ATC), the firm earns a short-run profit. In reality, this profit attracts new firms, stealing market share and shifting this firm's demand back left until tangency is restored!</li>
+  </ol>
+description_zh: |
+  <p>在垄断竞争市场中，自由的进入与退出保证了企业在<strong>长期</strong>只能获得零经济利润。这意味着向下倾斜的需求曲线必须在利润最大化产量 (Q*) 处与平均总成本 (ATC) 曲线完全相切。</p>
+  <p><strong>动一动：</strong></p>
+  <ol>
+    <li><strong>探索产量：</strong> 拖动灰色端点以改变企业产量。你会发现，任何偏离 Q* 的生产都会导致经济亏损。</li>
+    <li><strong>过剩产能：</strong> 勾选复选框，观察企业实际产量 (Q*) 与生产有效产量 (Q<sub>p</sub>，即 ATC 最低点) 之间的差距。</li>
+    <li><strong>短期动态：</strong> 拖动需求曲线。如果需求上升 (P > ATC)，企业将获得短期利润。在现实中，这会吸引新企业进入市场并抢走份额，迫使该企业的需求曲线向左平移，直到重新回到相切状态！</li>
+  </ol>
+
+schema: EconSchema
+version: 2
+
+params:
+  - {name: Q_firm, value: 6, min: 2, max: 12, round: 0.1}
+  - {name: demandShift, value: 0, min: -10, max: 10, round: 1}
+  - {name: showOptimal, value: true}
+  - {name: showTotalProfit, value: false}
+  - {name: showExcess, value: false}
+  - {name: showDWL, value: false}
+
+calcs:
+  # Base Demand engineered for perfect tangency at Q=6 when TFC=81
+  demandInt: (37 + (params.demandShift))
+  
+  # Firm's choice at current Q
+  P_firm: ((calcs.demandInt) - 2.25 * (params.Q_firm))
+  MR_firm: ((calcs.demandInt) - 4.5 * (params.Q_firm))
+  
+  # Cost functions (TFC strictly = 81 for tangency math)
+  MC: (16 - 4 * (params.Q_firm) + 0.5 * ((params.Q_firm)^2))
+  AVC: (16 - 2 * (params.Q_firm) + (1/6) * ((params.Q_firm)^2))
+  ATC: ((calcs.AVC) + 81 / (params.Q_firm))
+  profit: (((calcs.P_firm) - (calcs.ATC)) * (params.Q_firm))
+  
+  # Optimal Q* where MR = MC (Analytical Solve)
+  # -4.5Q + 37+S = 0.5Q^2 - 4Q + 16 -> 0.5Q^2 + 0.5Q - (21+S) = 0
+  qStar: ((-1 + sqrt(max(0, 169 + 8 * (params.demandShift)))) / 2)
+  pStar: ((calcs.demandInt) - 2.25 * (calcs.qStar))
+  mcStar: (16 - 4 * (calcs.qStar) + 0.5 * ((calcs.qStar)^2))
+  atcStar: (16 - 2 * (calcs.qStar) + (1/6) * ((calcs.qStar)^2) + 81 / (calcs.qStar))
+  profitStar: (((calcs.pStar) - (calcs.atcStar)) * (calcs.qStar))
+  
+  # Productive Efficiency (Min ATC where MC = ATC. Constant at Q=9)
+  qMin: 9
+  pMin: 20.5
+  excessCap: ((calcs.qMin) - (calcs.qStar))
+  
+  # Allocative Efficiency (where P = MC)
+  # -2.25Q + 37+S = 0.5Q^2 - 4Q + 16 -> 0.5Q^2 - 1.75Q - (21+S) = 0
+  qComp: ((7 + sqrt(max(0, 721 + 32 * (params.demandShift)))) / 4)
+  pComp: ((calcs.demandInt) - 2.25 * (calcs.qComp))
+  
+  # Centroid for DWL
+  dwlX: ((2 * (calcs.qStar) + (calcs.qComp)) / 3)
+  dwlY: (((calcs.pStar) + (calcs.mcStar) + (calcs.pComp)) / 3)
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis: {title: Quantity, max: 14, ticks: 14}
+      yAxis: {title: Price / Cost, max: 40, min: 0, ticks: 8}
+      objects:
+
+        # ══════════════════════════════════════════════════════════════
+        # AREAS (Drawn first to stay in background)
+        # ══════════════════════════════════════════════════════════════
+        - Rectangle:
+            x1: 0
+            y1: (calcs.P_firm)
+            x2: (params.Q_firm)
+            y2: (calcs.ATC)
+            color: "`${calcs.profit >= 0 ? 'green' : 'red'}`"
+            opacity: 0.2
+            show: params.showTotalProfit
+            
+        - Area:
+            fn1: (calcs.demandInt) - 2.25 * (x)
+            fn2: 16 - 4 * (x) + 0.5 * ((x)^2)
+            min: (calcs.qStar)
+            max: (calcs.qComp)
+            color: black
+            opacity: 0.22
+            show: params.showDWL
+
+        # ══════════════════════════════════════════════════════════════
+        # CURVES
+        # ══════════════════════════════════════════════════════════════
+        - Line:
+            yIntercept: (calcs.demandInt)
+            slope: -2.25
+            color: blue
+            strokeWidth: 2.5
+            drag: [{vertical: demandShift}]
+            label: {text: "`\\t{D = AR}`", x: 12}
+
+        - Line:
+            yIntercept: (calcs.demandInt)
+            slope: -4.5
+            color: cadetblue
+            strokeWidth: 2
+            label: {text: "`\\t{MR}`", x: 7}
+
+        - Curve:
+            fn: 16 - 4 * (x) + 0.5 * ((x)^2)
+            min: 0.5
+            color: red
+            strokeWidth: 2.5
+            label: {text: "`\\t{MC}`", x: 12}
+
+        - Curve:
+            fn: 16 - 2 * (x) + (1/6) * ((x)^2) + 81 / (x)
+            min: 3
+            color: orange
+            strokeWidth: 2.5
+            label: {text: "`\\t{ATC}`", x: 13, position: tr}
+
+        # ══════════════════════════════════════════════════════════════
+        # INTERACTIVE POINTS & DROPLINES
+        # ══════════════════════════════════════════════════════════════
+        
+        # User-controlled Q_firm Anchor (Grey)
+        - Point:
+            coordinates: [(params.Q_firm), (calcs.P_firm)]
+            color: grey
+            r: 4
+            drag: [{horizontal: Q_firm}]
+            droplines:
+              vertical: '`${params.Q_firm.toFixed(1)}`'
+              horizontal: '`${calcs.P_firm.toFixed(1)}`'
+              
+        - Point:
+            coordinates: [(params.Q_firm), (calcs.ATC)]
+            color: orange
+            r: 4
+            droplines: {horizontal: '`${calcs.ATC.toFixed(1)}`'}
+            show: params.showTotalProfit
+
+        # Optimal Q* Points
+        - Point:
+            coordinates: [(calcs.qStar), (calcs.pStar)]
+            color: blue
+            r: 5
+            droplines:
+              vertical: "`Q^* = ${calcs.qStar.toFixed(1)}`"
+              horizontal: "`P^* = ${calcs.pStar.toFixed(1)}`"
+            show: params.showOptimal
+
+        - Point:
+            coordinates: [(calcs.qStar), (calcs.mcStar)]
+            color: red
+            r: 5
+            show: params.showOptimal
+
+        - Point:
+            coordinates: [(calcs.qStar), (calcs.atcStar)]
+            color: orange
+            r: 5
+            show: params.showOptimal
+
+        # Allocative Efficiency (P = MC)
+        - Point:
+            coordinates: [(calcs.qComp), (calcs.pComp)]
+            color: grey
+            r: 5
+            label: {text: "`\\t{P = MC}`", position: l}
+            droplines:
+              vertical: "`Q_{pc} = ${calcs.qComp.toFixed(1)}`"
+              horizontal: "`P_{pc} = ${calcs.pComp.toFixed(1)}`"
+            show: params.showDWL
+
+        # Productive Efficiency (Min ATC)
+        - Point:
+            coordinates: [(calcs.qMin), (calcs.pMin)]
+            color: orange
+            r: 5
+            label: {text: "`\\t{Min ATC}`", position: tl, fontSize: 11}
+            droplines:
+              vertical: "`Q_{p} = 9`"
+            show: params.showExcess
+
+        # ══════════════════════════════════════════════════════════════
+        # LABELS & INDICATORS
+        # ══════════════════════════════════════════════════════════════
+        - Label:
+            coordinates: [(calcs.dwlX), (calcs.dwlY)]
+            text: "`\\t{DWL}`"
+            color: firebrick
+            fontSize: 11
+            bgcolor: none
+            show: params.showDWL
+
+        - Segment:
+            a: [(calcs.qStar), 4]
+            b: [(calcs.qMin), 4]
+            color: purple
+            strokeWidth: 2
+            lineStyle: dashed
+            startArrow: true
+            endArrow: true
+            label: {text: "`\\t{Excess \\\\ Capacity}`", position: t, fontSize: 10, bgcolor: none}
+            show: (params.showExcess && (calcs.excessCap > 0))
+
+    sidebar:
+      controls:
+        - title: Firm Analysis
+          sliders:
+            - {param: Q_firm, label: '`\\text{Q}`'}
+            - {param: demandShift, label: '`\\text{Demand}`'}
+          checkboxes:
+            - {param: showOptimal, label: '`\\text{Show Optimal (MR=MC)}`'}
+            - {param: showTotalProfit, label: '`\\text{Show Total Profit / Loss}`'}
+            - {param: showDWL, label: '`\\text{Show DWL}`'}
+            - {param: showExcess, label: '`\\text{Show Excess Capacity}`'}
+          divs:
+            - html: "`<b>Firm Output:</b> Q = ${params.Q_firm.toFixed(1)}, P = $${calcs.P_firm.toFixed(1)}`"
+            - html: "`<b>Optimal Target:</b> Q* = ${calcs.qStar.toFixed(1)}, P* = $${calcs.pStar.toFixed(1)}`"
+              show: params.showOptimal
+            - html: "`<hr/>`"
+            
+            - html: "`<span style=\"color:green\"><b>Short-Run Profit:</b> $${calcs.profit.toFixed(1)}</span>`"
+              show: (params.showTotalProfit && (calcs.profit > 0.05))
+              
+            - html: "`<span style=\"color:firebrick\"><b>Short-Run Loss:</b> $${Math.abs(calcs.profit).toFixed(1)}</span>`"
+              show: (params.showTotalProfit && (calcs.profit < -0.05))
+              
+            - html: "`<span style=\"color:orange\"><b>Long-Run Equilibrium:</b> Profit is exactly zero. Demand is tangent to ATC.</span>`"
+              show: (params.showTotalProfit && (calcs.profit >= -0.05) && (calcs.profit <= 0.05))

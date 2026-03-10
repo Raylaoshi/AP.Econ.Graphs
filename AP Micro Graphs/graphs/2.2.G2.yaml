@@ -1,25 +1,41 @@
-title: Individual Supply → Market Supply
-title_zh: 个人供给 → 市场供给
+title: Individual Demand → Market Demand
+title_zh: 个人需求 → 市场需求
 label: 2.2.G2
 eyebrow: Unit 2 — Supply and Demand
 eyebrow_zh: 第二单元 — 供给与需求
 description: |
+  <p>The <strong>Market Demand curve</strong> is the <em>horizontal summation</em> of all individual demand curves. At every price level, we add up each consumer's quantity demanded to get the total market quantity demanded.</p>
+  <p>Here, two consumers — <strong style="color:#1a56db">Consumer A</strong> (steeper demand) and <strong style="color:#057a55">Consumer B</strong> (flatter demand) — together form the <strong style="color:#7e3af2">Market Demand curve</strong>, which is flatter than either individual curve.</p>
+  <p><strong>Interactive features to explore:</strong></p>
+  <ol>
+    <li><strong>Drag the blue point</strong> (left graph) up and down to change the price. Watch how Q<sub>A</sub> and Q<sub>B</sub> update simultaneously, and how Q<sub>M</sub> = Q<sub>A</sub> + Q<sub>B</sub> in the market graph.</li>
+    <li><strong>Check the breakdown</strong> to see the colored bars that show each consumer's contribution to market quantity.</li>
+  </ol>
 description_zh: |
+  <p><strong>市场需求曲线</strong>是所有个人需求曲线的<em>水平加总</em>。在每一个价格水平上，我们将每位消费者的需求量相加，即得到市场总需求量。</p>
+  <p>图中，<strong style="color:#1a56db">消费者A</strong>（需求曲线较陡）与<strong style="color:#057a55">消费者B</strong>（需求曲线较平）共同构成了<strong style="color:#7e3af2">市场需求曲线</strong>——它比任何一条个人需求曲线都要平缓。</p>
+  <p><strong>动一动：</strong></p>
+  <ol>
+    <li><strong>拖动蓝色端点</strong>（左图）改变价格，观察Q<sub>A</sub>与Q<sub>B</sub>同步变化，以及市场图中Q<sub>M</sub> = Q<sub>A</sub> + Q<sub>B</sub>的水平加总过程。</li>
+    <li><strong>勾选"显示构成拆分"</strong>，图中会显示彩色线段，清晰呈现每位消费者对市场总需求量的贡献。</li>
+  </ol>
 
+schema: EconSchema
+version: 1
 
 params:
   - {name: price,   value: 6, min: 0, max: 12, round: 0.5}
   - {name: showSum, value: true}
 
 calcs:
-  # Producer A: P = 2 + 2·Qa  →  Qa = (P − 2)/2   (steeper supply)
-  Qa: max(0, (params.price - 2) / 2)
+  # Consumer A: P = 12 - 2·Qa  →  Qa = 6 - P/2
+  Qa: max(0, 6 - params.price / 2)
 
-  # Producer B: P = 2 + Qb    →  Qb = P − 2        (flatter supply)
-  Qb: max(0, params.price - 2)
+  # Consumer B: P = 12 - Qb   →  Qb = 12 - P
+  Qb: max(0, 12 - params.price)
 
   # Market: horizontal sum  Qm = Qa + Qb
-  #         → P = 2 + (2/3)·Qm   (flattest of the three)
+  #         → P = 12 - (2/3)·Qm   (flatter than either individual)
   Qm: (calcs.Qa + calcs.Qb)
 
   # Midpoints for segment labels
@@ -29,9 +45,9 @@ calcs:
 layout:
   ThreeHorizontalGraphs:
 
-    # ══════════════════════════════════════════════════════════════
-    # LEFT — Producer A (steep supply)
-    # ══════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════
+    # LEFT GRAPH — Consumer A
+    # ══════════════════════════════════════════════════════════════════
     leftGraph:
       xAxis:
         title: Quantity ($Q_A$)
@@ -44,20 +60,19 @@ layout:
         ticks: 7
       objects:
 
-        # Sa: P = 2 + 2·Qa  (slope = 2, steeper curve)
+        # Da: P = 12 - 2·Qa  (slope = -2, steeper curve)
         - Line:
-            yIntercept: 2
-            slope: 2
-            color: orange
+            yIntercept: 12
+            slope: -2
+            color: blue
             strokeWidth: 3
-            min: 0
-            max: 5
+            max: 6
             label:
-              text: S_A
-              x: 3
+              text: D_A
+              x: 2
               position: bl
 
-        # Horizontal price guide
+        # Horizontal price guide line
         - Line:
             yIntercept: params.price
             slope: 0
@@ -65,25 +80,24 @@ layout:
             strokeWidth: 1
             lineStyle: dashed
             drag:
-              - vertical: price
+              - vertical: price            
 
-        # Draggable point
+        # Draggable point — drag this to change price in all three graphs
         - Point:
             coordinates: [calcs.Qa, params.price]
-            color: orange
+            color: blue
             r: 5
             droplines:
-              vertical: '`Q_A = ${calcs.Qa.toFixed(1)}`'
-            show: (params.price >= 2)
+              vertical:   '`Q_A = ${calcs.Qa.toFixed(1)}`'
 
     leftControls:
-      title: "Producer A"
+      title: "Consumer A"
       divs:
-        - html: "`At P = $${params.price.toFixed(1)}, Producer A supplies <strong>${calcs.Qa.toFixed(1)}</strong> units.`"
+        - html: "`At P = $${params.price.toFixed(1)}, Consumer A demands <strong>${calcs.Qa.toFixed(1)}</strong> units.`"
 
-    # ══════════════════════════════════════════════════════════════
-    # MIDDLE — Producer B (flatter supply)
-    # ══════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════
+    # MIDDLE GRAPH — Consumer B
+    # ══════════════════════════════════════════════════════════════════
     middleGraph:
       xAxis:
         title: Quantity ($Q_B$)
@@ -96,20 +110,19 @@ layout:
         ticks: 7
       objects:
 
-        # Sb: P = 2 + Qb  (slope = 1, flatter curve)
+        # Db: P = 12 - Qb  (slope = -1, flatter curve)
         - Line:
-            yIntercept: 2
-            slope: 1
-            color: red
+            yIntercept: 12
+            slope: -1
+            color: green
             strokeWidth: 3
-            min: 0
-            max: 10
+            max: 12
             label:
-              text: S_B
-              x: 6
+              text: D_B
+              x: 4
               position: bl
 
-        # Horizontal price guide
+        # Horizontal price guide line
         - Line:
             yIntercept: params.price
             slope: 0
@@ -117,25 +130,24 @@ layout:
             strokeWidth: 1
             lineStyle: dashed
             drag:
-              - vertical: price
+              - vertical: price            
 
-        # Point at (Qb, price)
+        # Point at (Qb, price) — follows price param
         - Point:
             coordinates: [calcs.Qb, params.price]
-            color: red
+            color: green
             r: 5
             droplines:
               vertical: '`Q_B = ${calcs.Qb.toFixed(1)}`'
-            show: (params.price >= 2)
 
     middleControls:
-      title: "Producer B"
+      title: "Consumer B"
       divs:
-        - html: "`At P = $${params.price.toFixed(1)}, Producer B supplies <strong>${calcs.Qb.toFixed(1)}</strong> units.`"
+        - html: "`At P = $${params.price.toFixed(1)}, Consumer B demands <strong>${calcs.Qb.toFixed(1)}</strong> units.`"
 
-    # ══════════════════════════════════════════════════════════════
-    # RIGHT — Market Supply (horizontal sum)
-    # ══════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════
+    # RIGHT GRAPH — Market Demand (horizontal sum)
+    # ══════════════════════════════════════════════════════════════════
     rightGraph:
       xAxis:
         title: Market Quantity ($Q_M$)
@@ -148,20 +160,19 @@ layout:
         ticks: 7
       objects:
 
-        # Sm: P = 2 + (2/3)·Qm  (slope = 2/3, flattest)
+        # Dm: P = 12 - (2/3)·Qm  (slope = -2/3, flattest)
         - Line:
-            yIntercept: 2
-            slope: (2/3)
-            color: brown
+            yIntercept: 12
+            slope: -(2/3)
+            color: purple
             strokeWidth: 3
-            min: 0
-            max: 15
+            max: 18
             label:
-              text: S_M
-              x: 8
+              text: D_M
+              x: 6
               position: bl
 
-        # Horizontal price guide
+        # Horizontal price guide line
         - Line:
             yIntercept: params.price
             slope: 0
@@ -169,69 +180,68 @@ layout:
             strokeWidth: 1
             lineStyle: dashed
             drag:
-              - vertical: price
+              - vertical: price            
 
-        # ── Contribution breakdown (toggle) ─────────────────────
-        # Orange segment: Producer A's share [0 → Qa]
+        # ── Contribution breakdown (toggle on/off) ──────────────────
+        # Blue segment: Consumer A's share [0 → Qa]
         - Segment:
             a: [0, params.price]
             b: [calcs.Qa, params.price]
-            color: orange
-            strokeWidth: 4
+            color: blue
+            strokeWidth: 4 
             startArrow: true
             endArrow: true
-            show: (params.showSum && calcs.Qa > 0)
+            show: params.showSum
 
-        # Red segment: Producer B's share [Qa → Qm]
+        # Green segment: Consumer B's share [Qa → Qm]
         - Segment:
             a: [calcs.Qa, params.price]
             b: [calcs.Qm, params.price]
-            color: red
-            strokeWidth: 4
+            color: green
+            strokeWidth: 4 
             startArrow: true
             endArrow: true
-            show: (params.showSum && calcs.Qb > 0)
+            show: params.showSum
 
-        # Junction marker "+" between contributions
+        # Junction marker "+" between the two contributions
         - Point:
             coordinates: [calcs.Qa, params.price]
             color: grey
             r: 3
             droplines:
-              vertical:
+              vertical: 
             show: (params.showSum && calcs.Qa > 0 && calcs.Qb > 0)
 
-        # Label: Q_A on the orange segment
+        # Label: Q_A on the blue segment
         - Label:
             coordinates: [calcs.midA, params.price]
             text: "`${calcs.Qa.toFixed(1)}`"
-            color: orange
+            color: blue
             fontSize: 9
-            position: b
+            position: t
             bgcolor: none
             show: (params.showSum && calcs.Qa > 0.5)
 
-        # Label: Q_B on the red segment
+        # Label: Q_B on the green segment
         - Label:
             coordinates: [calcs.midB, params.price]
             text: "`${calcs.Qb.toFixed(1)}`"
-            color: red
+            color: green
             fontSize: 9
-            position: b
+            position: t
             bgcolor: none
             show: (params.showSum && calcs.Qb > 0.5)
 
-        # Market supply point at (Qm, price)
+        # Market demand point at (Qm, price) with droplines
         - Point:
             coordinates: [calcs.Qm, params.price]
-            color: brown
+            color: purple
             r: 5
             droplines:
-              vertical: '`Q_M = ${calcs.Qm.toFixed(1)}`'
-            show: (params.price >= 2)
+              vertical:   '`Q_M = ${calcs.Qm.toFixed(1)}`'
 
     rightControls:
-      title: "Market Supply"
+      title: "Market Demand"
       sliders:
         - param: price
           label: \text{Price}
@@ -242,5 +252,3 @@ layout:
         - html: "`<hr/><b>Horizontal Summation at P = $${params.price.toFixed(1)}:</b>`"
         - html: "`Q<sub>A</sub> + Q<sub>B</sub> = Q<sub>M</sub>`"
         - html: "`<strong>${calcs.Qa.toFixed(1)}</strong> + <strong>${calcs.Qb.toFixed(1)}</strong> = <strong>${calcs.Qm.toFixed(1)}</strong>`"
-        - html: "`<em>Below P = 2, neither producer supplies.</em>`"
-          show: (params.price < 2)

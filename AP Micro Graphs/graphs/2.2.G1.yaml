@@ -1,57 +1,56 @@
-title: Supply vs. Quantity Supplied
-title_zh: 供给变动 vs. 供给量变动
+title: Demand vs. Quantity Demanded
+title_zh: 需求变动 vs. 需求量变动
 label: 2.2.G1
 eyebrow: Unit 2 — Supply and Demand
 eyebrow_zh: 第二单元 — 供给与需求
 description: |
-  <p>A mirror rule to demand: A change in the price of the good itself causes a <strong>movement along</strong> the supply curve (a change in <em>quantity supplied</em>). A change in any non-price determinant (like input costs, technology, or number of sellers) causes a <strong>shift</strong> of the entire supply curve (a change in <em>supply</em>).</p>
+  <p>A fundamental rule in microeconomics: A change in the price of the good itself causes a <strong>movement along</strong> the demand curve (a change in <em>quantity demanded</em>). A change in any non-price determinant (like income, preferences, or prices of related goods) causes a <strong>shift</strong> of the entire demand curve (a change in <em>demand</em>).</p>
   <p><strong>Interactive features to explore:</strong></p>
   <ol>
-    <li><strong>Movement along the curve:</strong> Drag the orange point up and down to change the price. Notice how the curve itself stays frozen, but the quantity supplied changes. This is the Law of Supply in action.</li>
-    <li><strong>Shift of the curve:</strong> Drag the Supply curve left or right to simulate a change in a non-price factor (e.g., a technological improvement). At every single price level, the quantity supplied has changed, which means <em>Supply</em> has changed.</li>
+    <li><strong>Movement along the curve:</strong> Drag the blue point up and down to change the price. Notice how the curve itself stays frozen, but the quantity demanded changes. This is the Law of Demand in action.</li>
+    <li><strong>Shift of the curve:</strong> Drag the Demand curve left or right to simulate a change in a non-price factor (e.g., a successful ad campaign). At every single price level, the quantity demanded has changed, which means <em>Demand</em> has changed.</li>
     <li><strong>Visual Guides:</strong> Use the checkboxes to draw arrows that map exactly where the point or the curve originated.</li>
   </ol>
 description_zh: |
-  <p>与需求法则相对应：商品自身价格的变化会导致沿供给曲线的<strong>移动</strong>（即<strong>供给量</strong>的变动）。而任何非价格决定因素（如投入成本、技术水平、卖家数量等）的变化，都会导致整条供给曲线发生<strong>平移</strong>（即<strong>供给</strong>的变动）。</p>
+  <p>微观经济学中的一个绝对核心法则：商品自身价格的变化会导致沿需求曲线的<strong>移动</strong>（即<strong>需求量</strong>的变动）。而任何非价格决定因素（如收入、偏好、相关商品价格等）的变化，都会导致整条需求曲线发生<strong>平移</strong>（即<strong>需求</strong>的变动）。</p>
   <p><strong>动一动：</strong></p>
   <ol>
-    <li><strong>沿曲线移动：</strong> 上下拖动橙色端点来改变价格。你会发现，供给曲线本身纹丝不动，只有对应的供给量发生了改变。这就是供给法则的直观体现。</li>
-    <li><strong>曲线的平移：</strong> 左右拖动供给曲线，模拟非价格因素的变化（例如技术进步降低成本）。此时在每一个既定的价格水平下，供给量都发生了改变，这意味着<strong>供给（整体）</strong>发生了变动。</li>
-    <li><strong>视觉辅助：</strong> 勾选复选框，系统会画出辅助箭头，帮你精准追踪端点和曲线的原始出处。</li>
+    <li><strong>沿曲线移动：</strong> 上下拖动蓝色端点来改变价格。你会发现，需求曲线本身纹丝不动，只有对应的需求量发生了改变。这就是需求法则的直观体现。</li>
+    <li><strong>曲线的平移：</strong> 左右拖动需求曲线，模拟非价格因素的变化（例如一次成功的广告营销）。此时在每一个既定的价格水平下，需求量都发生了改变，这意味着<strong>需求（整体）</strong>发生了变动。</li>
+    <li><strong>视觉辅助：</strong> 勾选右侧的复选框，系统会画出辅助箭头，帮你精准追踪端点和曲线的原始出处。</li>
   </ol>
 
 schema: EconSchema
 version: 1
 
 params:
-  - {name: price,       value: 10, min: 2,  max: 18, round: 1}
-  - {name: supplyShift, value: 0,  min: -6, max: 8,  round: 1}
+  - {name: price, value: 10, min: 2, max: 18, round: 1}
+  - {name: demandShift, value: 0, min: -8, max: 8, round: 1}
   - {name: showMovement, value: true}
-  - {name: showShift,    value: true}
-  - {name: baseP,        value: 10}
+  - {name: showShift, value: true}
+  - {name: baseP, value: 10}
 
 calcs:
-  # Supply curve: P = 2 + Q  →  Q = P - 2
-  # Current Supply Curve (S1) quantity at current price
-  newQs: (params.price - 2 + params.supplyShift)
-
-  # Original Supply Curve (S0) quantity at current price
-  origQs: (params.price - 2)
-
-  # Base point for Movement Arrow (anchored to current curve at P = baseP = 10)
-  baseQs: (params.baseP - 2 + params.supplyShift)
-
-  # Logic toggles
-  isShifted: (params.supplyShift != 0)
-  isMoved:   (params.price != params.baseP)
+  # Current Demand Curve (D1)
+  newQd: (20 + (params.demandShift) - (params.price))
+  
+  # Original Demand Curve (D0)
+  origQd: (20 - (params.price))
+  
+  # Base point for Movement Arrow (anchored to current curve at P=10)
+  baseQd: (20 + (params.demandShift) - (params.baseP))
+  
+  # Logic Toggles
+  isShifted: ((params.demandShift) != 0)
+  isMoved: ((params.price) != (params.baseP))
 
 layout:
   OneGraphPlusSidebar:
     graph:
       xAxis:
-        title: Quantity Supplied ($Q_s$)
-        max: 25
-        ticks: 5
+        title: Quantity Demanded ($Q_d$)
+        max: 30
+        ticks: 6
       yAxis:
         title: Price ($P$)
         max: 25
@@ -60,32 +59,33 @@ layout:
       objects:
 
         # ══════════════════════════════════════════════════════════════
-        # SHIFT: Original Supply Curve (S0) — visible only when shifted
+        # SHIFT: Original Demand Curve (D0) - Visible when shifted
         # ══════════════════════════════════════════════════════════════
         - Line:
-            yIntercept: 2
-            slope: 1
+            yIntercept: 20
+            slope: -1
+            max: 20
             color: grey
             strokeWidth: 2
             lineStyle: dashed
             label:
-              text: S_0
-              x: 20
+              text: D_0
+              x: 18
             show: (params.showShift && calcs.isShifted)
 
         # ══════════════════════════════════════════════════════════════
-        # SHIFT: Ghost point on S0 + horizontal arrow to S1
+        # SHIFT: ghost point and Arrow from D0 to D1
         # ══════════════════════════════════════════════════════════════
         - Point:
-            coordinates: [(calcs.origQs), (params.price)]
+            coordinates: [10, (params.baseP)]
             color: grey
             r: 4
             show: (calcs.isShifted)
 
         - Segment:
-            a: [(calcs.origQs), (params.price)]
-            b: [(calcs.newQs), (params.price)]
-            color: grey
+            a: [(calcs.origQd), (params.price)]
+            b: [(calcs.newQd), (params.price)]
+            color: grey  
             strokeWidth: 3
             endArrow: true
             trim: 0.05
@@ -97,34 +97,33 @@ layout:
               bgcolor: none
 
         # ══════════════════════════════════════════════════════════════
-        # CURRENT: Main Supply Curve (S1) — draggable horizontally
-        # yIntercept shifts DOWN when supplyShift is positive
-        # (rightward shift = more Q at every P = lower P-intercept)
+        # CURRENT: Main Demand Curve (D1)
         # ══════════════════════════════════════════════════════════════
         - Line:
-            yIntercept: (2 - params.supplyShift)
-            slope: 1
-            color: orange
+            yIntercept: (20 + (params.demandShift))
+            slope: -1
+            max: (20 + (params.demandShift))
+            color: blue
             strokeWidth: 3
             drag:
-              - horizontal: supplyShift
+              - horizontal: demandShift
             label:
-              text: "`${calcs.isShifted ? 'S_1' : 'S_0'}`"
-              x: (20 + params.supplyShift)
+              text: "`${calcs.isShifted ? 'D_1' : 'D_0'}`"
+              x: (18 + (params.demandShift))
 
         # ══════════════════════════════════════════════════════════════
-        # MOVEMENT: Ghost point at baseP + diagonal arrow along curve
+        # MOVEMENT: Ghost point and arrow along the curve
         # ══════════════════════════════════════════════════════════════
         - Point:
-            coordinates: [(calcs.baseQs), (params.baseP)]
+            coordinates: [(calcs.baseQd), (params.baseP)]
             color: grey
             r: 4
             show: (params.showMovement && calcs.isMoved)
 
         - Segment:
-            a: [(calcs.baseQs), (params.baseP)]
-            b: [(calcs.newQs), (params.price)]
-            color: orange
+            a: [(calcs.baseQd), (params.baseP)]
+            b: [(calcs.newQd), (params.price)]
+            color: blue
             strokeWidth: 1
             endArrow: true
             trim: 0.05
@@ -136,26 +135,26 @@ layout:
               bgcolor: none
 
         # ══════════════════════════════════════════════════════════════
-        # CURRENT: Draggable Point (Qs at current Price)
+        # CURRENT: Draggable Point (Qd at current Price)
         # ══════════════════════════════════════════════════════════════
         - Point:
-            coordinates: [(calcs.newQs), (params.price)]
-            color: orange
+            coordinates: [(calcs.newQd), (params.price)]
+            color: blue
             r: 6
             drag:
               - vertical: price
             droplines:
-              vertical:   '`Q = ${calcs.newQs.toFixed(0)}`'
+              vertical: '`Q = ${calcs.newQd.toFixed(0)}`'
               horizontal: '`P = \\$${params.price.toFixed(0)}`'
 
     sidebar:
       controls:
         - title: Market Controls
-          description: Drag the orange point up/down to move along the curve. Drag the curve itself left/right to shift it.
+          description: Drag the blue point or the demand curve itself.
           sliders:
             - param: price
               label: \text{Price}
-            - param: supplyShift
+            - param: demandShift
               label: \text{Non-Price}
           checkboxes:
             - param: showMovement
@@ -164,4 +163,4 @@ layout:
               label: \text{Show shift of the curve}
           divs:
             - html: "`<hr/><b>Current State:</b>`"
-            - html: "`At a price of $${params.price.toFixed(0)}, the <strong>Quantity Supplied</strong> is ${calcs.newQs.toFixed(0)} units.`"
+            - html: "`At a price of $${params.price.toFixed(0)}, the <strong>Quantity Demanded</strong> is ${calcs.newQd.toFixed(0)} units.`"

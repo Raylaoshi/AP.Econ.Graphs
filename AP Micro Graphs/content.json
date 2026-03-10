@@ -25,46 +25,46 @@
       "title_zh": "第二单元 — 供求关系",
       "chapters": [
         {
-          "code": "2.1",
+          "code": "2.2",
           "title": "Demand",
           "title_zh": "需求",
           "graphs": [
             {
-              "id": "2.1.G1",
+              "id": "2.2.G1",
               "title": "Demand vs. Quantity Demanded",
               "title_zh": "需求变动 vs. 需求量变动"
             },
             {
-              "id": "2.1.G2",
+              "id": "2.2.G2",
               "title": "Individual Demand → Market Demand",
               "title_zh": "个人需求 → 市场需求"
             }
           ]
         },
         {
-          "code": "2.2",
+          "code": "2.3",
           "title": "Supply",
           "title_zh": "供给",
           "graphs": [
             {
-              "id": "2.2.G1",
+              "id": "2.3.G1",
               "title": "Supply vs. Quantity Supplied",
               "title_zh": "供给变动 vs. 供给量变动"
             },
             {
-              "id": "2.2.G2",
+              "id": "2.3.G2",
               "title": "Individual Supply → Market Supply",
               "title_zh": "个人供给 → 市场供给"
             }
           ]
         },
         {
-          "code": "2.3",
-          "title": "Market Equilibrium, Disequilibrium, and Changes in Equilibrium",
-          "title_zh": "市场均衡、非均衡与均衡变动",
+          "code": "2.4",
+          "title": "Price Elasticity of Supply",
+          "title_zh": "供给价格弹性",
           "graphs": [
             {
-              "id": "2.3.G1",
+              "id": "2.4.G1",
               "title": "Market Equilibrium and Disequilibrium",
               "title_zh": "市场均衡与非均衡"
             }
@@ -123,13 +123,13 @@
             },
             {
               "id": "3.3.G3",
-              "title": "Marginal Cost and Average Variable Cost",
-              "title_zh": "边际与平均成本"
+              "title": "MP, AP, MC and AVC",
+              "title_zh": "边际与平均产量和成本"
             },
             {
               "id": "3.3.G4",
-              "title": "MP, AP, MC and AVC",
-              "title_zh": "边际与平均产量和成本"
+              "title": "Marginal Cost and Average Variable Cost",
+              "title_zh": "边际与平均成本"
             }
           ]
         },
@@ -161,6 +161,18 @@
               "id": "4.1.G1",
               "title": "Typical Monopoly",
               "title_zh": "典型垄断"
+            }
+          ]
+        },
+        {
+          "code": "4.3",
+          "title": "Monopolistic Competition",
+          "title_zh": "垄断竞争",
+          "graphs": [
+            {
+              "id": "4.3.G1",
+              "title": "Monopolistic Competition in the Long Run",
+              "title_zh": "垄断竞争的长期均衡"
             }
           ]
         }

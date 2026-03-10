@@ -1,189 +1,167 @@
-title: Market Equilibrium and Disequilibrium
-title_zh: 市场均衡与非均衡
+title: Supply vs. Quantity Supplied
+title_zh: 供给变动 vs. 供给量变动
 label: 2.3.G1
 eyebrow: Unit 2 — Supply and Demand
 eyebrow_zh: 第二单元 — 供给与需求
 description: |
-  <p>A market is in <strong>equilibrium</strong> when the quantity demanded equals the quantity supplied (Q<sub>d</sub> = Q<sub>s</sub>). Any other price creates a <strong>disequilibrium</strong>, resulting in either a shortage or a surplus.</p>
-  <p><strong>Interactive features:</strong></p>
+  <p>A mirror rule to demand: A change in the price of the good itself causes a <strong>movement along</strong> the supply curve (a change in <em>quantity supplied</em>). A change in any non-price determinant (like input costs, technology, or number of sellers) causes a <strong>shift</strong> of the entire supply curve (a change in <em>supply</em>).</p>
+  <p><strong>Interactive features to explore:</strong></p>
   <ol>
-    <li><strong>Price Controls:</strong> Drag the dashed Current Price line up or down. Notice how P > P* creates a surplus (Q<sub>s</sub> > Q<sub>d</sub>), while P < P* creates a shortage (Q<sub>d</sub> > Q<sub>s</sub>).</li>
-    <li><strong>Market Adjustment:</strong> Shift Demand or Supply using the sliders. The Current Price line stays at its original position, revealing the immediate shortage or surplus that occurs <em>before</em> the price has time to adjust to the new equilibrium!</li>
+    <li><strong>Movement along the curve:</strong> Drag the orange point up and down to change the price. Notice how the curve itself stays frozen, but the quantity supplied changes. This is the Law of Supply in action.</li>
+    <li><strong>Shift of the curve:</strong> Drag the Supply curve left or right to simulate a change in a non-price factor (e.g., a technological improvement). At every single price level, the quantity supplied has changed, which means <em>Supply</em> has changed.</li>
+    <li><strong>Visual Guides:</strong> Use the checkboxes to draw arrows that map exactly where the point or the curve originated.</li>
   </ol>
 description_zh: |
-  <p>当需求量等于供给量（Q<sub>d</sub> = Q<sub>s</sub>）时，市场处于<strong>均衡</strong>状态。偏离该点的任何价格都会导致<strong>非均衡</strong>，从而产生短缺或过剩。</p>
+  <p>与需求法则相对应：商品自身价格的变化会导致沿供给曲线的<strong>移动</strong>（即<strong>供给量</strong>的变动）。而任何非价格决定因素（如投入成本、技术水平、卖家数量等）的变化，都会导致整条供给曲线发生<strong>平移</strong>（即<strong>供给</strong>的变动）。</p>
   <p><strong>动一动：</strong></p>
   <ol>
-    <li><strong>价格控制：</strong> 上下拖动绿色的当前价格虚线。观察当 P > P* 时如何产生过剩（Q<sub>s</sub> > Q<sub>d</sub>），而 P < P* 时如何产生短缺（Q<sub>d</sub> > Q<sub>s</sub>）。</li>
-    <li><strong>市场调节过程：</strong> 拖动需求或供给滑块。此时当前价格线会停留在原处，完美展示出在价格来得及调节到新均衡点<strong>之前</strong>，市场在原价格下瞬间产生的短缺或过剩！</li>
+    <li><strong>沿曲线移动：</strong> 上下拖动橙色端点来改变价格。你会发现，供给曲线本身纹丝不动，只有对应的供给量发生了改变。这就是供给法则的直观体现。</li>
+    <li><strong>曲线的平移：</strong> 左右拖动供给曲线，模拟非价格因素的变化（例如技术进步降低成本）。此时在每一个既定的价格水平下，供给量都发生了改变，这意味着<strong>供给（整体）</strong>发生了变动。</li>
+    <li><strong>视觉辅助：</strong> 勾选复选框，系统会画出辅助箭头，帮你精准追踪端点和曲线的原始出处。</li>
   </ol>
 
 schema: EconSchema
 version: 1
 
 params:
-  - {name: currentPrice, value: 50, min: 20, max: 100, round: 1}
-  - {name: demandShift, value: 0, min: -30, max: 30, round: 2}
-  - {name: supplyShift, value: 0, min: -30, max: 30, round: 2}
-  - {name: showPriceLine, value: true}
+  - {name: price,       value: 10, min: 2,  max: 18, round: 1}
+  - {name: supplyShift, value: 0,  min: -6, max: 8,  round: 1}
+  - {name: showMovement, value: true}
+  - {name: showShift,    value: true}
+  - {name: baseP,        value: 10}
 
 calcs:
-  # Qd = 90 + demandShift - P
-  Qd_safe: (max(0, 90 + (params.demandShift) - (params.currentPrice)))
-  
-  # Qs = P - 10 + supplyShift
-  Qs_safe: (max(0, (params.currentPrice) - 10 + (params.supplyShift)))
-  
-  # Gap between Qd and Qs (Positive = Shortage, Negative = Surplus)
-  gap: ((calcs.Qd_safe) - (calcs.Qs_safe))
+  # Supply curve: P = 2 + Q  →  Q = P - 2
+  # Current Supply Curve (S1) quantity at current price
+  newQs: (params.price - 2 + params.supplyShift)
+
+  # Original Supply Curve (S0) quantity at current price
+  origQs: (params.price - 2)
+
+  # Base point for Movement Arrow (anchored to current curve at P = baseP = 10)
+  baseQs: (params.baseP - 2 + params.supplyShift)
+
+  # Logic toggles
+  isShifted: (params.supplyShift != 0)
+  isMoved:   (params.price != params.baseP)
 
 layout:
   OneGraphPlusSidebar:
     graph:
       xAxis:
-        title: Quantity
-        max: 80
-        ticks: 10
+        title: Quantity Supplied ($Q_s$)
+        max: 25
+        ticks: 5
       yAxis:
-        title: Price
-        max: 100
+        title: Price ($P$)
+        max: 25
         min: 0
-        ticks: 10
+        ticks: 5
       objects:
 
         # ══════════════════════════════════════════════════════════════
-        # MARKET EQUILIBRIUM ENGINE
-        # ══════════════════════════════════════════════════════════════
-        - EconLinearEquilibrium:
-            name: mktEq
-            demand:
-              name: demandCurve
-              xIntercept: 90 + params.demandShift
-              invSlope: -1
-              color: dodgerblue
-              drag:
-                - horizontal: demandShift
-              label:
-                text: D
-                x: 70
-            supply:
-              name: supplyCurve
-              yIntercept: 10 - params.supplyShift
-              slope: 1
-              color: darkorange
-              drag:
-                - horizontal: supplyShift
-              label:
-                text: S
-                x: 70
-            equilibrium:
-              color: green
-              droplines:
-                vertical: "`Q_e = ${calcs.mktEq.Q.toFixed(0)}`"
-                horizontal: "`P_e = ${calcs.mktEq.P.toFixed(0)}`"
-
-        # ══════════════════════════════════════════════════════════════
-        # DISEQUILIBRIUM PRICE LINE
+        # SHIFT: Original Supply Curve (S0) — visible only when shifted
         # ══════════════════════════════════════════════════════════════
         - Line:
-            yIntercept: (params.currentPrice)
-            slope: 0
+            yIntercept: 2
+            slope: 1
             color: grey
-            lineStyle: dashed
             strokeWidth: 2
-            drag:
-              - vertical: currentPrice
+            lineStyle: dashed
             label:
-              text: "`P_{dis}`"
-              x: 10
-              position: t
-            show: (params.showPriceLine && ((params.currentPrice != 50) || (calcs.gap != 0)))
+              text: S_0
+              x: 20
+            show: (params.showShift && calcs.isShifted)
+
         # ══════════════════════════════════════════════════════════════
-        # QUANTITY DEMANDED POINT
+        # SHIFT: Ghost point on S0 + horizontal arrow to S1
         # ══════════════════════════════════════════════════════════════
         - Point:
-            coordinates: [(calcs.Qd_safe), (params.currentPrice)]
-            color: dodgerblue
-            r: 6
-            droplines:
-              vertical: "`${calcs.Qd_safe.toFixed(0)}`"
-            show: (params.showPriceLine && ((params.currentPrice != 50) || (calcs.gap != 0)))
+            coordinates: [(calcs.origQs), (params.price)]
+            color: grey
+            r: 4
+            show: (calcs.isShifted)
 
-
-        # ══════════════════════════════════════════════════════════════
-        # QUANTITY SUPPLIED POINT
-        # ══════════════════════════════════════════════════════════════
-        - Point:
-            coordinates: [(calcs.Qs_safe), (params.currentPrice)]
-            color: darkorange
-            r: 6
-            droplines:
-              vertical: "`${calcs.Qs_safe.toFixed(0)}`"
-            show: (params.showPriceLine && ((params.currentPrice != 50) || (calcs.gap != 0)))
-
-        # ══════════════════════════════════════════════════════════════
-        # SHORTAGE ARROW (Red: Qd > Qs)
-        # ══════════════════════════════════════════════════════════════
         - Segment:
-            a: [(calcs.Qs_safe), (params.currentPrice)]
-            b: [(calcs.Qd_safe), (params.currentPrice)]
-            color: firebrick
-            startArrow: true
-            endArrow: true
+            a: [(calcs.origQs), (params.price)]
+            b: [(calcs.newQs), (params.price)]
+            color: grey
             strokeWidth: 3
+            endArrow: true
             trim: 0.05
-            show: ((params.showPriceLine) && (calcs.gap > 0))
+            show: (params.showShift && calcs.isShifted)
             label:
-              text: "`\\t{Shortage = ${calcs.gap.toFixed(0)}}`"
+              text: \text{Shift}
               position: b
-              fontSize: 11
+              fontSize: 10
               bgcolor: none
 
         # ══════════════════════════════════════════════════════════════
-        # SURPLUS ARROW (Purple: Qs > Qd)
+        # CURRENT: Main Supply Curve (S1) — draggable horizontally
+        # yIntercept shifts DOWN when supplyShift is positive
+        # (rightward shift = more Q at every P = lower P-intercept)
         # ══════════════════════════════════════════════════════════════
-        - Segment:
-            a: [(calcs.Qd_safe), (params.currentPrice)]
-            b: [(calcs.Qs_safe), (params.currentPrice)]
-            color: purple
-            startArrow: true
-            endArrow: true
+        - Line:
+            yIntercept: (2 - params.supplyShift)
+            slope: 1
+            color: orange
             strokeWidth: 3
-            trim: 0.05
-            show: ((params.showPriceLine) && (calcs.gap < 0))
+            drag:
+              - horizontal: supplyShift
             label:
-              text: "`\\t{Surplus = ${Math.abs(calcs.gap).toFixed(0)}}`"
-              position: t
-              fontSize: 11
+              text: "`${calcs.isShifted ? 'S_1' : 'S_0'}`"
+              x: (20 + params.supplyShift)
+
+        # ══════════════════════════════════════════════════════════════
+        # MOVEMENT: Ghost point at baseP + diagonal arrow along curve
+        # ══════════════════════════════════════════════════════════════
+        - Point:
+            coordinates: [(calcs.baseQs), (params.baseP)]
+            color: grey
+            r: 4
+            show: (params.showMovement && calcs.isMoved)
+
+        - Segment:
+            a: [(calcs.baseQs), (params.baseP)]
+            b: [(calcs.newQs), (params.price)]
+            color: orange
+            strokeWidth: 1
+            endArrow: true
+            trim: 0.05
+            show: (params.showMovement && calcs.isMoved)
+            label:
+              text: \text{Movement}
+              position: r
+              fontSize: 10
               bgcolor: none
+
+        # ══════════════════════════════════════════════════════════════
+        # CURRENT: Draggable Point (Qs at current Price)
+        # ══════════════════════════════════════════════════════════════
+        - Point:
+            coordinates: [(calcs.newQs), (params.price)]
+            color: orange
+            r: 6
+            drag:
+              - vertical: price
+            droplines:
+              vertical:   '`Q = ${calcs.newQs.toFixed(0)}`'
+              horizontal: '`P = \\$${params.price.toFixed(0)}`'
 
     sidebar:
       controls:
         - title: Market Controls
+          description: Drag the orange point up/down to move along the curve. Drag the curve itself left/right to shift it.
           sliders:
-            - param: currentPrice
-              label: \text{Current Price}
-            - param: demandShift
-              label: \text{Demand Shift}
+            - param: price
+              label: \text{Price}
             - param: supplyShift
-              label: \text{Supply Shift}
+              label: \text{Non-Price}
           checkboxes:
-            - param: showPriceLine
-              label: \text{Show Current Price Analysis}
+            - param: showMovement
+              label: \text{Show movement along curve}
+            - param: showShift
+              label: \text{Show shift of the curve}
           divs:
-            - html: "`<b>Equilibrium:</b> P* = $${calcs.mktEq.P.toFixed(0)}, Q* = ${calcs.mktEq.Q.toFixed(0)}`"
-            
-            - html: "`<hr/><b>Current Market:</b> P = $${params.currentPrice.toFixed(0)}`"
-              show: params.showPriceLine
-              
-            - html: "`$Q_d = ${calcs.Qd_safe.toFixed(0)}$, $Q_s = ${calcs.Qs_safe.toFixed(0)}$`"
-              show: params.showPriceLine
-              
-            - html: "`<span style=\"color:firebrick\"><b>Shortage:</b> ${calcs.gap.toFixed(0)} units</span>`"
-              show: (params.showPriceLine && (calcs.gap > 0))
-              
-            - html: "`<span style=\"color:purple\"><b>Surplus:</b> ${Math.abs(calcs.gap).toFixed(0)} units</span>`"
-              show: (params.showPriceLine && (calcs.gap < 0))
-              
-            - html: "`<span style=\"color:seagreen\"><b>Market Cleared</b> ($Q_d = Q_s$)</span>`"
-              show: (params.showPriceLine && (calcs.gap == 0))
+            - html: "`<hr/><b>Current State:</b>`"
+            - html: "`At a price of $${params.price.toFixed(0)}, the <strong>Quantity Supplied</strong> is ${calcs.newQs.toFixed(0)} units.`"

@@ -1,0 +1,246 @@
+title: Individual Supply → Market Supply
+title_zh: 个人供给 → 市场供给
+label: 2.3.G2
+eyebrow: Unit 2 — Supply and Demand
+eyebrow_zh: 第二单元 — 供给与需求
+description: |
+description_zh: |
+
+
+params:
+  - {name: price,   value: 6, min: 0, max: 12, round: 0.5}
+  - {name: showSum, value: true}
+
+calcs:
+  # Producer A: P = 2 + 2·Qa  →  Qa = (P − 2)/2   (steeper supply)
+  Qa: max(0, (params.price - 2) / 2)
+
+  # Producer B: P = 2 + Qb    →  Qb = P − 2        (flatter supply)
+  Qb: max(0, params.price - 2)
+
+  # Market: horizontal sum  Qm = Qa + Qb
+  #         → P = 2 + (2/3)·Qm   (flattest of the three)
+  Qm: (calcs.Qa + calcs.Qb)
+
+  # Midpoints for segment labels
+  midA: (calcs.Qa / 2)
+  midB: (calcs.Qa + calcs.Qb / 2)
+
+layout:
+  ThreeHorizontalGraphs:
+
+    # ══════════════════════════════════════════════════════════════
+    # LEFT — Producer A (steep supply)
+    # ══════════════════════════════════════════════════════════════
+    leftGraph:
+      xAxis:
+        title: Quantity ($Q_A$)
+        max: 8
+        ticks: 4
+      yAxis:
+        title: Price ($P$)
+        max: 14
+        min: 0
+        ticks: 7
+      objects:
+
+        # Sa: P = 2 + 2·Qa  (slope = 2, steeper curve)
+        - Line:
+            yIntercept: 2
+            slope: 2
+            color: orange
+            strokeWidth: 3
+            min: 0
+            max: 5
+            label:
+              text: S_A
+              x: 3
+              position: bl
+
+        # Horizontal price guide
+        - Line:
+            yIntercept: params.price
+            slope: 0
+            color: grey
+            strokeWidth: 1
+            lineStyle: dashed
+            drag:
+              - vertical: price
+
+        # Draggable point
+        - Point:
+            coordinates: [calcs.Qa, params.price]
+            color: orange
+            r: 5
+            droplines:
+              vertical: '`Q_A = ${calcs.Qa.toFixed(1)}`'
+            show: (params.price >= 2)
+
+    leftControls:
+      title: "Producer A"
+      divs:
+        - html: "`At P = $${params.price.toFixed(1)}, Producer A supplies <strong>${calcs.Qa.toFixed(1)}</strong> units.`"
+
+    # ══════════════════════════════════════════════════════════════
+    # MIDDLE — Producer B (flatter supply)
+    # ══════════════════════════════════════════════════════════════
+    middleGraph:
+      xAxis:
+        title: Quantity ($Q_B$)
+        max: 14
+        ticks: 7
+      yAxis:
+        title: Price ($P$)
+        max: 14
+        min: 0
+        ticks: 7
+      objects:
+
+        # Sb: P = 2 + Qb  (slope = 1, flatter curve)
+        - Line:
+            yIntercept: 2
+            slope: 1
+            color: red
+            strokeWidth: 3
+            min: 0
+            max: 10
+            label:
+              text: S_B
+              x: 6
+              position: bl
+
+        # Horizontal price guide
+        - Line:
+            yIntercept: params.price
+            slope: 0
+            color: grey
+            strokeWidth: 1
+            lineStyle: dashed
+            drag:
+              - vertical: price
+
+        # Point at (Qb, price)
+        - Point:
+            coordinates: [calcs.Qb, params.price]
+            color: red
+            r: 5
+            droplines:
+              vertical: '`Q_B = ${calcs.Qb.toFixed(1)}`'
+            show: (params.price >= 2)
+
+    middleControls:
+      title: "Producer B"
+      divs:
+        - html: "`At P = $${params.price.toFixed(1)}, Producer B supplies <strong>${calcs.Qb.toFixed(1)}</strong> units.`"
+
+    # ══════════════════════════════════════════════════════════════
+    # RIGHT — Market Supply (horizontal sum)
+    # ══════════════════════════════════════════════════════════════
+    rightGraph:
+      xAxis:
+        title: Market Quantity ($Q_M$)
+        max: 22
+        ticks: 11
+      yAxis:
+        title: Price ($P$)
+        max: 14
+        min: 0
+        ticks: 7
+      objects:
+
+        # Sm: P = 2 + (2/3)·Qm  (slope = 2/3, flattest)
+        - Line:
+            yIntercept: 2
+            slope: (2/3)
+            color: brown
+            strokeWidth: 3
+            min: 0
+            max: 15
+            label:
+              text: S_M
+              x: 8
+              position: bl
+
+        # Horizontal price guide
+        - Line:
+            yIntercept: params.price
+            slope: 0
+            color: grey
+            strokeWidth: 1
+            lineStyle: dashed
+            drag:
+              - vertical: price
+
+        # ── Contribution breakdown (toggle) ─────────────────────
+        # Orange segment: Producer A's share [0 → Qa]
+        - Segment:
+            a: [0, params.price]
+            b: [calcs.Qa, params.price]
+            color: orange
+            strokeWidth: 4
+            startArrow: true
+            endArrow: true
+            show: (params.showSum && calcs.Qa > 0)
+
+        # Red segment: Producer B's share [Qa → Qm]
+        - Segment:
+            a: [calcs.Qa, params.price]
+            b: [calcs.Qm, params.price]
+            color: red
+            strokeWidth: 4
+            startArrow: true
+            endArrow: true
+            show: (params.showSum && calcs.Qb > 0)
+
+        # Junction marker "+" between contributions
+        - Point:
+            coordinates: [calcs.Qa, params.price]
+            color: grey
+            r: 3
+            droplines:
+              vertical:
+            show: (params.showSum && calcs.Qa > 0 && calcs.Qb > 0)
+
+        # Label: Q_A on the orange segment
+        - Label:
+            coordinates: [calcs.midA, params.price]
+            text: "`${calcs.Qa.toFixed(1)}`"
+            color: orange
+            fontSize: 9
+            position: b
+            bgcolor: none
+            show: (params.showSum && calcs.Qa > 0.5)
+
+        # Label: Q_B on the red segment
+        - Label:
+            coordinates: [calcs.midB, params.price]
+            text: "`${calcs.Qb.toFixed(1)}`"
+            color: red
+            fontSize: 9
+            position: b
+            bgcolor: none
+            show: (params.showSum && calcs.Qb > 0.5)
+
+        # Market supply point at (Qm, price)
+        - Point:
+            coordinates: [calcs.Qm, params.price]
+            color: brown
+            r: 5
+            droplines:
+              vertical: '`Q_M = ${calcs.Qm.toFixed(1)}`'
+            show: (params.price >= 2)
+
+    rightControls:
+      title: "Market Supply"
+      sliders:
+        - param: price
+          label: \text{Price}
+      checkboxes:
+        - param: showSum
+          label: \text{Show contribution breakdown}
+      divs:
+        - html: "`<hr/><b>Horizontal Summation at P = $${params.price.toFixed(1)}:</b>`"
+        - html: "`Q<sub>A</sub> + Q<sub>B</sub> = Q<sub>M</sub>`"
+        - html: "`<strong>${calcs.Qa.toFixed(1)}</strong> + <strong>${calcs.Qb.toFixed(1)}</strong> = <strong>${calcs.Qm.toFixed(1)}</strong>`"
+        - html: "`<em>Below P = 2, neither producer supplies.</em>`"
+          show: (params.price < 2)
