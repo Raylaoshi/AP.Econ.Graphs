@@ -113,49 +113,6 @@ layout:
             label: {text: "`\\t{LRATC}`", x: 160}
 
         # ══════════════════════════════════════════════════════════════
-        # PRICE CEILING & KINKED MR CURVE
-        # ══════════════════════════════════════════════════════════════
-        
-        # Main Price Ceiling Line
-        - Line:
-            yIntercept: (params.priceCeiling)
-            slope: 0
-            color: grey
-            strokeWidth: 3
-            lineStyle: dashed
-            drag: [{vertical: priceCeiling}]
-            label: {text: "`P_c`", x: 160}
-            show: params.showCeiling
-
-        # New MR (Horizontal part)
-        - Segment:
-            a: [0, params.priceCeiling]
-            b: [(calcs.Qd_at_Pc), (params.priceCeiling)]
-            color: cadetblue
-            strokeWidth: 4
-            label: {text: "`\\t{New MR}`", fontSize: 12}
-            show: params.showCeiling
-
-        # New MR (Vertical drop)
-        - Segment:
-            a: [(calcs.Qd_at_Pc), (params.priceCeiling)]
-            b: [(calcs.Qd_at_Pc), (calcs.MR_at_Qd)]
-            color: cadetblue
-            strokeWidth: 2
-            lineStyle: dotted
-            show: params.showCeiling
-
-        # New MR (Downward sloping remainder)
-        - Line:
-            yIntercept: 160
-            slope: -2
-            min: (calcs.Qd_at_Pc)
-            max: 80
-            color: cadetblue
-            strokeWidth: 4
-            show: params.showCeiling
-
-        # ══════════════════════════════════════════════════════════════
         # DYNAMIC INTERSECTION POINTS
         # ══════════════════════════════════════════════════════════════
         
@@ -196,6 +153,49 @@ layout:
             fontSize: 12
             bgcolor: none
             show: (params.showDWL && calcs.Q_opt < 130)
+
+       # ══════════════════════════════════════════════════════════════
+        # PRICE CEILING & KINKED MR CURVE
+        # ══════════════════════════════════════════════════════════════
+        
+        # Main Price Ceiling Line
+        - Line:
+            yIntercept: (params.priceCeiling)
+            slope: 0
+            color: grey
+            strokeWidth: 3
+            lineStyle: dashed
+            drag: [{vertical: priceCeiling}]
+            label: {text: "`P_c`", x: 160}
+            show: params.showCeiling
+
+        # New MR (Horizontal part)
+        - Segment:
+            a: [0, params.priceCeiling]
+            b: [(calcs.Qd_at_Pc), (params.priceCeiling)]
+            color: cadetblue
+            strokeWidth: 4
+            label: {text: "`\\t{New MR}`", fontSize: 12}
+            show: params.showCeiling
+
+        # New MR (Vertical drop)
+        - Segment:
+            a: [(calcs.Qd_at_Pc), (params.priceCeiling)]
+            b: [(calcs.Qd_at_Pc), (calcs.MR_at_Qd)]
+            color: cadetblue
+            strokeWidth: 3
+            lineStyle: dashed
+            show: params.showCeiling
+
+        # New MR (Downward sloping remainder)
+        - Line:
+            yIntercept: 160
+            slope: -2
+            min: (calcs.Qd_at_Pc)
+            max: 80
+            color: cadetblue
+            strokeWidth: 4
+            show: params.showCeiling
 
     sidebar:
       controls:
