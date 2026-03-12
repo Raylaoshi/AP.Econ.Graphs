@@ -9,20 +9,20 @@ description: |
   <ol>
     <li><strong>Market Shifts:</strong> Drag the Market Demand or Supply curves to see how the "handshake" of price instantly synchronizes with the firm's revenue line.</li>
     <li><strong>Cost Shifters:</strong> Use the sliders to simulate <strong>per-unit taxes/subsidies</strong> (which shift MC, AVC, and ATC) or <strong>lump-sum interventions</strong> (which shift only fixed costs and ATC).</li>
-    <li><strong>Output Choice:</strong> Drag the green point on the firm's demand curve to explore the relationship between marginal and total values.</li>
+    <li><strong>Free Explore:</strong> Toggle this to manually drag the firm's quantity and investigate marginal profit. All other analysis views are mathematically locked to the firm's optimal outcome (Q*).</li>
   </ol>
 description_zh: |
   <p>在完全竞争市场中，典型企业是<strong>价格的接受者</strong>。左侧的市场均衡直接决定了右侧企业的完全弹性需求曲线（d<sub>f</sub> = MR = AR）。为了实现利润最大化，企业会遵循 <strong>MR = MC</strong> 的原则来确定产量 Q*。</p>
   <p><strong>可调节元素：</strong></p>
   <ol>
-    <li><strong>产量选择：</strong> 拖动右图灰色垂线，实时观察总利润与边际利润的变化。</li>
-    <li><strong>总量变化：</strong> 在下面的框框里勾选总收入、成本等变量，观察他们的面积构成。</li>
-    <li><strong>市场变化：</strong> 拖动左侧市场的需求或供给曲线，观察均衡价格对企业收入的影响。</li>
-    <li><strong>税收和补贴：</strong> 利用滑动条模拟<strong>一次性税/补贴</strong>（同步影响 MC、AVC 和 ATC）或<strong>总额税/补贴</strong>（仅影响固定成本和 ATC）。观察固定成本的变化如何影响盈亏，却不影响利润最大化产量 Q*。
+    <li><strong>自由探索：</strong> 勾选此项以手动拖动企业的产量，直观研究边际利润的变化。其他所有的分析视图都紧紧锁定在企业的最优目标产量 (Q*) 上。</li>
+    <li><strong>总量变化：</strong> 在下方勾选总收入、成本等变量，观察它们在最优产量下的面积构成。</li>
+    <li><strong>市场变化：</strong> 拖动左侧市场的需求或供给曲线，观察均衡价格对企业收入的瞬间影响。</li>
+    <li><strong>税收和补贴：</strong> 利用滑动条模拟<strong>一次性税/补贴</strong>（同步影响 MC、AVC 和 ATC）或<strong>总额税/补贴</strong>（仅影响固定成本和 ATC）。</li>
   </ol>
 
 schema: EconSchema
-version: 2
+version: 5
 
 params:
 - {name: demandShift, value: 0, min: -20, max: 20, round: 0.5}
@@ -32,11 +32,13 @@ params:
 - {name: wageChange, value: 0, min: -5, max: 10, round: 0.5}
 - {name: perUnitTaxSub, value: 0, min: -10, max: 10, round: 1}
 - {name: lumpSumTaxSub, value: 0, min: -50, max: 150, round: 5}
+
 # ── Category views ──
+- {name: showExplore, value: false}
 - {name: showOptimal, value: true}
-- {name: showMargProfit, value: false}
 - {name: showTotalProfit, value: false}
 - {name: showShortRun, value: false}
+
 # ── Independent area toggles ──
 - {name: showTR, value: false}
 - {name: showTC, value: false}
@@ -44,34 +46,28 @@ params:
 - {name: showTFC, value: false}
 
 calcs:
-  varShift: (params.wageChange + params.perUnitTaxSub)
+  varShift: ((params.wageChange) + (params.perUnitTaxSub))
   fixShift: (params.lumpSumTaxSub)
-  TFC_total: (params.tfc_base + calcs.fixShift)
+  TFC_total: ((params.tfc_base) + (calcs.fixShift))
 
-  # Cost at current Q
-  MC:  (16 - 4*(params.Q_firm) + 0.5*((params.Q_firm)^2) + calcs.varShift)
-  AVC: (16 - 2*(params.Q_firm) + (1/6)*((params.Q_firm)^2) + calcs.varShift)
-  ATC: (calcs.AVC + calcs.TFC_total/(params.Q_firm))
-
-  # Revenue — P set by market
+  # Market Handshake
   P_firm: (calcs.ourEquilibrium.P)
 
-  # Totals at current Q
-  TR:     (calcs.P_firm * params.Q_firm)
-  TVC:    (calcs.AVC * params.Q_firm)
-  TC:     (calcs.ATC * params.Q_firm)
-  TFC:    (calcs.TFC_total)
-  profit: (calcs.TR - calcs.TC)
+  # Optimal Q* Engine (Upward-sloping portion where MR=MC)
+  qStar: (4 + sqrt(max(0, 2*(calcs.P_firm) - 2*(calcs.varShift) - 16)))
+  atcStar: (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + (calcs.varShift) + (calcs.TFC_total)/(calcs.qStar))
+  avcStar: (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + (calcs.varShift))
+  profitStar: (((calcs.P_firm) - (calcs.atcStar)) * (calcs.qStar))
+  
+  # Optimal Totals (Locked to qStar)
+  trStar: ((calcs.P_firm) * (calcs.qStar))
+  tvcStar: ((calcs.avcStar) * (calcs.qStar))
+  tcStar: ((calcs.atcStar) * (calcs.qStar))
 
-  # Marginal profit at current Q
-  margProfit:    (calcs.P_firm - calcs.MC)
-  margProfitMid: ((calcs.P_firm + calcs.MC) / 2)
-
-  # Q* where P = MC (upward-sloping portion)
-  qStar:      (4 + sqrt(max(0, 2*(calcs.P_firm) - 2*calcs.varShift - 16)))
-  atcStar:    (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + calcs.varShift + calcs.TFC_total/(calcs.qStar))
-  avcStar:    (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + calcs.varShift)
-  profitStar: ((calcs.P_firm - calcs.atcStar) * calcs.qStar)
+  # Free Explore Engine (Tied to draggable Q_firm)
+  MC_explore: (16 - 4*(params.Q_firm) + 0.5*((params.Q_firm)^2) + (calcs.varShift))
+  margProfit: ((calcs.P_firm) - (calcs.MC_explore))
+  margProfitMid: (((calcs.P_firm) + (calcs.MC_explore)) / 2)
 
 layout:
   TwoHorizontalGraphs:
@@ -79,7 +75,6 @@ layout:
     # ══════════════════════════════════════════════════════════════
     # LEFT — Market Equilibrium
     # ══════════════════════════════════════════════════════════════
-
     leftGraph:
       xAxis: {title: Market Quantity, max: 200, ticks: 0}
       yAxis: {title: Price, max: 50, min: 0, ticks: 10}
@@ -90,16 +85,18 @@ layout:
             name: ourDemand
             xIntercept: 235 + 10*(params.demandShift)
             invSlope: -5
-            color: demand
+            color: dodgerblue
             drag: [{vertical: demandShift}]
-            label: {text: D, x: 180}
+            label: {text: "`D`", x: 180}
           supply:
             name: ourSupply
             yIntercept: 5 + params.supplyShift
             slope: 0.2
+            color: darkorange
             drag: [{vertical: supplyShift}]
-            label: {text: S, x: 180}
+            label: {text: "`S`", x: 180}
           equilibrium:
+            color: green
             droplines:
               vertical: "`Q_m = ${calcs.ourEquilibrium.Q.toFixed(0)}`"
               horizontal: "`P_m = ${calcs.ourEquilibrium.P.toFixed(1)}`"
@@ -108,181 +105,142 @@ layout:
       title: Market
       description: Drag curves or use sliders.
       sliders:
-      - {param: demandShift, label: '`Demand \\ Shift`'}
-      - {param: supplyShift, label: '`Supply \\ Shift`'}
+      - {param: demandShift, label: Demand}
+      - {param: supplyShift, label: Supply}
       divs:
-      - html: "`$P_m = ${calcs.ourEquilibrium.P.toFixed(1)}$, $Q_m = ${calcs.ourEquilibrium.Q.toFixed(0)}$`"
+      - html: "`<b>P<sub>m</sub> = ${calcs.ourEquilibrium.P.toFixed(1)}, Q<sub>m</sub> = ${calcs.ourEquilibrium.Q.toFixed(0)}</b>`"
 
     # ══════════════════════════════════════════════════════════════
     # RIGHT — Firm (price-taker)
     # ══════════════════════════════════════════════════════════════
-
     rightGraph:
       xAxis: {title: Firm Quantity (q), max: 20, ticks: 10}
       yAxis: {title: Price / Cost ($), max: 50, min: 0, ticks: 10}
       objects:
 
         # ══════════════════════════════════════════════════════════
-        # AREA OVERLAYS — independent rectangles (bottom layer)
+        # AREA OVERLAYS (Locked to qStar, Color-Matched to Curves)
         # ══════════════════════════════════════════════════════════
-
         - Rectangle:
             x1: 0
-            y1: calcs.P_firm
-            x2: params.Q_firm
+            y1: (calcs.P_firm)
+            x2: (calcs.qStar)
             y2: 0
-            color: green
+            color: dodgerblue
             opacity: 0.1
             show: params.showTR
-            label:
-              text: "`\\\\text{TR = ${calcs.TR.toFixed(1)}}`"
+            label: {text: "`\\t{TR = ${calcs.trStar.toFixed(1)}}`"}
 
         - Rectangle:
             x1: 0
-            y1: calcs.ATC
-            x2: params.Q_firm
+            y1: (calcs.atcStar)
+            x2: (calcs.qStar)
             y2: 0
             color: orange
             opacity: 0.1
             show: params.showTC
-            label:
-              text: "`\\\\text{TC = ${calcs.TC.toFixed(1)}}`"
+            label: {text: "`\\t{TC = ${calcs.tcStar.toFixed(1)}}`"}
 
         - Rectangle:
             x1: 0
-            y1: calcs.AVC
-            x2: params.Q_firm
+            y1: (calcs.avcStar)
+            x2: (calcs.qStar)
             y2: 0
             color: hotpink
             opacity: 0.1
             show: params.showTVC
-            label:
-              text: "`\\\\text{TVC = ${calcs.TVC.toFixed(1)}}`"
+            label: {text: "`\\t{TVC = ${calcs.tvcStar.toFixed(1)}}`"}
 
         - Rectangle:
             x1: 0
-            y1: calcs.ATC
-            x2: params.Q_firm
-            y2: calcs.AVC
+            y1: (calcs.atcStar)
+            x2: (calcs.qStar)
+            y2: (calcs.avcStar)
             color: grey
             opacity: 0.12
             show: params.showTFC
-            label:
-              text: "`\\\\text{TFC = ${calcs.TFC.toFixed(0)}}`"
+            label: {text: "`\\t{TFC = ${calcs.TFC_total.toFixed(0)}}`"}
 
         # ══════════════════════════════════════════════════════════
-        # OPTIMAL — profit/loss rectangle at Q*
+        # TOTAL PROFIT (Locked to qStar)
         # ══════════════════════════════════════════════════════════
-
         - Rectangle:
             x1: 0
-            y1: calcs.P_firm
-            x2: calcs.qStar
-            y2: calcs.atcStar
-            color: "`${calcs.profitStar >= 0 ? 'green' : 'red'}`"
-            opacity: 0.3
-            show: params.showOptimal
-            label:
-              text: "`${calcs.profitStar >= 0 ? '\\\\text{Profit = }' : '\\\\text{Loss = }'} ${Math.abs(calcs.profitStar).toFixed(1)}`"
-
-        # ══════════════════════════════════════════════════════════
-        # TOTAL PROFIT — profit/loss rectangle at CURRENT Q
-        # ══════════════════════════════════════════════════════════
-
-        - Rectangle:
-            x1: 0
-            y1: calcs.P_firm
-            x2: params.Q_firm
-            y2: calcs.ATC
-            color: "`${calcs.profit >= 0 ? 'green' : 'red'}`"
+            y1: (calcs.P_firm)
+            x2: (calcs.qStar)
+            y2: (calcs.atcStar)
+            color: "`${calcs.profitStar >= 0 ? 'green' : 'firebrick'}`"
             opacity: 0.4
             show: params.showTotalProfit
-            label:
-              text: "`${calcs.profit >= 0 ? '\\\\text{Profit = }' : '\\\\text{Loss = }'} ${Math.abs(calcs.profit).toFixed(1)}`"
+            label: {text: "`${calcs.profitStar >= 0 ? '\\t{Profit = }' : '\\t{Loss = }'} ${Math.abs(calcs.profitStar).toFixed(1)}`"}
 
         # ══════════════════════════════════════════════════════════
-        # MARGINAL PROFIT — arrow from MC to P at current Q
+        # EXPLORE: MARGINAL PROFIT ARROW (Tied to Q_firm)
         # ══════════════════════════════════════════════════════════
-
-        # Arrow tail at MC, head at P — direction encodes P vs MC
-        # P > MC → points UP   → produce more
-        # P < MC → points DOWN → reduce output
-        # P = MC → zero length, vanishes at Q*
         - Segment:
-            a: [params.Q_firm, calcs.MC]
-            b: [params.Q_firm, calcs.P_firm]
-            color: "`${calcs.margProfit >= 0 ? 'green' : 'red'}`"
+            a: [(params.Q_firm), (calcs.MC_explore)]
+            b: [(params.Q_firm), (calcs.P_firm)]
+            color: "`${calcs.margProfit >= 0 ? 'dodgerblue' : 'firebrick'}`"
             strokeWidth: 3
             startArrow: true
             endArrow: true
-            show: params.showMargProfit
+            show: params.showExplore
 
-        # Floating gap label at arrow midpoint
         - Label:
-            coordinates: [params.Q_firm, calcs.margProfitMid]
+            coordinates: [(params.Q_firm), (calcs.margProfitMid)]
             text: "`${calcs.margProfit >= 0 ? '+' : ''}${calcs.margProfit.toFixed(1)}`"
-            color: "`${calcs.margProfit >= 0 ? 'green' : 'red'}`"
+            color: "`${calcs.margProfit >= 0 ? 'dodgerblue' : 'firebrick'}`"
             position: r
-            show: params.showMargProfit
+            show: params.showExplore
 
-        # MC point at current Q (reference dot on curve)
         - Point:
-            coordinates: [params.Q_firm, calcs.MC]
+            coordinates: [(params.Q_firm), (calcs.MC_explore)]
             r: 5
-            color: red
-            droplines:
-              horizontal: '`MC = ${calcs.MC.toFixed(1)}`'
-            show: (params.showMargProfit)
+            color: firebrick
+            droplines: {horizontal: '`MC = ${calcs.MC_explore.toFixed(1)}`'}
+            show: params.showExplore
         
-        # MR point at current Q
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
+            coordinates: [(params.Q_firm), (calcs.P_firm)]
             r: 5
-            color: green
-            droplines:
-              horizontal: '`MR = ${calcs.P_firm.toFixed(1)}`'
-            show: (params.showMargProfit)
+            color: dodgerblue
+            droplines: {horizontal: '`MR = ${calcs.P_firm.toFixed(1)}`'}
+            show: params.showExplore
 
         # ══════════════════════════════════════════════════════════
         # ALWAYS VISIBLE — curves + grey drag handle
         # ══════════════════════════════════════════════════════════
-
-        # Grey drag handle on firm demand
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
+            coordinates: [(params.Q_firm), (calcs.P_firm)]
             color: grey
             r: 4
             drag: [{horizontal: Q_firm}]
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
+            droplines: {vertical: '`${params.Q_firm.toFixed(1)}`'}
+            show: params.showExplore
 
-        # Firm demand = MR = AR (horizontal at market P)
         - Line:
-            yIntercept: calcs.P_firm
+            yIntercept: (calcs.P_firm)
             slope: 0
-            color: green
+            color: dodgerblue
             strokeWidth: 2.5
-            label: {text: '`d_f = MR = AR`', x: 16}
+            label: {text: "`d_f = MR = AR`", x: 16}
 
-        # MC
         - Curve:
-            fn: 16 - 4*(x) + 0.5*((x)^2) + calcs.varShift
+            fn: 16 - 4*(x) + 0.5*((x)^2) + (calcs.varShift)
             min: 0.5
-            color: red
+            color: firebrick
             strokeWidth: 2.5
-            label: {text: MC, x: 13, position: t}
+            label: {text: "`MC`", x: 13, position: t}
 
-        # ATC
         - Curve:
-            fn: 16 - 2*(x) + (1/6)*((x)^2) + calcs.varShift + calcs.TFC_total/(x)
+            fn: 16 - 2*(x) + (1/6)*((x)^2) + (calcs.varShift) + (calcs.TFC_total)/(x)
             min: 0.5
             color: orange
             strokeWidth: 2.5
-            label: {text: ATC, x: 19, position: tr}
+            label: {text: "`ATC`", x: 19, position: tr}
 
-        # AVC — conditional
         - Curve:
-            fn: 16 - 2*(x) + (1/6)*((x)^2) + calcs.varShift
+            fn: 16 - 2*(x) + (1/6)*((x)^2) + (calcs.varShift)
             min: 0.5
             color: hotpink
             strokeWidth: 2
@@ -290,32 +248,28 @@ layout:
             show: (params.showShortRun || params.showTVC || params.showTFC)
 
         # ══════════════════════════════════════════════════════════
-        # OPTIMAL — Q* points on demand and ATC
+        # OPTIMAL — Target Points (Locked to qStar)
         # ══════════════════════════════════════════════════════════
-
-        # Q* on demand — top in profit (P > ATC)
         - Point:
-            coordinates: [calcs.qStar, calcs.P_firm]
-            color: green
+            coordinates: [(calcs.qStar), (calcs.P_firm)]
+            color: dodgerblue
             r: 5
             droplines:
-              vertical:   '`Q^* = ${calcs.qStar.toFixed(1)}`'
+              vertical: '`Q^* = ${calcs.qStar.toFixed(1)}`'
               horizontal: '`${calcs.P_firm.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar >= 0))
 
-        # Q* on demand — bottom in loss (ATC > P)
         - Point:
-            coordinates: [calcs.qStar, calcs.P_firm]
-            color: green
+            coordinates: [(calcs.qStar), (calcs.P_firm)]
+            color: dodgerblue
             r: 5
             droplines:
               vertical:
               horizontal: '`${calcs.P_firm.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar < 0))
 
-        # Q* on ATC — bottom in profit
         - Point:
-            coordinates: [calcs.qStar, calcs.atcStar]
+            coordinates: [(calcs.qStar), (calcs.atcStar)]
             color: orange
             r: 5
             droplines:
@@ -323,135 +277,82 @@ layout:
               horizontal: '`ATC = ${calcs.atcStar.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar >= 0))
 
-        # Q* on ATC — top in loss
         - Point:
-            coordinates: [calcs.qStar, calcs.atcStar]
+            coordinates: [(calcs.qStar), (calcs.atcStar)]
             color: orange
             r: 5
             droplines:
-              vertical:   '`Q^* = ${calcs.qStar.toFixed(1)}`'
+              vertical: '`Q^* = ${calcs.qStar.toFixed(1)}`'
               horizontal: '`ATC = ${calcs.atcStar.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar < 0))
 
         # ══════════════════════════════════════════════════════════
-        # TOTAL PROFIT — P + ATC at current Q
+        # SHORT-RUN POINTS (Locked to qStar)
         # ══════════════════════════════════════════════════════════
-
-        # P — top in profit
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
+            coordinates: [(calcs.qStar), (calcs.P_firm)]
             r: 5
-            color: green
+            color: dodgerblue
             droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
+              vertical: '`${calcs.qStar.toFixed(1)}`'
               horizontal: '`P = ${calcs.P_firm.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit >= 0))
-
-        # P — bottom in loss
-        - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
-            r: 5
-            color: green
-            droplines:
-              vertical:
-              horizontal: '`P = ${calcs.P_firm.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit < 0))
-
-        # ATC — bottom in profit
-        - Point:
-            coordinates: [params.Q_firm, calcs.ATC]
-            r: 5
-            color: orange
-            droplines:
-              vertical:
-              horizontal: '`ATC = ${calcs.ATC.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit >= 0))
-
-        # ATC — top in loss
-        - Point:
-            coordinates: [params.Q_firm, calcs.ATC]
-            r: 5
-            color: orange
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`ATC = ${calcs.ATC.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit < 0))
-
-        # ══════════════════════════════════════════════════════════
-        # SHORT-RUN — P + AVC at current Q
-        # ══════════════════════════════════════════════════════════
+            show: params.showShortRun
 
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
-            r: 5
-            color: green
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`P = ${calcs.P_firm.toFixed(1)}`'
-            show: (params.showShortRun && "(!params.showTotalProfit)")
-
-        - Point:
-            coordinates: [params.Q_firm, calcs.AVC]
+            coordinates: [(calcs.qStar), (calcs.avcStar)]
             r: 5
             color: hotpink
             droplines:
               vertical:
-              horizontal: '`AVC = ${calcs.AVC.toFixed(1)}`'
+              horizontal: '`AVC = ${calcs.avcStar.toFixed(1)}`'
             show: (params.showShortRun || params.showTVC || params.showTFC)
 
     # ══════════════════════════════════════════════════════════════
     # RIGHT CONTROLS — Firm sidebar
     # ══════════════════════════════════════════════════════════════
-
     rightControls:
       title: Firm Analysis
-      description: Drag the grey point or use the Q slider.
-
-      # ── All sliders (one block only — YAML forbids duplicate keys) ──
       sliders:
-      - {param: Q_firm,        label: '`\\text{Q}`'}
-      - {param: wageChange,    label: '`\\text{Wage Change}`'}
-      - {param: perUnitTaxSub, label: '`\\text{Per-Unit T/S}`'}
-      - {param: lumpSumTaxSub, label: '`\\text{Lump-Sum T/S}`'}
+      - {param: Q_firm,        label: Quantity}
+      - {param: wageChange,    label: ΔWage}
+      - {param: perUnitTaxSub, label: Per-Unit \ T/S}
+      - {param: lumpSumTaxSub, label: Lump-Sum \ T/S}
 
-      # ── All checkboxes (one block only) ──
       checkboxes:
-      - {param: showOptimal,     label: '`\\text{Optimal}`'}
-      - {param: showMargProfit,  label: '`\\text{Marginal Profit (MR vs MC)}`'}
-      - {param: showTotalProfit, label: '`\\text{Total Profit}`'}
+      - {param: showExplore,     label: '`\\text{Free Explore: Marginal Profit}`'}
+      - {param: showOptimal,     label: '`\\text{Optimal Target}`'}
+      - {param: showTotalProfit, label: '`\\text{Total Profit Loss}`'}
       - {param: showShortRun,    label: '`\\text{Short-Run Analysis (P vs AVC)}`'}
-      - {param: showTR,          label: '`\\text{TR  Rectangle}`'}
+      - {param: showTR,          label: '`\\text{TR Rectangle}`'}
       - {param: showTC,          label: '`\\text{TC Rectangle}`'}
       - {param: showTVC,         label: '`\\text{TVC Rectangle}`'}
       - {param: showTFC,         label: '`\\text{TFC Rectangle}`'}
 
-      # ── All divs (one block only) ──
       divs:
-      - html: "`$P = ${calcs.P_firm.toFixed(1)}$, $MC = ${calcs.MC.toFixed(1)}$`"
-        show: params.showMargProfit
-      - html: "`$P - MC = ${calcs.margProfit.toFixed(2)}$ → produce <strong>more</strong>`"
-        show: (params.showMargProfit && (calcs.margProfit > 0.05))
-      - html: "`$P - MC = ${calcs.margProfit.toFixed(2)}$ → produce <strong>less</strong>`"
-        show: (params.showMargProfit && (calcs.margProfit < -0.05))
-      - html: "`$P = MC$ — at optimal $Q^*$`"
-        show: (params.showMargProfit && (calcs.margProfit >= -0.05) && (calcs.margProfit <= 0.05))
-      - html: "`$Q^* = ${calcs.qStar.toFixed(1)}$, $P = ${calcs.P_firm.toFixed(1)}$`"
+      # Free Explore Divs
+      - html: "`<b>$P - MC$ = ${calcs.margProfit.toFixed(2)} → produce <strong>more</strong></b>`"
+        show: (params.showExplore && (calcs.margProfit > 0.05))
+      - html: "`<b>$P - MC$ = ${calcs.margProfit.toFixed(2)} → produce <strong>less</strong></b>`"
+        show: (params.showExplore && (calcs.margProfit < -0.05))
+      - html: "`<b>$P = MC$ — at optimal $Q^*$</b>`"
+        show: (params.showExplore && (calcs.margProfit >= -0.05) && (calcs.margProfit <= 0.05))
+      
+      # Locked Optimal Divs
+      - html: "`<b>$Q^*$ = ${calcs.qStar.toFixed(1)}, $P$ = ${calcs.P_firm.toFixed(1)}</b>`"
         show: params.showOptimal
-      - html: "`$\\\\text{Max Profit} = ${calcs.profitStar.toFixed(1)}$`"
-        show: params.showOptimal
-      - html: "`$\\\\text{Profit} = ${calcs.profit.toFixed(1)}$`"
+      - html: "`<b>$Profit = ${calcs.profitStar.toFixed(1)}$</b>`"
         show: params.showTotalProfit
-      - html: "`$TR = ${calcs.TR.toFixed(1)}$, $TC = ${calcs.TC.toFixed(1)}$`"
+      - html: "`<b>$TR = ${calcs.trStar.toFixed(1)}$, $TC = ${calcs.tcStar.toFixed(1)}$</b>`"
         show: params.showTotalProfit
-      - html: "`$P = ${calcs.P_firm.toFixed(1)}$, $AVC = ${calcs.AVC.toFixed(1)}$`"
+      - html: "`<b>$P = ${calcs.P_firm.toFixed(1)}$, $AVC = ${calcs.avcStar.toFixed(1)}$</b>`"
         show: params.showShortRun
-      - html: "`$P > AVC$: firm operates`"
-        show: (params.showShortRun && (calcs.P_firm > calcs.AVC))
-      - html: "`$P < AVC$: firm should shut down`"
-        show: (params.showShortRun && (calcs.P_firm < calcs.AVC))
-      - html: "`Per-unit ($${params.perUnitTaxSub.toFixed(0)}$): shifts $MC$, $AVC$, $ATC$`"
+      - html: "`<b>P > AVC: firm operates</b>`"
+        show: (params.showShortRun && (calcs.P_firm > calcs.avcStar))
+      - html: "`<b>P < AVC: firm should shut down</b>`"
+        show: (params.showShortRun && (calcs.P_firm < calcs.avcStar))
+      
+      # Tax Divs
+      - html: "`<b>Per-unit (=${params.perUnitTaxSub.toFixed(0)}): tax shifts MC, AVC, ATC</b>`"
         show: (params.perUnitTaxSub != 0)
-      - html: "`Lump-sum ($${params.lumpSumTaxSub.toFixed(0)}$): shifts $TFC$ & $ATC$ only`"
-        show: (params.lumpSumTaxSub != 0)
-      - html: "`Lump-sum does NOT change $Q^*$ ($MC$ unchanged)`"
+      - html: "`<b>Lump-sum (=${params.lumpSumTaxSub.toFixed(0)}): shifts TFC & ATC only</b>`"
         show: (params.lumpSumTaxSub != 0)
