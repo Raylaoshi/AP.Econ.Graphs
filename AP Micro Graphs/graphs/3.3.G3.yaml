@@ -22,8 +22,8 @@ calcs:
   avc: (16 - 2 * (params.x) + (1/6) * ((params.x)^2))
   
   # Deriving Productivity as the inverse (Assuming Wage = 150 for clean scaling)
-  mp: (150 / (calcs.mc))
-  ap: (150 / (calcs.avc))
+  mp: (150 / (calcs.mc) - 9.375)
+  ap: (150 / (calcs.avc) - 9.375)
 
 layout:
   TwoVerticalGraphs:
@@ -36,22 +36,22 @@ layout:
       yAxis:
         title: Output
         min: 0
-        max: 20
+        max: 12
         ticks: 0
       objects:
         # AP Curve
         - Curve:
-            fn: (150 / (16 - 2 * (x) + (1/6) * ((x)^2)))
+            fn: (150 / (16 - 2 * (x) + (1/6) * ((x)^2)) - 9.375) 
             color: blue
             strokeWidth: 3
             label: { text: AP, x: 8.5}
             
         # MP Curve
         - Curve:
-            fn: (150 / (16 - 4 * (x) + (0.5 * ((x)^2))))
+            fn: (150 / (16 - 4 * (x) + (0.5 * ((x)^2))) - 9.375)
             color: red
             strokeWidth: 3
-            label: { text: MP, x: 8.5}
+            label: { text: MP, x: 7}
 
         # Guide Line: Max MP
         - Segment:
@@ -60,7 +60,7 @@ layout:
             color: lightgrey
             lineStyle: dotted
         - Point:
-            coordinates: [4, 18.75]
+            coordinates: [4, 9.375]
             color: red
             r: 4
             label:  
@@ -76,7 +76,7 @@ layout:
             lineStyle: dotted
 
         - Point:
-            coordinates: [6, 15]
+            coordinates: [6, 5.625]
             color: blue
             r: 4
             label:  
@@ -109,7 +109,7 @@ layout:
         - Arrow:
             begin: [(params.x), (calcs.ap)]
             end: [(params.x), (calcs.mp)]
-            color: orange
+            color: red
             strokeWidth: 2
             trim: 0.1
             show: (calcs.mp) < (calcs.ap)
@@ -197,7 +197,7 @@ layout:
         - Arrow:
             begin: [(params.x), (calcs.avc)]
             end: [(params.x), (calcs.mc)]
-            color: orange
+            color: red
             strokeWidth: 2
             trim: 0.1
             show: (calcs.mc) < (calcs.avc)
