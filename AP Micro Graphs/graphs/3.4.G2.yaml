@@ -330,6 +330,7 @@ layout:
 
       divs:
       # Free Explore Divs
+      - html: "`<hr>`"
       - html: "`<b>$P - MC$ = ${calcs.margProfit.toFixed(2)} → produce <strong>more</strong></b>`"
         show: (params.showExplore && (calcs.margProfit > 0.05))
       - html: "`<b>$P - MC$ = ${calcs.margProfit.toFixed(2)} → produce <strong>less</strong></b>`"

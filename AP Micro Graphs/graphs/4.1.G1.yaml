@@ -7,29 +7,25 @@ description: |
   <p>Being the only seller in town gives a monopoly market power. Because it faces a downward-sloping demand curve, its marginal revenue (MR) is always lower than the price. To maximize profit, the firm follows a simple rule: produce exactly where <strong>MR = MC</strong>, and charge the highest price consumers are willing to pay along the demand curve.</p>
   <p><strong>Interactive features to explore:</strong></p>
   <ol>
-    <li><strong>Explore the market:</strong> Drag the grey point along the demand curve to manually adjust the firm's output (Q), or shift the entire Demand curve up and down to simulate market changes.</li>
-    <li><strong>Optimal:</strong> Check this box to instantly spot the profit-maximizing quantity (Q*) where MR and MC cross.</li>
-    <li><strong>Marginal Profit:</strong> See the arrows between MR and MC? They show whether an extra unit adds to your profit (MR > MC) or eats into it (MR < MC) once you pass Q*.</li>
-    <li><strong>Total Profit:</strong> Watch the profit (or loss) rectangle shrink the further you drag your output away from Q*.</li>
-    <li><strong>Short-Run Analysis:</strong> What happens if demand crashes? Pull the Demand curve down—if the price (P) drops below Average Variable Cost (AVC), shutting down becomes the best move.</li>
+    <li><strong>Explore the market:</strong> Toggle the Free Explore box and drag the point to manually adjust output (Q). See how producing beyond MR = MC hurts profit.</li>
+    <li><strong>Optimal:</strong> Uncheck Free Explore to lock the graph to the profit-maximizing quantity (Q*).</li>
+    <li><strong>Total Profit:</strong> Watch the profit (or loss) rectangle shrink if you increase fixed costs (Lump-Sum).</li>
+    <li><strong>Short-Run Analysis:</strong> Pull the Demand curve down—if the price (P) drops below Average Variable Cost (AVC), shutting down becomes the best move.</li>
     <li><strong>Efficiency and DWL:</strong> Monopolies underproduce compared to the socially optimal benchmark (P = MC), leaving behind a deadweight loss (DWL) for society.</li>
-    <li><strong>Tax & Subsidy (Sliders):</strong> Try the policy sliders at the bottom. A <strong>per-unit tax</strong> shifts MC and forces the firm to cut production, but a <strong>lump-sum tax</strong> only shifts ATC—shrinking the profit rectangle without changing the optimal output.</li>
   </ol>
 description_zh: |
   <p>作为市场上的唯一卖家，垄断企业拥有定价权。由于面临向下倾斜的需求曲线，它的边际收益（MR）总是低于价格。为了实现利润最大化，企业的法则是：在 <strong>MR = MC</strong> 处确定产量，并按需求曲线上对应的最高价格来收费。</p>
   <p><strong>动一动：</strong></p>
   <ol>
-    <li><strong>自由探索：</strong> 沿需求曲线拖动灰色端点，手动调整企业的产量（Q），或者上下拖动整条需求曲线，模拟市场环境的冷暖变化。</li>
-    <li><strong>最优 (Optimal)：</strong> 勾选此项，一键定位到利润最大化的目标产量 Q*（即 MR 与 MC 的交点）。</li>
-    <li><strong>边际利润 (Marginal Profit)：</strong> 留意 MR 与 MC 之间的箭头。它直观地显示了多生产一件产品是赚是亏：只要 MR > MC 就能增加利润，而一旦越过 Q* 导致 MR < MC，多出来的产量反而会吞噬利润。</li>
-    <li><strong>总利润 (Total Profit)：</strong> 拖动端点，亲眼看看当你偏离最优产量 Q* 时，代表总利润（或亏损）的矩形面积是如何跟着缩水的。</li>
-    <li><strong>短期分析 (Short-Run)：</strong> 如果市场需求大跌怎么办？试着将需求曲线大幅下拉，当价格（P）跌破平均可变成本（AVC）时，直接关门停业才是止损的最好选择。</li>
-    <li><strong>效率与无谓损失 (Efficiency)：</strong> 将垄断的决定与社会最优的完全竞争基准（P = MC）比一比，垄断导致的生产不足会给社会留下一块明显的无谓损失（DWL）。</li>
-    <li><strong>税收与补贴 (底部滑块)：</strong> 调节底部的滑块，对比两者的威力：<strong>单位税</strong>会推高 MC，从而迫使企业减产；而<strong>一次性总额税</strong>只上移 ATC，虽然让利润变薄了，但并不会动摇企业的最优产量。</li>
+    <li><strong>自由探索：</strong> 勾选自由探索框，拖动端点手动调整产量（Q），直观研究为什么越过 MR = MC 会导致利润受损。</li>
+    <li><strong>最优：</strong> 取消勾选自由探索，将图表锁定在利润最大化的目标产量 Q* 上。</li>
+    <li><strong>总利润：</strong> 如果你增加固定成本（一次性总额税），观察利润矩形是如何缩水的。</li>
+    <li><strong>短期分析：</strong> 试着将需求曲线大幅下拉，当价格（P）跌破平均可变成本（AVC）时，直接关门停业才是止损的最好选择。</li>
+    <li><strong>效率与无谓损失：</strong> 将垄断的决定与社会最优的完全竞争基准（P = MC）比一比，垄断导致的生产不足会给社会留下一块明显的无谓损失（DWL）。</li>
   </ol>
 
 schema: EconSchema
-version: 14
+version: 5
 
 colors:
   demandBlue: rgb(41, 128, 185)
@@ -40,16 +36,18 @@ params:
 - {name: demandShift, value: 0, min: -20, max: 20, round: 1}
 
 # ── Category views ──
-- {name: showOptimal, value: false}
-- {name: showMarginal, value: false}
+- {name: showExplore, value: false}
+- {name: showOptimal, value: true}
 - {name: showTotalProfit, value: false}
 - {name: showShortRun, value: false}
 - {name: showEfficiency, value: false}
+
 # ── Independent area toggles ──
 - {name: showTR, value: false}
 - {name: showTC, value: false}
 - {name: showTVC, value: false}
 - {name: showTFC, value: false}
+
 # ── Tax / Subsidy sliders ──
 - {name: perUnitTax, value: 0, min: -10, max: 10, round: 0.5}
 - {name: lumpSumTax, value: 0, min: -30, max: 30, round: 1}
@@ -59,30 +57,27 @@ calcs:
   TFC_total: (50 + params.lumpSumTax)
   demandInt: (30 + params.demandShift)
 
-  # Cost functions at current Q
-  MC:  (16 - 4*(params.Q_firm) + 0.5*((params.Q_firm)^2) + calcs.varShift)
-  AVC: (16 - 2*(params.Q_firm) + (1/6)*((params.Q_firm)^2) + calcs.varShift)
-  ATC: (calcs.AVC + calcs.TFC_total/(params.Q_firm))
-
-  # Revenue — demand slope = -1.25, MR slope = -2.5
-  P_firm: ((calcs.demandInt) - 1.25*(params.Q_firm))
-  MR:     ((calcs.demandInt) - 2.5*(params.Q_firm))
-
-  # Totals at current Q
-  TR:     (calcs.P_firm * (params.Q_firm))
-  TVC:    (calcs.AVC * (params.Q_firm))
-  TC:     (calcs.ATC * (params.Q_firm))
-  TFC:    (calcs.TFC_total)
-  profit: (calcs.TR - calcs.TC)
-
-  # Q* where MR = MC
+  # --- OPTIMAL (Target) ENGINE ---
   qStar:   (1.5 + sqrt(max(0, 2*(calcs.demandInt) - 2*calcs.varShift - 29.75)))
   pStar:   ((calcs.demandInt) - 1.25*(calcs.qStar))
   atcStar: (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + calcs.varShift + calcs.TFC_total/(calcs.qStar))
+  avcStar: (16 - 2*(calcs.qStar) + (1/6)*((calcs.qStar)^2) + calcs.varShift)
   mcStar:  (16 - 4*(calcs.qStar) + 0.5*((calcs.qStar)^2) + calcs.varShift)
   profitStar: ((calcs.pStar - calcs.atcStar) * (calcs.qStar))
+  
+  # Optimal Totals (Locked to qStar)
+  trStar: ((calcs.pStar) * (calcs.qStar))
+  tvcStar: ((calcs.avcStar) * (calcs.qStar))
+  tcStar: ((calcs.atcStar) * (calcs.qStar))
 
-  # Competitive outcome P = MC
+  # --- FREE EXPLORE ENGINE (Tied to params.Q_firm) ---
+  P_explore: ((calcs.demandInt) - 1.25*(params.Q_firm))
+  MR_explore: ((calcs.demandInt) - 2.5*(params.Q_firm))
+  MC_explore: (16 - 4*(params.Q_firm) + 0.5*((params.Q_firm)^2) + calcs.varShift)
+  margProfit: ((calcs.MR_explore) - (calcs.MC_explore))
+  margProfitMid: (((calcs.MR_explore) + (calcs.MC_explore)) / 2)
+
+  # --- EFFICIENCY ENGINE ---
   qComp: (2.75 + sqrt(max(0, 2*(calcs.demandInt) - 2*calcs.varShift - 24.4375)))
   pComp: ((calcs.demandInt) - 1.25*(calcs.qComp))
 
@@ -94,447 +89,312 @@ layout:
       objects:
 
         # ══════════════════════════════════════════════════════════════
-        # AREA OVERLAYS — independent rectangles (bottom layer)
+        # AREA OVERLAYS (Locked to qStar, Color-Matched to Curves)
         # ══════════════════════════════════════════════════════════════
 
         - Rectangle:
             x1: 0
-            y1: calcs.P_firm
-            x2: params.Q_firm
+            y1: (calcs.pStar)
+            x2: (calcs.qStar)
             y2: 0
-            color: green
+            color: demandBlue
             opacity: 0.1
             show: params.showTR
             label:
-              text: "`TR = ${calcs.TR.toFixed(1)}`"
+              text: "`TR = ${calcs.trStar.toFixed(1)}`"
 
         - Rectangle:
             x1: 0
-            y1: calcs.ATC
-            x2: params.Q_firm
+            y1: (calcs.atcStar)
+            x2: (calcs.qStar)
             y2: 0
             color: orange
             opacity: 0.1
             show: params.showTC
             label:
-              text: "`TC = ${calcs.TC.toFixed(1)}`"
+              text: "`TC = ${calcs.tcStar.toFixed(1)}`"
 
         - Rectangle:
             x1: 0
-            y1: calcs.AVC
-            x2: params.Q_firm
+            y1: (calcs.avcStar)
+            x2: (calcs.qStar)
             y2: 0
             color: avcDarkOrange
             opacity: 0.1
             show: params.showTVC
             label:
-              text: "`TVC = ${calcs.TVC.toFixed(1)}`"
+              text: "`TVC = ${calcs.tvcStar.toFixed(1)}`"
 
         - Rectangle:
             x1: 0
-            y1: calcs.ATC
-            x2: params.Q_firm
-            y2: calcs.AVC
+            y1: (calcs.atcStar)
+            x2: (calcs.qStar)
+            y2: (calcs.avcStar)
             color: grey
             opacity: 0.12
             show: params.showTFC
             label:
-              text: "`TFC = ${calcs.TFC.toFixed(0)}`"
+              text: "`TFC = ${calcs.TFC_total.toFixed(0)}`"
 
         # ══════════════════════════════════════════════════════════════
-        # OPTIMAL — profit/loss rectangle at Q*
+        # TOTAL PROFIT (Locked to qStar)
         # ══════════════════════════════════════════════════════════════
 
         - Rectangle:
             x1: 0
-            y1: calcs.pStar
-            x2: calcs.qStar
-            y2: calcs.atcStar
+            y1: (calcs.pStar)
+            x2: (calcs.qStar)
+            y2: (calcs.atcStar)
             color: "`${calcs.profitStar >= 0 ? 'green' : 'red'}`"
-            opacity: 0.3
-            show: params.showOptimal
+            opacity: 0.4
+            show: params.showTotalProfit
             label:
               text: "`${calcs.profitStar >= 0 ? 'Profit = ' : 'Loss = '} ${Math.abs(calcs.profitStar).toFixed(1)}`"
 
         # ══════════════════════════════════════════════════════════════
-        # TOTAL PROFIT — profit/loss rectangle at CURRENT Q
-        # ══════════════════════════════════════════════════════════════
-
-        - Rectangle:
-            x1: 0
-            y1: calcs.P_firm
-            x2: params.Q_firm
-            y2: calcs.ATC
-            color: "`${calcs.profit >= 0 ? 'green' : 'red'}`"
-            opacity: 0.4
-            show: params.showTotalProfit
-            label:
-              text: "`${calcs.profit >= 0 ? 'Profit = ' : 'Loss = '} ${Math.abs(calcs.profit).toFixed(1)}`"
-
-        # ══════════════════════════════════════════════════════════════
-        # EFFICIENCY — DWL from current Q to competitive Qc
+        # EFFICIENCY & DWL (Locked to qStar)
         # ══════════════════════════════════════════════════════════════
 
         - Area:
             fn1: (calcs.demandInt) - 1.25*(x)
             fn2: 16 - 4*(x) + 0.5*((x)^2) + calcs.varShift
-            min: params.Q_firm
-            max: calcs.qComp
-            color: black
-            opacity: 0.22
+            min: (calcs.qStar)
+            max: (calcs.qComp)
+            color: grey
+            opacity: 0.3
+            show: params.showEfficiency
+
+        - Segment:
+            a: [(calcs.qComp), 0]
+            b: [(calcs.qComp), (calcs.pComp)]
+            lineStyle: dotted
+            strokeWidth: 1.5
+            color: grey
+            show: params.showEfficiency
+
+        - Segment:
+            a: [0, (calcs.pComp)]
+            b: [(calcs.qComp), (calcs.pComp)]
+            lineStyle: dotted
+            strokeWidth: 1.5
+            color: grey
+            show: params.showEfficiency
+
+        - Point:
+            coordinates: [(calcs.qComp), (calcs.pComp)]
+            color: grey
+            r: 5
+            label: {text: "`P=MC`", position: bl}
+            droplines:
+              vertical:   '`Q_{pc} = ${calcs.qComp.toFixed(1)}`'
+              horizontal: '`P_{pc} = ${calcs.pComp.toFixed(1)}`'
             show: params.showEfficiency
 
         # ══════════════════════════════════════════════════════════════
-        # ALWAYS VISIBLE — base curves + grey drag handle
+        # EXPLORE: MARGINAL PROFIT ARROW (Tied to Q_firm)
         # ══════════════════════════════════════════════════════════════
 
-        # Grey drag handle on demand
+        - Segment:
+            a: [(params.Q_firm), (calcs.MC_explore)]
+            b: [(params.Q_firm), (calcs.MR_explore)]
+            color: "`${calcs.margProfit >= 0 ? 'cadetblue' : 'red'}`"
+            strokeWidth: 3
+            startArrow: true
+            endArrow: true
+            show: params.showExplore
+
+        - Label:
+            coordinates: [(params.Q_firm), (calcs.margProfitMid)]
+            text: "`${calcs.margProfit >= 0 ? '+' : ''}${calcs.margProfit.toFixed(1)}`"
+            color: "`${calcs.margProfit >= 0 ? 'cadetblue' : 'red'}`"
+            position: r
+            show: params.showExplore
+
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
+            coordinates: [(params.Q_firm), (calcs.MC_explore)]
+            r: 5
+            color: red
+            droplines: {horizontal: '`MC = ${calcs.MC_explore.toFixed(1)}`'}
+            show: params.showExplore
+        
+        - Point:
+            coordinates: [(params.Q_firm), (calcs.MR_explore)]
+            r: 5
+            color: cadetblue
+            droplines: {horizontal: '`MR = ${calcs.MR_explore.toFixed(1)}`'}
+            show: params.showExplore
+
+        # ══════════════════════════════════════════════════════════════
+        # ALWAYS VISIBLE — Base Curves + Drag Handle
+        # ══════════════════════════════════════════════════════════════
+
+        - Point:
+            coordinates: [(params.Q_firm), (calcs.P_explore)]
             color: grey
             r: 4
             drag: [{horizontal: Q_firm}]
             droplines:
               vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.P_firm.toFixed(1)}`'
+              horizontal: '`${calcs.P_explore.toFixed(1)}`'
+            show: params.showExplore
 
-        # Demand
         - Line:
-            yIntercept: calcs.demandInt
+            yIntercept: (calcs.demandInt)
             slope: -1.25
             max: "(calcs.demandInt / 1.25)"
             color: demandBlue
             strokeWidth: 2.5
-            label: {text: 'D = AR', x: 13}
+            label: {text: "`D = AR`", x: 13}
             drag: [{vertical: demandShift}]
 
-        # MR — solid, lighter blue
         - Line:
-            yIntercept: calcs.demandInt
+            yIntercept: (calcs.demandInt)
             slope: -2.5
             min: 0
             max: "(calcs.demandInt / 2.5)"
             color: cadetblue
             strokeWidth: 2
-            label: {text: MR, x: 11}
+            label: {text: "`MR`", x: 11}
 
-        # MC — red
         - Curve:
             fn: 16 - 4*(x) + 0.5*((x)^2) + calcs.varShift
             min: 0
             color: red
             strokeWidth: 2.5
-            label: {text: MC, x: 10}
+            label: {text: "`MC`", x: 10}
 
-        # ATC — terra cotta
         - Curve:
             fn: 16 - 2*(x) + (1/6)*((x)^2) + calcs.varShift + calcs.TFC_total/(x)
             min: 0
             color: orange
             strokeWidth: 2.5
-            label: {text: ATC, x: 14, position: tr}
+            label: {text: "`ATC`", x: 14, position: tr}
 
-        # AVC — orange
         - Curve:
             fn: 16 - 2*(x) + (1/6)*((x)^2) + calcs.varShift
             min: 0
             color: avcDarkOrange
             strokeWidth: 2
-            label: {text: AVC, x: 14, position: t}
+            label: {text: "`AVC`", x: 14, position: t}
             show: (params.showShortRun || params.showTVC || params.showTFC)
 
         # ══════════════════════════════════════════════════════════════
-        # OPTIMAL — Q* points on D and ATC
-        # Top gets Q* label, bottom gets blank vertical
+        # OPTIMAL — Target Points (Locked to qStar)
         # ══════════════════════════════════════════════════════════════
 
-        # Q* on demand — top in profit
         - Point:
-            coordinates: [calcs.qStar, calcs.pStar]
+            coordinates: [(calcs.qStar), (calcs.pStar)]
             color: demandBlue
             r: 5
             droplines:
-              vertical:   '`Q^* = ${calcs.qStar.toFixed(1)}`'
-              horizontal: '`${calcs.pStar.toFixed(1)}`'
+              vertical: '`Q^* = ${calcs.qStar.toFixed(1)}`'
+              horizontal: '`P^* = ${calcs.pStar.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar >= 0))
 
-        # Q* on demand — bottom in loss
         - Point:
-            coordinates: [calcs.qStar, calcs.pStar]
+            coordinates: [(calcs.qStar), (calcs.pStar)]
             color: demandBlue
             r: 5
             droplines:
               vertical:
-              horizontal: '`${calcs.pStar.toFixed(1)}`'
+              horizontal: '`P^* = ${calcs.pStar.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar < 0))
 
-        # Q* on ATC — bottom in profit
         - Point:
-            coordinates: [calcs.qStar, calcs.atcStar]
+            coordinates: [(calcs.qStar), (calcs.atcStar)]
             color: orange
             r: 5
             droplines:
               vertical:
-              horizontal: '`${calcs.atcStar.toFixed(1)}`'
+              horizontal: '`ATC = ${calcs.atcStar.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar >= 0))
 
-        # Q* on ATC — top in loss
         - Point:
-            coordinates: [calcs.qStar, calcs.atcStar]
+            coordinates: [(calcs.qStar), (calcs.atcStar)]
             color: orange
             r: 5
             droplines:
-              vertical:   '`Q^* = ${calcs.qStar.toFixed(0)}`'
-              horizontal: '`${calcs.atcStar.toFixed(1)}`'
+              vertical: '`Q^* = ${calcs.qStar.toFixed(0)}`'
+              horizontal: '`ATC = ${calcs.atcStar.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar < 0))
 
-        # ══════════════════════════════════════════════════════════════
-        # MARGINAL PROFIT — MR ↔ MC arrow
-        # Arrow color = larger value's family
-        #   MR > MC → cadetblue (expand is good)
-        #   MR < MC → red (overproducing)
-        # ══════════════════════════════════════════════════════════════
-
-        - Segment:
-            a: [params.Q_firm, calcs.MC]
-            b: [params.Q_firm, calcs.MR]
-            endArrow: true
-            startArrow: true
-            color: "`${calcs.MR >= calcs.MC ? 'cadetblue' : 'red'}`"
-            strokeWidth: 3
-            show: params.showMarginal
-
-        # MR — top when MR > MC
         - Point:
-            coordinates: [params.Q_firm, calcs.MR]
-            r: 5
-            color: cadetblue
-            drag: [{horizontal: Q_firm}]
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.MR.toFixed(1)}`'
-            show: (params.showMarginal && (calcs.MR >= calcs.MC))
-
-        # MR — bottom when MR < MC
-        - Point:
-            coordinates: [params.Q_firm, calcs.MR]
-            r: 5
-            color: cadetblue
-            drag: [{horizontal: Q_firm}]
-            droplines:
-              vertical:
-              horizontal: '`${calcs.MR.toFixed(1)}`'
-            show: (params.showMarginal && (calcs.MR < calcs.MC))
-
-        # MC — bottom when MR > MC
-        - Point:
-            coordinates: [params.Q_firm, calcs.MC]
-            r: 5
-            color: red
-            droplines:
-              vertical:
-              horizontal: '`${calcs.MC.toFixed(1)}`'
-            show: (params.showMarginal && (calcs.MR >= calcs.MC))
-
-        # MC — top when MR < MC
-        - Point:
-            coordinates: [params.Q_firm, calcs.MC]
-            r: 5
-            color: red
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.MC.toFixed(1)}`'
-            show: (params.showMarginal && (calcs.MR < calcs.MC))
-
-        # Q* on MC — MR = MC intersection
-        - Point:
-            coordinates: [calcs.qStar, calcs.mcStar]
+            coordinates: [(calcs.qStar), (calcs.mcStar)]
             color: red
             r: 5
-            show: params.showMarginal
+            show: params.showOptimal
 
         # ══════════════════════════════════════════════════════════════
-        # TOTAL PROFIT — P + ATC at current Q
-        # Top gets Q label, bottom gets blank vertical
+        # SHORT-RUN POINTS (Locked to qStar)
         # ══════════════════════════════════════════════════════════════
 
-        # P — top in profit
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
+            coordinates: [(calcs.qStar), (calcs.pStar)]
             r: 5
             color: demandBlue
             droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.P_firm.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit >= 0))
-
-        # P — bottom in loss
-        - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
-            r: 5
-            color: demandBlue
-            droplines:
-              vertical:
-              horizontal: '`${calcs.P_firm.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit < 0))
-
-        # ATC — bottom in profit
-        - Point:
-            coordinates: [params.Q_firm, calcs.ATC]
-            r: 5
-            color: orange
-            droplines:
-              vertical:
-              horizontal: '`${calcs.ATC.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit >= 0))
-
-        # ATC — top in loss
-        - Point:
-            coordinates: [params.Q_firm, calcs.ATC]
-            r: 5
-            color: orange
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.ATC.toFixed(1)}`'
-            show: (params.showTotalProfit && (calcs.profit < 0))
-
-        # ══════════════════════════════════════════════════════════════
-        # SHORT-RUN — P + AVC at current Q
-        # P typically above AVC; P gets Q label
-        # ══════════════════════════════════════════════════════════════
+              vertical: '`${calcs.qStar.toFixed(1)}`'
+              horizontal: '`${calcs.pStar.toFixed(1)}`'
+            show: params.showShortRun
 
         - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
-            r: 5
-            color: demandBlue
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.P_firm.toFixed(1)}`'
-            show: (params.showShortRun && "(!params.showTotalProfit)")
-
-        - Point:
-            coordinates: [params.Q_firm, calcs.AVC]
+            coordinates: [(calcs.qStar), (calcs.avcStar)]
             r: 5
             color: avcDarkOrange
             droplines:
               vertical:
-              horizontal: '`${calcs.AVC.toFixed(1)}`'
+              horizontal: '`AVC = ${calcs.avcStar.toFixed(1)}`'
             show: (params.showShortRun || params.showTVC || params.showTFC)
-
-        # ══════════════════════════════════════════════════════════════
-        # EFFICIENCY — P ↔ MC arrow + competitive benchmark
-        # Arrow color = larger value's family
-        #   P > MC → demandBlue (monopoly markup)
-        #   P < MC → red (below cost)
-        # ══════════════════════════════════════════════════════════════
-
-        - Segment:
-            a: [params.Q_firm, calcs.MC]
-            b: [params.Q_firm, calcs.P_firm]
-            endArrow: true
-            startArrow: true
-            color: "`${calcs.P_firm >= calcs.MC ? 'rgb(41,128,185)' : 'red'}`"
-            strokeWidth: 2.5
-            show: params.showEfficiency
-
-        - Point:
-            coordinates: [params.Q_firm, calcs.P_firm]
-            r: 5
-            color: demandBlue
-            droplines:
-              vertical: '`${params.Q_firm.toFixed(1)}`'
-              horizontal: '`${calcs.P_firm.toFixed(1)}`'
-            show: (params.showEfficiency && "(!params.showTotalProfit)" && "(!params.showShortRun)")
-
-        - Point:
-            coordinates: [params.Q_firm, calcs.MC]
-            r: 5
-            color: red
-            droplines:
-              vertical:
-              horizontal: '`${calcs.MC.toFixed(1)}`'
-            show: (params.showEfficiency && "(!params.showMarginal)")
-
-        # Competitive benchmark
-        - Segment:
-            a: [calcs.qComp, 0]
-            b: [calcs.qComp, calcs.pComp]
-            lineStyle: dotted
-            strokeWidth: 1.5
-            color: grey
-            show: params.showEfficiency
-
-        - Segment:
-            a: [0, calcs.pComp]
-            b: [calcs.qComp, calcs.pComp]
-            lineStyle: dotted
-            strokeWidth: 1.5
-            color: grey
-            show: params.showEfficiency
-
-        - Point:
-            coordinates: [calcs.qComp, calcs.pComp]
-            color: grey
-            r: 5
-            label: {text: '`P=MC`', position: bl}
-            droplines:
-              vertical:   '`Q_{pc} = ${calcs.qComp.toFixed(1)}`'
-              horizontal: '`P_{pc} = ${calcs.pComp.toFixed(1)}`'
-            show: params.showEfficiency
 
     sidebar:
       controls:
         - title: Monopoly Analysis
           description: Drag the grey point or use the slider to choose Q.
           sliders:
-          - {param: Q_firm, label: '`\\text{Q}`'}
-          - {param: demandShift, label: '`\\text{Demand}`'}
+          - {param: demandShift, label: Demand}
+          - {param: perUnitTax, label: Per-Unit \ T/S}
+          - {param: lumpSumTax, label: Lump-Sum \ T/S}          
           checkboxes:
-          - {param: showOptimal,     label: '`\\text{Optimal}`'}
-          - {param: showMarginal,    label: '`\\text{Marginal Profit}`'}
-          - {param: showTotalProfit, label: '`\\text{Total Profit}`'}
-          - {param: showShortRun,    label: '`\\text{Short-Run Analysis}`'}
-          - {param: showEfficiency,  label: '`\\text{Efficiency and DWL}`'}
+          - {param: showExplore,     label: '\text{Free Explore: Marginal Profit}'}
+          - {param: showOptimal,     label: '\text{Optimal Target}'}
+          - {param: showTotalProfit, label: '\text{Total Profit / Loss}'}
+          - {param: showShortRun,    label: '\text{Short-Run Analysis}'}
+          - {param: showEfficiency,  label: '\text{Efficiency and DWL}'}
           divs:
-          - html: "`$Q^* = ${calcs.qStar.toFixed(0)}$,  $P^* = ${calcs.pStar.toFixed(1)}$`"
+          # Free Explore Divs
+          - html: "`<b>$MR - MC = ${calcs.margProfit.toFixed(2)}$ → produce <strong>more</strong></b>`"
+            show: (params.showExplore && (calcs.margProfit > 0.05))
+          - html: "`<b>$MR - MC = ${calcs.margProfit.toFixed(2)}$ → produce <strong>less</strong></b>`"
+            show: (params.showExplore && (calcs.margProfit < -0.05))
+          - html: "`<b>$MR = MC$ — at optimal $Q^*$</b>`"
+            show: (params.showExplore && (calcs.margProfit >= -0.05) && (calcs.margProfit <= 0.05))
+
+          # Locked Optimal Divs
+          - html: "`<b>$Q^* = ${calcs.qStar.toFixed(1)}$, $P^* = ${calcs.pStar.toFixed(1)}$</b>`"
             show: params.showOptimal
-          - html: "`$Profit_{max} = ${calcs.profitStar.toFixed(1)}$`"
-            show: params.showOptimal
-          - html: "`$MR = ${calcs.MR.toFixed(1)}$,  $MC = ${calcs.MC.toFixed(1)}$`"
-            show: params.showMarginal
-          - html: "`$MR - MC = ${(calcs.MR - calcs.MC).toFixed(1)}$`"
-            show: params.showMarginal
-          - html: "`$Profit = ${calcs.profit.toFixed(1)}$`"
+          - html: "`<b>Profit = ${calcs.profitStar.toFixed(1)}</b>`"
             show: params.showTotalProfit
-          - html: "`$TR = ${calcs.TR.toFixed(1)}$,  $TC = ${calcs.TC.toFixed(1)}$`"
+          - html: "`<b>$TR = ${calcs.trStar.toFixed(1)}$, $TC = ${calcs.tcStar.toFixed(1)}$</b>`"
             show: params.showTotalProfit
-          - html: "`$P = ${calcs.P_firm.toFixed(1)}$,  $AVC = ${calcs.AVC.toFixed(1)}$`"
+          - html: "`<b>$P = ${calcs.pStar.toFixed(1)}$, $AVC = ${calcs.avcStar.toFixed(1)}$</b>`"
             show: params.showShortRun
-          - html: "`$P > AVC$: firm operates`"
-            show: (params.showShortRun && (calcs.P_firm > calcs.AVC))
-          - html: "`$P < AVC$: firm should shut down`"
-            show: (params.showShortRun && (calcs.P_firm < calcs.AVC))
-          - html: "`$Q_{pc} = ${calcs.qComp.toFixed(1)}$,  $P_{pc} = ${calcs.pComp.toFixed(1)}$`"
+          - html: "`<b>$P > AVC$: firm <strong>operates</strong></b>`"
+            show: (params.showShortRun && (calcs.pStar > calcs.avcStar))
+          - html: "`<b>$P < AVC$: firm should <strong>shut down</strong></b>`"
+            show: (params.showShortRun && (calcs.pStar < calcs.avcStar))
+          - html: "`<b>$Q_{pc} = ${calcs.qComp.toFixed(1)}$, $P_{pc} = ${calcs.pComp.toFixed(1)}$</b>`"
             show: params.showEfficiency
-          - html: "`DWL exists: $Q < Q_{pc}$`"
-            show: (params.showEfficiency && (params.Q_firm < calcs.qComp))
+          - html: "`<b>DWL exists: $Q^* < Q_{pc}$</b>`"
+            show: (params.showEfficiency && (calcs.qStar < calcs.qComp))
+
+          - html: "`<b>Per-unit (${params.perUnitTax.toFixed(1)}): shifts $MC$, $AVC$, $ATC$</b>`"
+            show: (params.perUnitTax != 0)
+          - html: "`<b>Lump-sum (${params.lumpSumTax.toFixed(0)}): shifts $TFC$ & $ATC$ only</b>`"
+            show: (params.lumpSumTax != 0)
 
         - title: Total Variables
           checkboxes:
-          - {param: showTR,  label: '`\\text{TR Rectangle}`'}
-          - {param: showTC,  label: '`\\text{TC Rectangle}`'}
-          - {param: showTVC, label: '`\\text{TVC Rectangle}`'}
-          - {param: showTFC, label: '`\\text{TFC Rectangle}`'}
-
-        - title: Tax / Subsidy
-          description: "+ tax, − subsidy. Slide to apply."
-          sliders:
-          - {param: perUnitTax, label: '`\\text{Per-Unit}`'}
-          - {param: lumpSumTax, label: '`\\text{Lump-Sum}`'}
-          divs:
-          - html: "`Per-unit ($${params.perUnitTax.toFixed(1)}$): shifts $MC$, $AVC$, $ATC$`"
-            show: (params.perUnitTax != 0)
-          - html: "`Lump-sum ($${params.lumpSumTax.toFixed(0)}$): shifts $TFC$ & $ATC$ only`"
-            show: (params.lumpSumTax != 0)
-          - html: "`Lump-sum does NOT change $Q^*$ ($MC$ unchanged)`"
-            show: (params.lumpSumTax != 0)
+          - {param: showTR,  label: '\text{TR Rectangle}'}
+          - {param: showTC,  label: '\text{TC Rectangle}'}
+          - {param: showTVC, label: '\text{TVC Rectangle}'}
+          - {param: showTFC, label: '\text{TFC Rectangle}'}
