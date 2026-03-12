@@ -85,7 +85,7 @@ layout:
             name: ourDemand
             xIntercept: 235 + 10*(params.demandShift)
             invSlope: -5
-            color: dodgerblue
+            color: blue
             drag: [{vertical: demandShift}]
             label: {text: "`D`", x: 180}
           supply:
@@ -126,7 +126,7 @@ layout:
             y1: (calcs.P_firm)
             x2: (calcs.qStar)
             y2: 0
-            color: dodgerblue
+            color: blue
             opacity: 0.1
             show: params.showTR
             label: {text: "`\\t{TR = ${calcs.trStar.toFixed(1)}}`"}
@@ -169,7 +169,7 @@ layout:
             y1: (calcs.P_firm)
             x2: (calcs.qStar)
             y2: (calcs.atcStar)
-            color: "`${calcs.profitStar >= 0 ? 'green' : 'firebrick'}`"
+            color: "`${calcs.profitStar >= 0 ? 'green' : 'red'}`"
             opacity: 0.4
             show: params.showTotalProfit
             label: {text: "`${calcs.profitStar >= 0 ? '\\t{Profit = }' : '\\t{Loss = }'} ${Math.abs(calcs.profitStar).toFixed(1)}`"}
@@ -180,7 +180,7 @@ layout:
         - Segment:
             a: [(params.Q_firm), (calcs.MC_explore)]
             b: [(params.Q_firm), (calcs.P_firm)]
-            color: "`${calcs.margProfit >= 0 ? 'dodgerblue' : 'firebrick'}`"
+            color: "`${calcs.margProfit >= 0 ? 'cadetblue' : 'red'}`"
             strokeWidth: 3
             startArrow: true
             endArrow: true
@@ -189,21 +189,21 @@ layout:
         - Label:
             coordinates: [(params.Q_firm), (calcs.margProfitMid)]
             text: "`${calcs.margProfit >= 0 ? '+' : ''}${calcs.margProfit.toFixed(1)}`"
-            color: "`${calcs.margProfit >= 0 ? 'dodgerblue' : 'firebrick'}`"
+            color: "`${calcs.margProfit >= 0 ? 'cadetblue' : 'red'}`"
             position: r
             show: params.showExplore
 
         - Point:
             coordinates: [(params.Q_firm), (calcs.MC_explore)]
             r: 5
-            color: firebrick
+            color: red
             droplines: {horizontal: '`MC = ${calcs.MC_explore.toFixed(1)}`'}
             show: params.showExplore
         
         - Point:
             coordinates: [(params.Q_firm), (calcs.P_firm)]
             r: 5
-            color: dodgerblue
+            color: cadetblue
             droplines: {horizontal: '`MR = ${calcs.P_firm.toFixed(1)}`'}
             show: params.showExplore
 
@@ -212,7 +212,7 @@ layout:
         # ══════════════════════════════════════════════════════════
         - Point:
             coordinates: [(params.Q_firm), (calcs.P_firm)]
-            color: grey
+            color: cadetblue
             r: 4
             drag: [{horizontal: Q_firm}]
             droplines: {vertical: '`${params.Q_firm.toFixed(1)}`'}
@@ -221,14 +221,14 @@ layout:
         - Line:
             yIntercept: (calcs.P_firm)
             slope: 0
-            color: dodgerblue
+            color: cadetblue
             strokeWidth: 2.5
             label: {text: "`d_f = MR = AR`", x: 16}
 
         - Curve:
             fn: 16 - 4*(x) + 0.5*((x)^2) + (calcs.varShift)
             min: 0.5
-            color: firebrick
+            color: red
             strokeWidth: 2.5
             label: {text: "`MC`", x: 13, position: t}
 
@@ -252,16 +252,16 @@ layout:
         # ══════════════════════════════════════════════════════════
         - Point:
             coordinates: [(calcs.qStar), (calcs.P_firm)]
-            color: dodgerblue
+            color: blue
             r: 5
             droplines:
               vertical: '`Q^* = ${calcs.qStar.toFixed(1)}`'
-              horizontal: '`${calcs.P_firm.toFixed(1)}`'
+              horizontal: '`P = ${calcs.P_firm.toFixed(1)}`'
             show: (params.showOptimal && (calcs.profitStar >= 0))
 
         - Point:
             coordinates: [(calcs.qStar), (calcs.P_firm)]
-            color: dodgerblue
+            color: blue
             r: 5
             droplines:
               vertical:
@@ -292,7 +292,7 @@ layout:
         - Point:
             coordinates: [(calcs.qStar), (calcs.P_firm)]
             r: 5
-            color: dodgerblue
+            color: blue
             droplines:
               vertical: '`${calcs.qStar.toFixed(1)}`'
               horizontal: '`P = ${calcs.P_firm.toFixed(1)}`'
@@ -321,8 +321,8 @@ layout:
       checkboxes:
       - {param: showExplore,     label: '`\\text{Free Explore: Marginal Profit}`'}
       - {param: showOptimal,     label: '`\\text{Optimal Target}`'}
-      - {param: showTotalProfit, label: '`\\text{Total Profit Loss}`'}
-      - {param: showShortRun,    label: '`\\text{Short-Run Analysis (P vs AVC)}`'}
+      - {param: showTotalProfit, label: '`\\text{Total Profit / Loss}`'}
+      - {param: showShortRun,    label: '`\\text{Short-Run Analysis}`'}
       - {param: showTR,          label: '`\\text{TR Rectangle}`'}
       - {param: showTC,          label: '`\\text{TC Rectangle}`'}
       - {param: showTVC,         label: '`\\text{TVC Rectangle}`'}
@@ -353,7 +353,7 @@ layout:
         show: (params.showShortRun && (calcs.P_firm < calcs.avcStar))
       
       # Tax Divs
-      - html: "`<b>Per-unit (=${params.perUnitTaxSub.toFixed(0)}): tax shifts MC, AVC, ATC</b>`"
+      - html: "`<b>Per-unit = ${params.perUnitTaxSub.toFixed(0)}: tax shifts MC, AVC, ATC</b>`"
         show: (params.perUnitTaxSub != 0)
-      - html: "`<b>Lump-sum (=${params.lumpSumTaxSub.toFixed(0)}): shifts TFC & ATC only</b>`"
+      - html: "`<b>Lump-sum = ${params.lumpSumTaxSub.toFixed(0)}: shifts TFC & ATC only</b>`"
         show: (params.lumpSumTaxSub != 0)
