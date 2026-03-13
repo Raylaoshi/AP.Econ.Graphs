@@ -23,10 +23,6 @@ description_zh: |
 schema: EconSchema
 version: 5
 
-colors:
-  demandBlue: rgb(41, 128, 185)
-  avcDarkOrange: rgb(230, 140, 30)
-
 params:
   - {name: Pw, value: 30, min: 15, max: 50, round: 1}
   - {name: tariff, value: 10, min: 0, max: 20, round: 1}
@@ -110,7 +106,7 @@ layout:
             fn2: (55)
             min: 0
             max: 45
-            color: dodgerblue
+            color: blue
             opacity: 0.2
             show: "(params.showCS && !params.showTrade && !params.showTariff)"
 
@@ -131,7 +127,7 @@ layout:
             fn2: (params.Pw)
             min: 0
             max: (calcs.Qd_ft)
-            color: dodgerblue
+            color: blue
             opacity: 0.2
             show: "(params.showCS && params.showTrade && !params.showTariff)"
 
@@ -171,7 +167,7 @@ layout:
             fn2: (calcs.Pt_safe)
             min: 0
             max: (calcs.Qd_t)
-            color: dodgerblue
+            color: blue
             opacity: 0.2
             show: "(params.showCS && params.showTariff)"
 
@@ -238,7 +234,7 @@ layout:
             demand:
               xIntercept: 100
               invSlope: -1
-              color: dodgerblue
+              color: blue
               label: {text: "`D`", x: 90}
             supply:
               yIntercept: 10
@@ -291,7 +287,7 @@ layout:
 
         - Point:
             coordinates: [(calcs.Qd_ft), (params.Pw)]
-            color: dodgerblue
+            color: blue
             r: 5
             droplines: {vertical: "`Q_d`"}
             show: "(params.showTrade && !params.showTariff)"
@@ -321,7 +317,7 @@ layout:
 
         - Point:
             coordinates: [(calcs.Qd_t), (calcs.Pt_safe)]
-            color: dodgerblue
+            color: blue
             r: 5
             droplines: {vertical: "`Q_{dt}`"}
             show: params.showTariff
@@ -349,7 +345,7 @@ layout:
         - Label:
             coordinates: [15, 70]
             text: "`CS`"
-            color: dodgerblue
+            color: blue
             fontSize: 14
             bgcolor: none
             show: "(params.showCS && !params.showTrade && !params.showTariff)"
@@ -357,7 +353,7 @@ layout:
         - Label:
             coordinates: [(calcs.csX_ft), (calcs.csY_ft)]
             text: "`CS`"
-            color: dodgerblue
+            color: blue
             fontSize: 14
             bgcolor: none
             show: "(params.showCS && params.showTrade && !params.showTariff)"
@@ -365,7 +361,7 @@ layout:
         - Label:
             coordinates: [(calcs.csX_t), (calcs.csY_t)]
             text: "`CS`"
-            color: dodgerblue
+            color: blue
             fontSize: 14
             bgcolor: none
             show: "(params.showCS && params.showTariff)"
