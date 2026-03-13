@@ -96,6 +96,11 @@
               "id": "2.6.G1",
               "title": "International Free Trade and Import Tariff",
               "title_zh": "国际自由贸易与进口关税"
+            },
+            {
+              "id": "2.6.G2",
+              "title": "Free Trade - Exports",
+              "title_zh": "自由贸易：出口"
             }
           ]
         }

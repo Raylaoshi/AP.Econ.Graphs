@@ -1,0 +1,266 @@
+title: Free Trade - Exports
+title_zh: 自由贸易：出口
+label: 2.6.G2
+eyebrow: Unit 2 — Supply and Demand
+eyebrow_zh: 第二单元 — 供给与需求
+description: |
+  <p>International trade allows domestic producers to access global markets. When the world price is <strong>above</strong> the domestic autarky price, opening to trade leads to <strong>exports</strong>, which expands total societal welfare.</p>
+  <p><strong>Interactive features to explore:</strong></p>
+  <ol>
+    <li><strong>Market Scenarios:</strong> Toggle the Free Trade box to open or close the economy.</li>
+    <li><strong>World Price:</strong> Drag the P<sub>w</sub> line up and down. Notice how higher global prices incentivize domestic producers to increase output (Q<sub>s</sub>), while domestic consumers reduce consumption (Q<sub>d</sub>). The gap between them is exported!</li>
+    <li><strong>Welfare Analysis:</strong> Notice how Free Trade shrinks Consumer Surplus (CS) but massively expands Producer Surplus (PS), resulting in a net positive Gain from Trade (the green area).</li>
+  </ol>
+description_zh: |
+  <p>国际贸易允许国内生产者进入全球市场。当世界价格<strong>高于</strong>国内自给自足价格时，开放贸易会带动<strong>出口</strong>，从而扩大整个社会的总福利。</p>
+  <p><strong>动一动：</strong></p>
+  <ol>
+    <li><strong>市场情境：</strong> 勾选自由贸易复选框，观察封闭经济与开放经济的区别。</li>
+    <li><strong>世界价格：</strong> 上下拖动 P<sub>w</sub> 线。注意更高的全球价格是如何激励国内生产者增加产量 (Q<sub>s</sub>) 的，同时国内消费者会减少消费 (Q<sub>d</sub>)。两者之间的差额即为出口量！</li>
+    <li><strong>福利分析：</strong> 注意自由贸易虽然缩小了消费者剩余 (CS)，但极大地扩张了生产者剩余 (PS)，最终带来了净正向的贸易利得（绿色区域）。</li>
+  </ol>
+
+schema: EconSchema
+version: 1
+
+colors:
+  demandBlue: rgb(41, 128, 185)
+  avcDarkOrange: rgb(230, 140, 30)
+
+params:
+  - {name: Pw, value: 70, min: 55, max: 90, round: 1}
+  - {name: showTrade, value: true}
+  - {name: showCS, value: true}
+  - {name: showPS, value: true}
+  - {name: showGains, value: true}
+
+calcs:
+  # Autarky Base (Fixed for D: P=100-Q, S: P=10+Q)
+  P_a: 55
+  Q_a: 45
+  
+  # Free Trade Quantities
+  Qd_ft: (100 - (params.Pw))
+  Qs_ft: ((params.Pw) - 10)
+  Exports: ((calcs.Qs_ft) - (calcs.Qd_ft))
+  
+  # Welfare Math
+  CS_ft: (0.5 * (calcs.Qd_ft) * (100 - (params.Pw)))
+  PS_ft: (0.5 * (calcs.Qs_ft) * ((params.Pw) - 10))
+  Gains_ft: (0.5 * (calcs.Exports) * ((params.Pw) - 55))
+
+  # --- Dynamic Geometric Centroids for Labels ---
+  csX_ft: ((calcs.Qd_ft) / 3)
+  csY_ft: ((100 + 2 * (params.Pw)) / 3)
+  
+  psX_ft: ((calcs.Qs_ft) / 3)
+  psY_ft: ((10 + 2 * (params.Pw)) / 3)
+  
+  gainsX: (((calcs.Qd_ft) + 45 + (calcs.Qs_ft)) / 3)
+  gainsY: ((55 + 2 * (params.Pw)) / 3)
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis: {title: Quantity, max: 100, ticks: 10}
+      yAxis: {title: Price, max: 100, min: 0, ticks: 10}
+      objects:
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE AREAS: AUTARKY
+        # ══════════════════════════════════════════════════════════════
+        - Area:
+            fn1: 100 - (x)
+            fn2: (55)
+            min: 0
+            max: 45
+            color: dodgerblue
+            opacity: 0.2
+            show: "(params.showCS && !params.showTrade)"
+
+        - Area:
+            fn1: (55)
+            fn2: 10 + (x)
+            min: 0
+            max: 45
+            color: darkorange
+            opacity: 0.2
+            show: "(params.showPS && !params.showTrade)"
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE AREAS: FREE TRADE
+        # ══════════════════════════════════════════════════════════════
+        - Area:
+            fn1: 100 - (x)
+            fn2: (params.Pw)
+            min: 0
+            max: (calcs.Qd_ft)
+            color: dodgerblue
+            opacity: 0.2
+            show: "(params.showCS && params.showTrade)"
+
+        - Area:
+            fn1: (params.Pw)
+            fn2: 10 + (x)
+            min: 0
+            max: (calcs.Qs_ft)
+            color: darkorange
+            opacity: 0.2
+            show: "(params.showPS && params.showTrade)"
+
+        # Gains from Trade (Split into two parts at Q=45 to trace the geometry cleanly)
+        - Area:
+            fn1: (params.Pw)
+            fn2: 100 - (x)
+            min: (calcs.Qd_ft)
+            max: 45
+            color: seagreen
+            opacity: 0.3
+            show: "(params.showGains && params.showTrade)"
+            
+        - Area:
+            fn1: (params.Pw)
+            fn2: 10 + (x)
+            min: 45
+            max: (calcs.Qs_ft)
+            color: seagreen
+            opacity: 0.3
+            show: "(params.showGains && params.showTrade)"
+
+        # ══════════════════════════════════════════════════════════════
+        # BASE CURVES & EQUILIBRIUM
+        # ══════════════════════════════════════════════════════════════
+        - EconLinearEquilibrium:
+            name: mktEq
+            demand:
+              xIntercept: 100
+              invSlope: -1
+              color: dodgerblue
+              label: {text: "`D`", x: 90}
+            supply:
+              yIntercept: 10
+              slope: 1
+              color: darkorange
+              label: {text: "`S`", x: 90}
+
+        - Point:
+            coordinates: [45, 55]
+            color: grey
+            r: 5
+            droplines:
+              vertical: "`Q_a = 45`"
+              horizontal: "`P_a = 55`"
+            show: "(!params.showTrade)"
+
+        # ══════════════════════════════════════════════════════════════
+        # WORLD PRICE & EXPORTS
+        # ══════════════════════════════════════════════════════════════
+        - Line:
+            yIntercept: (params.Pw)
+            slope: 0
+            color: seagreen
+            strokeWidth: 2
+            drag: [{vertical: Pw}]
+            label: {text: "`P_w`", x: 90}
+            show: params.showTrade
+
+        # Export Quantity Points
+        - Point:
+            coordinates: [(calcs.Qd_ft), (params.Pw)]
+            color: dodgerblue
+            r: 5
+            droplines: {vertical: "`Q_d`"}
+            show: params.showTrade
+
+        - Point:
+            coordinates: [(calcs.Qs_ft), (params.Pw)]
+            color: darkorange
+            r: 5
+            droplines: {vertical: "`Q_s`"}
+            show: params.showTrade
+
+        # Export Arrow (with NaN crash protection if Pw = 55)
+        - Segment:
+            a: [(calcs.Qd_ft), (params.Pw)]
+            b: ["(calcs.Qd_ft) == (calcs.Qs_ft) ? (calcs.Qs_ft) + 0.001 : (calcs.Qs_ft)", (params.Pw)]
+            color: seagreen
+            startArrow: true
+            endArrow: true
+            strokeWidth: 3
+            trim: 0.05
+            show: params.showTrade
+            label:
+              text: \text{Exports}
+              position: b
+              bgcolor: none
+
+        # ══════════════════════════════════════════════════════════════
+        # DYNAMIC ILLUSTRATIVE LABELS
+        # ══════════════════════════════════════════════════════════════
+        - Label:
+            coordinates: [15, 70]
+            text: "`CS`"
+            color: dodgerblue
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showCS && !params.showTrade)"
+            
+        - Label:
+            coordinates: [(calcs.csX_ft), (calcs.csY_ft)]
+            text: "`CS`"
+            color: dodgerblue
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showCS && params.showTrade)"
+
+        - Label:
+            coordinates: [15, 40]
+            text: "`PS`"
+            color: darkorange
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showPS && !params.showTrade)"
+
+        - Label:
+            coordinates: [(calcs.psX_ft), (calcs.psY_ft)]
+            text: "`PS`"
+            color: darkorange
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showPS && params.showTrade)"
+
+        - Label:
+            coordinates: [(calcs.gainsX), (calcs.gainsY)]
+            text: \text{Gains}
+            color: seagreen
+            fontSize: 12
+            bgcolor: none
+            show: "(params.showGains && params.showTrade)"
+
+    sidebar:
+      controls:
+        - title: International Trade - Exports
+          sliders:
+            - {param: Pw, label: World \ Price}
+          checkboxes:
+            - {param: showTrade, label: '`\\text{Show Free Trade}`'}
+            - {param: showCS,    label: '`\\text{Show Consumer Surplus}`'}
+            - {param: showPS,    label: '`\\text{Show Producer Surplus}`'}
+            - {param: showGains, label: '`\\text{Show Gains from Trade}`'}
+        - title: Outcome  
+          divs:
+            # Autarky Divs
+            - html: "`<b>Autarky Market:</b>`"
+              show: "(!params.showTrade)"
+            - html: "`<b>$P_a = ${calcs.P_a}$, $Q_a = ${calcs.Q_a}$</b>`"
+              show: "(!params.showTrade)"
+            
+            # Free Trade Divs
+            - html: "`<b>Free Trade Market:</b>`"
+              show: params.showTrade
+            - html: "`<b>$P_w = ${params.Pw.toFixed(1)}$. Domestic consumption drops to $Q_d = ${calcs.Qd_ft.toFixed(1)}$, and production rises to $Q_s = ${calcs.Qs_ft.toFixed(1)}$.</b>`"
+              show: params.showTrade
+            - html: "`<b>Exports = ${calcs.Exports.toFixed(1)} units.</b>`"
+              show: params.showTrade
+            - html: "`<b>Total Surplus increases by ${calcs.Gains_ft.toFixed(1)} (Gains from Trade).</b>`"
+              show: params.showTrade
