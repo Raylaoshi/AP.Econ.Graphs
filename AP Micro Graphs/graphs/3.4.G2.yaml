@@ -320,7 +320,7 @@ layout:
 
       checkboxes:
       - {param: showExplore,     label: '`\\text{Free Explore: Marginal Profit}`'}
-      - {param: showOptimal,     label: '`\\text{Optimal Target}`'}
+      - {param: showOptimal,     label: '`\\text{Optimal Point}`'}
       - {param: showTotalProfit, label: '`\\text{Total Profit / Loss}`'}
       - {param: showShortRun,    label: '`\\text{Short-Run Analysis}`'}
       - {param: showTR,          label: '`\\text{TR Rectangle}`'}

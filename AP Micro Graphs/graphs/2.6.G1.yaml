@@ -1,0 +1,486 @@
+title: International Free Trade and Import Tariff 
+title_zh: 国际自由贸易与进口关税
+label: 2.6.G1
+eyebrow: Unit 2 — Supply and Demand
+eyebrow_zh: 第二单元 — 供给与需求
+description: |
+  <p>International trade allows a domestic economy to consume beyond its domestic production capabilities. When the world price is below the domestic autarky price, opening to trade leads to <strong>imports</strong>, expanding total societal welfare.</p>
+  <p><strong>Interactive features to explore:</strong></p>
+  <ol>
+    <li><strong>Market Scenarios:</strong> Toggle the Free Trade and Tariff boxes to step through a closed economy (Autarky), an open economy, and government intervention.</li>
+    <li><strong>Welfare Analysis:</strong> Toggle the checkboxes to observe how Consumer Surplus (CS) and Producer Surplus (PS) shift between the scenarios.</li>
+    <li><strong>Gains from Trade:</strong> Notice how Free Trade expands total surplus (the green area). A tariff destroys a portion of these gains, generating government revenue but leaving behind a Deadweight Loss (DWL).</li>
+  </ol>
+description_zh: |
+  <p>国际贸易允许国内经济体的消费超越其国内生产能力。当世界价格低于国内自给自足价格时，开放贸易会引入<strong>进口</strong>，从而扩大整个社会的总福利。</p>
+  <p><strong>动一动：</strong></p>
+  <ol>
+    <li><strong>市场情境：</strong> 勾选自由贸易与关税复选框，逐步体验封闭经济（自给自足）、自由贸易以及实施关税的过程。</li>
+    <li><strong>福利分析：</strong> 勾选复选框，观察消费者剩余 (CS) 和生产者剩余 (PS) 在不同情境下是如何转移的。</li>
+    <li><strong>贸易利得：</strong> 注意自由贸易是如何扩大总剩余的（绿色区域）。而关税会破坏部分贸易利得，在产生政府收入的同时，留下无谓损失 (DWL)。</li>
+  </ol>
+
+schema: EconSchema
+version: 5
+
+colors:
+  demandBlue: rgb(41, 128, 185)
+  avcDarkOrange: rgb(230, 140, 30)
+
+params:
+  - {name: Pw, value: 30, min: 15, max: 50, round: 1}
+  - {name: tariff, value: 10, min: 0, max: 20, round: 1}
+  - {name: showTrade, value: true}
+  - {name: showTariff, value: false}
+  - {name: showCS, value: true}
+  - {name: showPS, value: true}
+  - {name: showGains, value: true}
+  - {name: showGovRev, value: true}
+  - {name: showDWL, value: true}
+
+calcs:
+  # Autarky Base (Fixed for D: P=100-Q, S: P=10+Q)
+  P_a: 55
+  Q_a: 45
+  
+  # Tariff Price (Capped so it doesn't exceed Autarky Price)
+  Pt_safe: (min(55, (params.Pw) + (params.tariff)))
+  
+  # Free Trade Quantities
+  Qs_ft: (max(0, (params.Pw) - 10))
+  Qd_ft: (100 - (params.Pw))
+  Imports_ft: ((calcs.Qd_ft) - (calcs.Qs_ft))
+  
+  # Tariff Quantities
+  Qs_t: (max(0, (calcs.Pt_safe) - 10))
+  Qd_t: (100 - (calcs.Pt_safe))
+  Imports_t: ((calcs.Qd_t) - (calcs.Qs_t))
+  
+  # Welfare Math - Free Trade
+  CS_ft: (0.5 * (calcs.Qd_ft) * (100 - (params.Pw)))
+  PS_ft: (0.5 * (calcs.Qs_ft) * ((params.Pw) - 10))
+  Gains_ft: (0.5 * (calcs.Imports_ft) * (55 - (params.Pw)))
+  
+  # Welfare Math - Tariff
+  CS_t: (0.5 * (calcs.Qd_t) * (100 - (calcs.Pt_safe)))
+  PS_t: (0.5 * (calcs.Qs_t) * ((calcs.Pt_safe) - 10))
+  GovRev: ((calcs.Imports_t) * ((calcs.Pt_safe) - (params.Pw)))
+  DWL_prod: (0.5 * ((calcs.Qs_t) - (calcs.Qs_ft)) * ((calcs.Pt_safe) - (params.Pw)))
+  DWL_cons: (0.5 * ((calcs.Qd_ft) - (calcs.Qd_t)) * ((calcs.Pt_safe) - (params.Pw)))
+  DWL_total: ((calcs.DWL_prod) + (calcs.DWL_cons))
+  Gains_t: (0.5 * (calcs.Imports_t) * (55 - (calcs.Pt_safe)))
+
+  # --- Dynamic Geometric Centroids for Labels ---
+  
+  # Free Trade Centroids
+  csX_ft: ((calcs.Qd_ft) / 3)
+  csY_ft: ((100 + 2 * (params.Pw)) / 3)
+  psX_ft: ((calcs.Qs_ft) / 3)
+  psY_ft: ((10 + 2 * (params.Pw)) / 3)
+  gainsX_ft: ((45 + (calcs.Qs_ft) + (calcs.Qd_ft)) / 3)
+  gainsY_ft: ((55 + 2 * (params.Pw)) / 3)
+
+  # Tariff Centroids
+  csX_t: ((calcs.Qd_t) / 3)
+  csY_t: ((100 + 2 * (calcs.Pt_safe)) / 3)
+  psX_t: ((calcs.Qs_t) / 3)
+  psY_t: ((10 + 2 * (calcs.Pt_safe)) / 3)
+  gainsX_t: ((45 + (calcs.Qs_t) + (calcs.Qd_t)) / 3)
+  gainsY_t: ((55 + 2 * (calcs.Pt_safe)) / 3)
+  
+  # Tariff Rectangle & DWL Centroids
+  govRevX: (((calcs.Qs_t) + (calcs.Qd_t)) / 2)
+  govRevY: (((params.Pw) + (calcs.Pt_safe)) / 2)
+  dwlProdX: (((calcs.Qs_ft) + 2 * (calcs.Qs_t)) / 3)
+  dwlConsX: (((calcs.Qd_ft) + 2 * (calcs.Qd_t)) / 3)
+  dwlY: ((2 * (params.Pw) + (calcs.Pt_safe)) / 3)
+
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis: {title: Quantity, max: 100, ticks: 10}
+      yAxis: {title: Price, max: 100, min: 0, ticks: 10}
+      objects:
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE AREAS: AUTARKY
+        # ══════════════════════════════════════════════════════════════
+        - Area:
+            fn1: 100 - (x)
+            fn2: (55)
+            min: 0
+            max: 45
+            color: dodgerblue
+            opacity: 0.2
+            show: "(params.showCS && !params.showTrade && !params.showTariff)"
+
+        - Area:
+            fn1: (55)
+            fn2: 10 + (x)
+            min: 0
+            max: 45
+            color: darkorange
+            opacity: 0.2
+            show: "(params.showPS && !params.showTrade && !params.showTariff)"
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE AREAS: FREE TRADE
+        # ══════════════════════════════════════════════════════════════
+        - Area:
+            fn1: 100 - (x)
+            fn2: (params.Pw)
+            min: 0
+            max: (calcs.Qd_ft)
+            color: dodgerblue
+            opacity: 0.2
+            show: "(params.showCS && params.showTrade && !params.showTariff)"
+
+        - Area:
+            fn1: (params.Pw)
+            fn2: 10 + (x)
+            min: 0
+            max: (calcs.Qs_ft)
+            color: darkorange
+            opacity: 0.2
+            show: "(params.showPS && params.showTrade && !params.showTariff)"
+
+        # Gains from Trade (Split into two areas at Q=45)
+        - Area:
+            fn1: 10 + (x)
+            fn2: (params.Pw)
+            min: (calcs.Qs_ft)
+            max: 45
+            color: seagreen
+            opacity: 0.3
+            show: "(params.showGains && params.showTrade && !params.showTariff)"
+            
+        - Area:
+            fn1: 100 - (x)
+            fn2: (params.Pw)
+            min: 45
+            max: (calcs.Qd_ft)
+            color: seagreen
+            opacity: 0.3
+            show: "(params.showGains && params.showTrade && !params.showTariff)"
+
+        # ══════════════════════════════════════════════════════════════
+        # WELFARE AREAS: TARIFF
+        # ══════════════════════════════════════════════════════════════
+        - Area:
+            fn1: 100 - (x)
+            fn2: (calcs.Pt_safe)
+            min: 0
+            max: (calcs.Qd_t)
+            color: dodgerblue
+            opacity: 0.2
+            show: "(params.showCS && params.showTariff)"
+
+        - Area:
+            fn1: (calcs.Pt_safe)
+            fn2: 10 + (x)
+            min: 0
+            max: (calcs.Qs_t)
+            color: darkorange
+            opacity: 0.2
+            show: "(params.showPS && params.showTariff)"
+
+        - Rectangle:
+            x1: (calcs.Qs_t)
+            x2: (calcs.Qd_t)
+            y1: (calcs.Pt_safe)
+            y2: (params.Pw)
+            color: purple
+            opacity: 0.3
+            show: "(params.showGovRev && params.showTariff)"
+
+        - Area:
+            fn1: 10 + (x)
+            fn2: (params.Pw)
+            min: (calcs.Qs_ft)
+            max: (calcs.Qs_t)
+            color: firebrick
+            opacity: 0.4
+            show: "(params.showDWL && params.showTariff)"
+
+        - Area:
+            fn1: 100 - (x)
+            fn2: (params.Pw)
+            min: (calcs.Qd_t)
+            max: (calcs.Qd_ft)
+            color: firebrick
+            opacity: 0.4
+            show: "(params.showDWL && params.showTariff)"
+
+        # Remaining Gains from Trade under Tariff
+        - Area:
+            fn1: 10 + (x)
+            fn2: (calcs.Pt_safe)
+            min: (calcs.Qs_t)
+            max: 45
+            color: seagreen
+            opacity: 0.3
+            show: "(params.showGains && params.showTariff)"
+            
+        - Area:
+            fn1: 100 - (x)
+            fn2: (calcs.Pt_safe)
+            min: 45
+            max: (calcs.Qd_t)
+            color: seagreen
+            opacity: 0.3
+            show: "(params.showGains && params.showTariff)"
+
+        # ══════════════════════════════════════════════════════════════
+        # BASE CURVES & EQUILIBRIUM
+        # ══════════════════════════════════════════════════════════════
+        - EconLinearEquilibrium:
+            name: mktEq
+            demand:
+              xIntercept: 100
+              invSlope: -1
+              color: dodgerblue
+              label: {text: "`D`", x: 90}
+            supply:
+              yIntercept: 10
+              slope: 1
+              color: darkorange
+              label: {text: "`S`", x: 90}
+
+        - Point:
+            coordinates: [45, 55]
+            color: grey
+            r: 5
+            droplines:
+              vertical: "`Q_a = 45`"
+              horizontal: "`P_a = 55`"
+            show: "(!params.showTrade && !params.showTariff)"
+
+        # ══════════════════════════════════════════════════════════════
+        # WORLD PRICE & TARIFF LINES
+        # ══════════════════════════════════════════════════════════════
+        - Line:
+            yIntercept: (params.Pw)
+            slope: 0
+            color: seagreen
+            strokeWidth: 2
+            drag: [{vertical: Pw}]
+            label: {text: "`P_w`", x: 90}
+            show: "(params.showTrade || params.showTariff)"
+
+        - Line:
+            yIntercept: (calcs.Pt_safe)
+            slope: 0
+            color: purple
+            strokeWidth: 2
+            lineStyle: solid
+            drag: [{vertical: tariff}]
+            label: {text: "`P_w + t`", x: 90}
+            show: params.showTariff
+
+        # ══════════════════════════════════════════════════════════════
+        # INTERSECTION POINTS & IMPORT ARROWS
+        # ══════════════════════════════════════════════════════════════
+        
+        # Free Trade Points
+        - Point:
+            coordinates: [(calcs.Qs_ft), (params.Pw)]
+            color: darkorange
+            r: 5
+            droplines: {vertical: "`Q_s`"}
+            show: "(params.showTrade && !params.showTariff)"
+
+        - Point:
+            coordinates: [(calcs.Qd_ft), (params.Pw)]
+            color: dodgerblue
+            r: 5
+            droplines: {vertical: "`Q_d`"}
+            show: "(params.showTrade && !params.showTariff)"
+
+        # Free Trade Import Arrow
+        - Segment:
+            a: [(calcs.Qs_ft), (5)]
+            b: ["(calcs.Qs_ft) == (calcs.Qd_ft) ? (calcs.Qd_ft) + 0.001 : (calcs.Qd_ft)", (5)]
+            color: seagreen
+            startArrow: true
+            endArrow: true
+            strokeWidth: 3
+            trim: 0.05
+            show: "(params.showTrade && !params.showTariff)"
+            label:
+              text: \text{Imports}
+              position: b
+              bgcolor: none
+
+        # Tariff Points
+        - Point:
+            coordinates: [(calcs.Qs_t), (calcs.Pt_safe)]
+            color: darkorange
+            r: 5
+            droplines: {vertical: "`Q_{st}`"}
+            show: params.showTariff
+
+        - Point:
+            coordinates: [(calcs.Qd_t), (calcs.Pt_safe)]
+            color: dodgerblue
+            r: 5
+            droplines: {vertical: "`Q_{dt}`"}
+            show: params.showTariff
+
+        # Tariff Import Arrow
+        - Segment:
+            a: [(calcs.Qs_t), (5)]
+            b: ["(calcs.Qs_t) == (calcs.Qd_t) ? (calcs.Qd_t) + 0.001 : (calcs.Qd_t)", (5)]
+            color: purple
+            startArrow: true
+            endArrow: true
+            strokeWidth: 3
+            trim: 0.05
+            show: params.showTariff
+            label:
+              text: \text{Imports}
+              position: b
+              bgcolor: none
+
+        # ══════════════════════════════════════════════════════════════
+        # DYNAMIC ILLUSTRATIVE LABELS
+        # ══════════════════════════════════════════════════════════════
+        
+        # --- CS LABELS ---
+        - Label:
+            coordinates: [15, 70]
+            text: "`CS`"
+            color: dodgerblue
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showCS && !params.showTrade && !params.showTariff)"
+            
+        - Label:
+            coordinates: [(calcs.csX_ft), (calcs.csY_ft)]
+            text: "`CS`"
+            color: dodgerblue
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showCS && params.showTrade && !params.showTariff)"
+            
+        - Label:
+            coordinates: [(calcs.csX_t), (calcs.csY_t)]
+            text: "`CS`"
+            color: dodgerblue
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showCS && params.showTariff)"
+
+        # --- PS LABELS ---
+        - Label:
+            coordinates: [15, 40]
+            text: "`PS`"
+            color: darkorange
+            fontSize: 14
+            bgcolor: none
+            show: "(params.showPS && !params.showTrade && !params.showTariff)"
+
+        - Label:
+            coordinates: [(calcs.psX_ft), (calcs.psY_ft)]
+            text: "`PS`"
+            color: darkorange
+            fontSize: 12
+            bgcolor: none
+            show: "(params.showPS && params.showTrade && !params.showTariff)"
+            
+        - Label:
+            coordinates: [(calcs.psX_t), (calcs.psY_t)]
+            text: "`PS`"
+            color: darkorange
+            fontSize: 12
+            bgcolor: none
+            show: "(params.showPS && params.showTariff)"
+
+        # --- GAINS LABELS ---
+        - Label:
+            coordinates: [(calcs.gainsX_ft), (calcs.gainsY_ft)]
+            text: \text{Gains}
+            color: seagreen
+            fontSize: 12
+            bgcolor: none
+            show: "(params.showGains && params.showTrade && !params.showTariff)"
+            
+        - Label:
+            coordinates: [(calcs.gainsX_t), (calcs.gainsY_t)]
+            text: \text{Gains}
+            color: seagreen
+            fontSize: 12
+            bgcolor: none
+            show: "(params.showGains && params.showTariff)"
+
+        # --- TARIFF REVENUE LABEL ---
+        - Label:
+            coordinates: [(calcs.govRevX), (calcs.govRevY)]
+            text: \text{Tariff Rev.}
+            color: purple
+            fontSize: 10
+            bgcolor: none
+            show: "(params.showGovRev && params.showTariff)"
+
+        # --- DWL LABELS ---
+        - Label:
+            coordinates: [(calcs.dwlProdX), (calcs.dwlY)]
+            text: "`DWL`"
+            color: firebrick
+            fontSize: 9
+            bgcolor: none
+            show: "(params.showDWL && params.showTariff)"
+
+        - Label:
+            coordinates: [(calcs.dwlConsX), (calcs.dwlY)]
+            text: "`DWL`"
+            color: firebrick
+            fontSize: 9
+            bgcolor: none
+            show: "(params.showDWL && params.showTariff)"
+
+    sidebar:
+      controls:
+        - title: International Trade
+          sliders:
+            - {param: Pw,     label: World \ Price}
+            - {param: tariff, label: Tariff \ Amount}
+          checkboxes:
+            - {param: showTrade,  label: '`\\text{Show Free Trade}`'}
+            - {param: showTariff, label: '`\\text{Show Tariff}`'}
+            - {param: showCS,     label: '`\\text{Show Consumer Surplus}`'}
+            - {param: showPS,     label: '`\\text{Show Producer Surplus}`'}
+            - {param: showGains,  label: '`\\text{Show Gains from Trade}`'}
+            - {param: showGovRev, label: '`\\text{Show Tariff Revenue}`'}
+            - {param: showDWL,    label: '`\\text{Show Deadweight Loss}`'}
+
+        - title: Outcome
+          divs:
+            # Autarky Divs
+            - html: "`<b>Autarky Market:</b>`"
+              show: "(!params.showTrade && !params.showTariff)"
+            - html: "`<b>$P_a = ${calcs.P_a}$, $Q_a = ${calcs.Q_a}$</b>`"
+              show: "(!params.showTrade && !params.showTariff)"
+            
+            # Free Trade Divs
+            - html: "`<b>Free Trade Market:</b>`"
+              show: "(params.showTrade && !params.showTariff)"
+            - html: "`<b>$P_w = ${params.Pw.toFixed(1)}$. Domestic production drops to $Q_s = ${calcs.Qs_ft.toFixed(1)}$, and consumption rises to $Q_d = ${calcs.Qd_ft.toFixed(1)}$.</b>`"
+              show: "(params.showTrade && !params.showTariff)"
+            - html: "`<b>Imports = ${calcs.Imports_ft.toFixed(1)} units.</b>`"
+              show: "(params.showTrade && !params.showTariff)"
+            - html: "`<b>Total Surplus increases by ${calcs.Gains_ft.toFixed(1)} (Gains from Trade).</b>`"
+              show: "(params.showTrade && !params.showTariff)"
+
+            # Tariff Divs
+            - html: "`<b>Tariff Market:</b>`"
+              show: params.showTariff
+            - html: "`<b>A Tariff of ${params.tariff.toFixed(1)} raises the domestic price to $P_t = ${calcs.Pt_safe.toFixed(1)}$.</b>`"
+              show: params.showTariff
+            - html: "`<b>Domestic production increases to $Q_s = ${calcs.Qs_t.toFixed(1)}$, and consumption falls to $Q_d = ${calcs.Qd_t.toFixed(1)}$.</b>`"
+              show: params.showTariff
+            - html: "`<b>Imports shrink to ${calcs.Imports_t.toFixed(1)} units.</b>`"
+              show: params.showTariff
+            - html: "`<b><span style=\"color:purple\">Tariff Revenue = ${calcs.GovRev.toFixed(1)}</span></b>`"
+              show: params.showTariff
+            - html: "`<b><span style=\"color:firebrick\">Deadweight Loss = ${calcs.DWL_total.toFixed(1)}</span></b>`"
+              show: params.showTariff
