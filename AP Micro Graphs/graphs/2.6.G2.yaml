@@ -181,8 +181,8 @@ layout:
 
         # Export Arrow (with NaN crash protection if Pw = 55)
         - Segment:
-            a: [(calcs.Qd_ft), (params.Pw)]
-            b: ["(calcs.Qd_ft) == (calcs.Qs_ft) ? (calcs.Qs_ft) + 0.001 : (calcs.Qs_ft)", (params.Pw)]
+            a: [(calcs.Qd_ft), 5]
+            b: ["(calcs.Qd_ft) == (calcs.Qs_ft) ? (calcs.Qs_ft) + 0.001 : (calcs.Qs_ft)", 5]
             color: seagreen
             startArrow: true
             endArrow: true
