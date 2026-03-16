@@ -102,7 +102,7 @@ body {
 /* ── COMMON UI ── */
 .section { padding: 16px 20px 0; }
 .label {
-  font-size: .58rem; font-weight: 600; letter-spacing: .1em;
+  font-size: .68rem; font-weight: 600; letter-spacing: .1em;
   text-transform: uppercase; color: var(--muted);
   margin-bottom: 8px;
 }
@@ -120,7 +120,7 @@ body {
 /* History Strip */
 .hist { padding: 12px 20px 14px; background: var(--surface); border-radius: 12px; margin: 0 20px;}
 .hist-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.hist-label { font-size: .58rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.hist-label { font-size: .68rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .hist-count { font-size: .6rem; color: var(--ghost); }
 .bars { display: flex; align-items: flex-end; gap: 3px; height: 32px; width: 100%; }
 .bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; transition: height .3s; }
@@ -128,7 +128,7 @@ body {
 .bar.mid { background: var(--sub); opacity: .5; }
 .bar.low { background: var(--muted); opacity: .4; }
 .hist-empty { width: 100%; text-align: center; font-size: .65rem; color: var(--ghost); align-self: center; }
-.hist-avg { font-size: .58rem; color: var(--ghost); margin-top: 5px; }
+.hist-avg { font-size: .68rem; color: var(--ghost); margin-top: 5px; }
 .hist-avg strong { color: var(--sub); }
 
 /* Mode */
@@ -151,11 +151,11 @@ body {
 .unit.sel { border-color: var(--hi-bdr); background: var(--hi-dim); }
 .unit::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0 1px 1px 0; background: var(--line2); transition: background .15s; }
 .unit.sel::before { background: var(--hi); }
-.unit-num { font-family: 'DM Mono', monospace; font-size: .52rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; }
+.unit-num { font-family: 'DM Mono', monospace; font-size: .65rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; }
 .unit.sel .unit-num { color: var(--sub); }
 .unit-name { font-size: .78rem; font-weight: 700; color: var(--sub); line-height: 1.25; }
 .unit.sel .unit-name { color: var(--hi); }
-.unit-meta { font-size: .58rem; color: var(--muted); }
+.unit-meta { font-size: .68rem; color: var(--muted); }
 .unit-bar { height: 2px; background: var(--line); border-radius: 1px; margin-top: 2px; overflow: hidden; }
 .unit-bar-fill { height: 100%; border-radius: 1px; background: var(--sub); opacity: .5; transition: width .3s; }
 .unit.sel .unit-bar-fill { background: var(--hi); opacity: .4; }
@@ -165,7 +165,7 @@ body {
 .sz { flex: 1; padding: 10px 4px; border-radius: var(--r); border: 1px solid var(--line); background: var(--card); color: var(--sub); cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all .15s; }
 .sz:active { transform: scale(.96); }
 .sz-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--ink); line-height: 1; }
-.sz-t { font-size: .5rem; color: var(--ghost); }
+.sz-t { font-size: .65rem; color: var(--ghost); }
 .sz.sel { border-color: var(--hi-bdr); background: var(--hi-dim); }
 .sz.sel .sz-n { color: var(--hi); }
 .sz.sel .sz-t { color: var(--sub); }
@@ -216,7 +216,7 @@ body {
   padding: 4px 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line);
   margin-bottom: 12px;
 }
-.sr-chip { float: right; font-size: .55rem; font-weight: 500; padding: 2px 6px; border-radius: 4px; margin-top: 2px; }
+.sr-chip { float: right; font-size: .68rem; font-weight: 500; padding: 2px 6px; border-radius: 4px; margin-top: 2px; }
 .sc-new { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
 .sc-learn { background: var(--err-glow); color: var(--err); border: 1px solid rgba(220,0,0,.3); }
 .sc-young { background: var(--card2); color: var(--ink); border: 1px solid var(--line2); }
@@ -259,7 +259,7 @@ body {
 /* Spelling */
 .spell-wrap { margin-bottom: 12px; display: none; }
 .spell-inner { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
-.spell-lbl { font-size: .58rem; font-weight: 600; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+.spell-lbl { font-size: .68rem; font-weight: 600; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
 .spell-input { width: 100%; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); font-family: 'DM Mono', monospace; font-size: .95rem; color: var(--ink); outline: none; transition: border-color .15s; }
 .spell-input:focus { border-color: var(--line2); }
 .spell-input.ok  { border-color: var(--go); background: var(--go-glow); color: var(--go); }
@@ -308,7 +308,7 @@ body {
 .res-badges::-webkit-scrollbar { display: none; }
 .res-badge { flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); min-width: 80px; }
 .res-badge-val { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 1.1rem; line-height: 1; color: var(--ink); }
-.res-badge-lbl { font-size: .58rem; font-weight: 600; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.res-badge-lbl { font-size: .68rem; font-weight: 600; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
 
 .res-level-block { margin: 16px 20px 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
 .res-level-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -416,8 +416,8 @@ body {
 .lb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .lb-hdr { padding: 10px 14px; border-bottom: 1px solid var(--line); }
 .lb-hdr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.lb-hdr-title { font-size: .58rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.lb-hdr-count { font-size: .58rem; color: var(--ghost); }
+.lb-hdr-title { font-size: .68rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.lb-hdr-count { font-size: .68rem; color: var(--ghost); }
 .lb-tabs { display: flex; gap: 4px; }
 .lb-tab { flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .62rem; font-weight: 600; cursor: pointer; text-align: center; transition: all .15s; }
 .lb-tab.active { background: var(--hi-dim); border-color: var(--hi-bdr); color: var(--hi); }
@@ -433,7 +433,7 @@ body {
 .lb-name { flex: 1; font-size: .8rem; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-name.lb-me-name { color: var(--hi); }
 .lb-score { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--go); font-weight: 700; flex-shrink: 0; }
-.lb-score-lbl { font-size: .52rem; color: var(--muted); margin-left: 2px; }
+.lb-score-lbl { font-size: .65rem; color: var(--muted); margin-left: 2px; }
 .lb-footer { padding: 10px 14px; background: var(--surface); font-size: .68rem; color: var(--sub); text-align: center; }
 .lb-footer strong { color: var(--ink); }
 .lb-empty { padding: 20px; text-align: center; font-size: .7rem; color: var(--ghost); }
@@ -629,15 +629,15 @@ body {
     <div class="conf-wrap" id="conf-wrap">
       <div class="conf-lbl">熟悉程度</div>
       <div class="conf-row">
-        <button class="conf-btn cf-bad" onclick="rate(0)">
+        <button class="conf-btn cf-bad" onclick="rate(0,this)">
           <span class="conf-txt">模糊</span>
           <span class="conf-sub">😳</span>
         </button>
-        <button class="conf-btn cf-ok" onclick="rate(2)">
+        <button class="conf-btn cf-ok" onclick="rate(2,this)">
           <span class="conf-txt">记得</span>
           <span class="conf-sub">👌</span>
         </button>
-        <button class="conf-btn cf-ez" onclick="rate(3)">
+        <button class="conf-btn cf-ez" onclick="rate(3,this)">
           <span class="conf-txt">熟练</span>
           <span class="conf-sub">🔥</span>
         </button>
@@ -1212,6 +1212,9 @@ function renderQ(){
   document.getElementById('feedback').style.display='none';
   document.getElementById('next-btn').classList.remove('on');
   document.getElementById('conf-wrap').style.display='none';
+  document.querySelector('.cf-bad').innerHTML='<span class="conf-txt">模糊</span><span class="conf-sub">😳</span>';
+  document.querySelector('.cf-ok').innerHTML='<span class="conf-txt">记得</span><span class="conf-sub">👌</span>';
+  document.querySelector('.cf-ez').innerHTML='<span class="conf-txt">熟练</span><span class="conf-sub">🔥</span>';
   document.getElementById('opts-list').style.display='none';
   document.getElementById('opts-list').innerHTML='';
   document.getElementById('spell-wrap').style.display='none';
@@ -1280,15 +1283,14 @@ function handleMC(chosen,correct,btn,list,type){
     S.score.ok++; S.streak++;
     if(S.streak>S.maxStreak) S.maxStreak=S.streak;
     onCorrect(S.streak);
-    showFb(true,null);
     S.pendingTerm=correct.term;
     document.getElementById('conf-wrap').style.display='block';
   } else {
     S.streak=0; addWeak(correct);
     onWrong();
-    srUp(correct.term,0);
+    const wd = srUp(correct.term,0);
+    document.getElementById('next-btn').textContent = `${wd.interval} 天后再见 →`;
     S.queue.push({w:correct,type:pickType(correct,['zh_to_en','en_to_zh']),pool:S.queue[S.qi].pool});
-    showFb(false,type==='en_to_zh'?correct.zh:stripA(correct.term));
     document.getElementById('next-btn').classList.add('on');
   }
 }
@@ -1310,20 +1312,26 @@ function doSpell(){
   } else {
     S.streak=0; si.className='spell-input bad'; addWeak(w);
     onWrong();
-    srUp(w.term,0);
+    const wd = srUp(w.term,0);
+    document.getElementById('next-btn').textContent = `${wd.interval} 天后再见 →`;
     S.queue.push({w,type:'spelling',pool});
     showFb(false,exp);
     document.getElementById('next-btn').classList.add('on');
   }
 }
 
-function rate(r){
-  if(!S.pendingTerm)return;
-  const d=srUp(S.pendingTerm,r); S.pendingTerm=null;
-  document.getElementById('conf-wrap').style.display='none';
-  const fb=document.getElementById('feedback');
-  if(fb.style.display!=='none'){ const fi=document.createElement('div'); fi.className='fb-int'; fi.textContent=`下次复习：${d.interval} 天后`; fb.appendChild(fi); }
-  setTimeout(()=>nextQ(),500);
+function rate(r, btn){
+  if(!S.pendingTerm) return;
+  const d = srUp(S.pendingTerm, r); S.pendingTerm = null;
+  btn.innerHTML = `<span class="conf-txt">${d.interval} 天后再见</span>`;
+  document.querySelectorAll('.conf-btn').forEach(b => {
+    if(b !== btn) b.style.opacity = '0.2';
+  });
+  setTimeout(() => {
+    document.getElementById('conf-wrap').style.display = 'none';
+    document.querySelectorAll('.conf-btn').forEach(b => b.style.opacity = '');
+    nextQ();
+  }, 800);
 }
 
 function showFb(ok,ans){
@@ -1339,6 +1347,7 @@ function nextQ(){
   if(S.qi>=S.queue.length){ showResults(); return; }
   document.getElementById('feedback').style.display='none';
   document.getElementById('next-btn').classList.remove('on');
+  document.getElementById('next-btn').textContent = '下一题 →';
   
   const tot = S.queue.length;
   const done = S.qi;
