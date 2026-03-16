@@ -453,7 +453,7 @@ body {
         <span class="pill">6 单元</span>        
         <span class="pill">729 词</span>
         <span class="pill">间隔重复</span>
-        <span class="pill">v2.1</span>
+        <span class="pill">v2.0</span>
 
       </div>
     </div>
@@ -1233,6 +1233,7 @@ function cpWeak(){
   const t=wa.map(({w})=>`${w.term} | ${w.zh}${w.def&&w.def.length>10?'\n  '+w.def:''}`).join('\n\n');
   navigator.clipboard.writeText(t).then(()=>{ const b=document.querySelector('.wcopy'); b.textContent='已复制'; setTimeout(()=>b.textContent='复制',2000); });
 }
+
 
 function replaySession(){
   S.queue=[]; S.qi=0; S.score={ok:0,tot:0}; S.weak={}; S.pendingTerm=null; S.streak=0; S.maxStreak=0;
