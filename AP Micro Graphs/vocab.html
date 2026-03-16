@@ -387,16 +387,30 @@ body {
 }
 
 
-/* ── USERNAME MODAL ── */
+/* ── IDENTITY MODAL ── */
 .name-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:24px; }
 .name-overlay.hidden { display:none; }
-.name-card { background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:32px 28px 28px; width:100%; max-width:360px; box-shadow:0 24px 60px rgba(0,0,0,.6); }
+.name-card { background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:32px 28px 28px; width:100%; max-width:360px; box-shadow:0 24px 60px rgba(0,0,0,.6); overflow:hidden; }
+.name-step { display:none; }
+.name-step.active { display:block; }
 .name-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; letter-spacing:-.02em; color:var(--ink); margin-bottom:6px; }
 .name-sub { font-size:.72rem; color:var(--muted); line-height:1.6; margin-bottom:22px; }
 .name-input { width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line2); background:var(--surface); font-size:.95rem; color:var(--ink); outline:none; transition:border-color .15s; margin-bottom:12px; font-family:var(--zh),'Outfit',sans-serif; }
 .name-input:focus { border-color:var(--hi); }
+.name-input.err { border-color:var(--err); }
+.name-err { font-size:.65rem; color:var(--err); margin-bottom:10px; display:none; min-height:1em; }
 .name-btn { width:100%; padding:13px; border-radius:8px; background:var(--ink); color:var(--bg); border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:opacity .15s; }
 .name-btn:disabled { opacity:.3; cursor:not-allowed; }
+.name-back { display:block; text-align:center; margin-top:12px; font-size:.7rem; color:var(--muted); cursor:pointer; transition:color .15s; background:none; border:none; width:100%; }
+.name-back:hover { color:var(--sub); }
+.emoji-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:20px; }
+.emoji-btn { font-size:1.5rem; padding:8px 4px; border-radius:8px; border:2px solid transparent; background:var(--surface); cursor:pointer; text-align:center; transition:all .15s; line-height:1; }
+.emoji-btn:hover { background:var(--card2); transform:scale(1.1); }
+.emoji-btn.sel { border-color:var(--hi-bdr); background:var(--hi-dim); transform:scale(1.15); }
+.name-dots { display:flex; justify-content:center; gap:6px; margin-bottom:24px; }
+.name-dot { width:6px; height:6px; border-radius:50%; background:var(--line2); transition:background .2s; }
+.name-dot.active { background:var(--hi); }
+
 
 .lb-section { margin: 16px 20px 0; }
 .lb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
@@ -425,14 +439,33 @@ body {
 
 <div id="app-shell">
 <div class="enc-toast" id="enc-toast"></div>
-<!-- ── USERNAME MODAL ── -->
+<!-- ── IDENTITY MODAL ── -->
 <div class="name-overlay hidden" id="name-overlay">
   <div class="name-card">
-    <div class="name-title">欢迎使用</div>
-    <div class="name-sub">请输入你的姓名或学号，用于保存你的学习进度。只需设置一次。</div>
-    <input class="name-input" id="name-input" type="text" placeholder="例：张三 / 2024001" maxlength="30" autocomplete="off" autocorrect="off" onkeydown="if(event.key==='Enter')confirmName()">
-    <button class="name-btn" id="name-btn" onclick="confirmName()" disabled>开始学习 →</button>
+    <div class="name-dots">
+      <div class="name-dot active" id="dot-1"></div>
+      <div class="name-dot" id="dot-2"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="name-step active" id="name-step-1">
+      <div class="name-title">给自己一个专属昵称</div>
+      <div class="name-sub">昵称会出现在排行榜上，好好挑一个响亮的名字</div>
+      <input class="name-input" id="name-input" type="text" placeholder="例：经济小天才" maxlength="20" autocomplete="off" autocorrect="off" onkeydown="if(event.key==='Enter')nameNext()">
+      <div class="name-err" id="name-err"></div>
+      <button class="name-btn" id="name-btn-1" onclick="nameNext()" disabled>下一步 →</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="name-step" id="name-step-2">
+      <div class="name-title">选择你的守护动物</div>
+      <div class="name-sub">一旦选定，伴你始终</div>
+      <div class="emoji-grid" id="emoji-grid"></div>
+      <button class="name-btn" id="name-btn-2" onclick="confirmIdentity()" disabled>开始学习 →</button>
+      <button class="name-back" onclick="nameBack()">← 返回修改昵称</button>
+    </div>
   </div>
+</div>
 </div>
 
 <!-- ══════════════════ SETUP ══════════════════ -->
@@ -706,31 +739,91 @@ function histRender(){
 let sr = {};
 async function srLoad(){
   try{ await app.auth().anonymousAuthProvider().signIn(); } catch(e){}
-  if(!studentId){ await showNameModal(); }
+  const studentEmoji = localStorage.getItem('student_emoji') || '';
+  if(!studentId || !studentEmoji){ await showNameModal(); }
   try{
     const res = await progressCol.doc(studentId).get();
     sr = res.data[0]?.sr || {};
   } catch(e){ sr={}; }
 }
 
+const ANIMALS = ['🐯','🦁','🐻','🐼','🐨','🦊','🐺','🐸','🐬','🦋','🦅','🦄','🐲','🐙','🦓','🦒','🐘','🦜','🐧','🦩','🐠','🦈','🐝','🦔'];
+let _selectedEmoji = '';
+
+function normalizeName(v){
+  return v.replace(/[\/\\.#$\[\]]/g,'').replace(/\s+/g,' ').trim();
+}
+
 function showNameModal(){
   return new Promise(resolve => {
     const overlay = document.getElementById('name-overlay');
-    const input = document.getElementById('name-input');
-    const btn = document.getElementById('name-btn');
     overlay.classList.remove('hidden');
+
+    // Build emoji grid
+    const grid = document.getElementById('emoji-grid');
+    grid.innerHTML = '';
+    ANIMALS.forEach(e => {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-btn';
+      btn.textContent = e;
+      btn.onclick = () => {
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        _selectedEmoji = e;
+        document.getElementById('name-btn-2').disabled = false;
+      };
+      grid.appendChild(btn);
+    });
+
+    // Wire name input
+    const input = document.getElementById('name-input');
+    const btn1 = document.getElementById('name-btn-1');
+    const errEl = document.getElementById('name-err');
+    input.value = '';
+    input.oninput = () => {
+      const v = normalizeName(input.value);
+      btn1.disabled = v.length === 0;
+      input.classList.remove('err');
+      errEl.style.display = 'none';
+    };
     setTimeout(() => input.focus(), 100);
-    input.oninput = () => { btn.disabled = input.value.trim().length === 0; };
+
     window._nameResolve = resolve;
   });
 }
 
-function confirmName(){
+function nameNext(){
   const input = document.getElementById('name-input');
-  const val = input.value.trim();
+  const errEl = document.getElementById('name-err');
+  const val = normalizeName(input.value);
   if(!val) return;
-  studentId = val;
+  if(val.length > 20){
+    input.classList.add('err');
+    errEl.textContent = '昵称最多20个字符';
+    errEl.style.display = 'block';
+    return;
+  }
+  // Store tentative name and go to step 2
+  window._pendingName = val;
+  document.getElementById('name-step-1').classList.remove('active');
+  document.getElementById('name-step-2').classList.add('active');
+  document.getElementById('dot-1').classList.remove('active');
+  document.getElementById('dot-2').classList.add('active');
+}
+
+function nameBack(){
+  document.getElementById('name-step-2').classList.remove('active');
+  document.getElementById('name-step-1').classList.add('active');
+  document.getElementById('dot-2').classList.remove('active');
+  document.getElementById('dot-1').classList.add('active');
+  setTimeout(() => document.getElementById('name-input').focus(), 100);
+}
+
+function confirmIdentity(){
+  if(!window._pendingName || !_selectedEmoji) return;
+  studentId = window._pendingName;
   localStorage.setItem('student_id', studentId);
+  localStorage.setItem('student_emoji', _selectedEmoji);
   document.getElementById('name-overlay').classList.add('hidden');
   if(window._nameResolve){ window._nameResolve(); window._nameResolve = null; }
 }
@@ -802,6 +895,7 @@ async function lbSave(){
   try{
     await lbCol.doc(studentId).set({
       name: studentId,
+      emoji: localStorage.getItem('student_emoji') || '',
       mastered: st.ma,
       sessions: hist.length,
       lastActive: today()
