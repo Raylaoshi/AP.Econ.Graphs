@@ -439,12 +439,19 @@ body {
 .lb-empty { padding: 20px; text-align: center; font-size: .7rem; color: var(--ghost); }
 .lb-loading { padding: 16px; text-align: center; font-size: .65rem; color: var(--muted); }
 
+.weak-tabs { display:flex; gap:4px; }
+.weak-tab { padding:4px 10px; border-radius:6px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:.62rem; font-weight:600; cursor:pointer; transition:all .15s; }
+.weak-tab.active { background:var(--hi-dim); border-color:var(--hi-bdr); color:var(--hi); }
+
 /* ── IDENTITY STRIP ── */
 .id-strip { display:flex; align-items:center; gap:10px; margin:0 20px 16px; padding:12px 16px; background:var(--surface); border-radius:var(--r); border:1px solid var(--line); }
 .id-avatar { font-size:1.6rem; line-height:1; flex-shrink:0; }
 .id-name { font-size:.85rem; font-weight:700; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.id-mastered { font-size:.65rem; color:var(--go); font-weight:700; flex-shrink:0; }
-.id-mastered span { color:var(--muted); font-weight:400; }
+.id-stats { display:flex; gap:8px; flex-shrink:0; align-items:center; }
+.id-stat {  font-size:.62rem; color:var(--muted); white-space:nowrap; }
+.id-stat strong { color:var(--ink); font-weight:700; }
+.id-stat.go strong { color:var(--go); }
+
 
 </style>
 </head>
@@ -500,6 +507,21 @@ body {
   </div>
 </div>
 
+<!-- ── WEAK MODAL ── -->
+<div class="name-overlay hidden" id="weak-overlay" onclick="if(event.target===this)closeWeakModal()">
+  <div class="name-card" style="max-height:80vh;display:flex;flex-direction:column;padding:20px 0 0">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;border-bottom:1px solid var(--line)">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink)">错词本</div>
+      <button onclick="closeWeakModal()" style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer">×</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line)">
+      <span style="font-size:.65rem;color:var(--muted)" id="weak-modal-count"></span>
+      <button onclick="clearLongTermWeak()" style="font-size:.62rem;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer">自动清除长期记忆词</button>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding-bottom:16px" id="weak-modal-list"></div>
+  </div>
+</div>
+
 <!-- ══════════════════ SETUP ══════════════════ -->
 <div class="screen active" id="screen-setup">
   <header class="topbar">
@@ -527,7 +549,8 @@ body {
     <div class="id-strip" id="id-strip" style="display:none">
       <div class="id-avatar" id="id-avatar"></div>
       <div class="id-name" id="id-name"></div>
-      <div class="id-mastered" id="id-mastered"></div>
+      <div id="id-mastered"></div>
+      <button id="id-weak-btn" onclick="openWeakModal()" style="font-size:.62rem;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0">错词本 0</button>
     </div>
 
     <!-- History Strip -->
@@ -707,9 +730,9 @@ body {
 
     <div class="rlabel">间隔重复进度</div>
     <div class="sr-trio">
-      <div class="sr-cell"><div class="sr-num" id="r-new">0</div><div class="sr-lbl">新词</div></div>
-      <div class="sr-cell"><div class="sr-num" id="r-young">0</div><div class="sr-lbl">学习中</div></div>
-      <div class="sr-cell"><div class="sr-num" id="r-mat">0</div><div class="sr-lbl">已掌握</div></div>
+      <div class="sr-cell"><div class="sr-num" id="r-new">0</div><div class="sr-lbl">待学习</div></div>
+      <div class="sr-cell"><div class="sr-num" id="r-young">0</div><div class="sr-lbl">短期记忆</div></div>
+      <div class="sr-cell"><div class="sr-num" id="r-mat">0</div><div class="sr-lbl">长期记忆</div></div>
     </div>
 
     <div class="rlabel">排行榜</div>
@@ -733,7 +756,10 @@ body {
     <div class="rlabel">需加强的词汇</div>
     <div class="weak-card">
       <div class="weak-hdr">
-        <span>错词列表</span>
+        <div class="weak-tabs">
+          <button class="weak-tab active" id="wtab-session" onclick="switchWeakTab('session')">本次错词</button>
+          <button class="weak-tab" id="wtab-history" onclick="switchWeakTab('history')">历史错词</button>
+        </div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="wcnt" id="w-cnt">0</span>
           <button class="wcopy" onclick="cpWeak()">复制</button>
@@ -789,6 +815,7 @@ function histRender(){
   document.getElementById('hist-avg-text').textContent=`${avg}%`;
 }
 let sr = {};
+let weakWords = {};
 async function srLoad(){
   try{ await app.auth().anonymousAuthProvider().signIn(); } catch(e){}
   const studentEmoji = localStorage.getItem('student_emoji') || '';
@@ -796,7 +823,8 @@ async function srLoad(){
   try{
     const res = await progressCol.doc(studentId).get();
     sr = res.data[0]?.sr || {};
-  } catch(e){ sr={}; }
+    weakWords = res.data[0]?.weakWords || {};
+  } catch(e){ sr={}; weakWords={}; }
 }
 
 const ANIMALS = ['🐯','🦁','🐻','🐼','🐨','🦊','🐺','🐸','🐬','🦋','🦅','🦄','🐲','🐙','🦓','🦒','🐘','🦜','🐧','🦩','🐠','🦈','🐝','🦔'];
@@ -979,7 +1007,7 @@ function confirmIdentity(){
 
 function srSave(){
   try{ localStorage.setItem(SR_KEY,JSON.stringify(sr)); }catch{}
-  progressCol.doc(studentId).set({ sr, emoji: localStorage.getItem('student_emoji') || '' });
+  progressCol.doc(studentId).set({ sr, emoji: localStorage.getItem('student_emoji') || '', weakWords });
 }
 function today(){ return new Date().toISOString().slice(0,10); }
 function days(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); }
@@ -996,10 +1024,9 @@ function srUp(t,r){
 }
 function srChipHtml(t){
   const d=sr[t];
-  if(!d||d.stage===0)return '<span class="sr-chip sc-new">新词</span>';
-  if(d.stage===1)return `<span class="sr-chip sc-learn">${d.interval}天后复习</span>`;
-  if(d.stage===2)return `<span class="sr-chip sc-young">学习·${d.interval}d</span>`;
-  return `<span class="sr-chip sc-done">掌握·${d.interval}d</span>`;
+  if(!d||d.stage===0)return '<span class="sr-chip sc-new">待学习</span>';
+  if(d.stage<=2)return '<span class="sr-chip sc-learn">短期记忆</span>';
+  return '<span class="sr-chip sc-done">长期记忆</span>';
 }
 function srStats(){ let a=0,b=0,c=0; VOCAB.forEach(w=>{ const d=sr[w.term]; if(!d||d.stage===0)a++; else if(d.stage<=2)b++; else c++; }); return{nw:a,yo:b,ma:c}; }
 
@@ -1049,27 +1076,24 @@ function getMonday(){
 
 async function lbSave(){
   if(!studentId) return;
-  const st = srStats();
   const currentWeekStart = getMonday();
+  const totalCorrect = hist.reduce((a, s) => a + (s.ok || 0), 0);
   try {
-    // Read existing doc to handle weekly reset
-    let sessionsThisWeek = 1;
+    let weekCorrect = S.score.ok;
     try {
       const existing = await lbCol.doc(studentId).get();
       if(existing.data && existing.data.length > 0){
         const doc = existing.data[0];
         if(doc.weekStart === currentWeekStart){
-          sessionsThisWeek = (doc.sessionsThisWeek || 0) + 1;
+          weekCorrect = (doc.weekCorrect || 0) + S.score.ok;
         }
       }
     } catch(e){}
-
     await lbCol.doc(studentId).set({
       name: studentId,
       emoji: localStorage.getItem('student_emoji') || '',
-      mastered: st.ma,
-      sessions: hist.length,
-      sessionsThisWeek,
+      totalCorrect,
+      weekCorrect,
       weekStart: currentWeekStart,
       lastActive: today()
     });
@@ -1133,20 +1157,20 @@ function lbRenderWithData(instance, all){
   // Sort by active tab metric
   const sorted = [...all].sort((a,b) => {
     if(tab === 'week'){
-      const aW = a.weekStart === currentWeekStart ? (a.sessionsThisWeek||0) : 0;
-      const bW = b.weekStart === currentWeekStart ? (b.sessionsThisWeek||0) : 0;
+      const aW = a.weekStart === currentWeekStart ? (a.weekCorrect||0) : 0;
+      const bW = b.weekStart === currentWeekStart ? (b.weekCorrect||0) : 0;
       return bW - aW;
     }
-    return (b.mastered||0) - (a.mastered||0);
+    return (b.totalCorrect||0) - (a.totalCorrect||0);
   });
 
   const top10 = sorted.slice(0, 10);
   const myRank = sorted.findIndex(d => d.name === studentId) + 1;
   const myScore = tab === 'week'
     ? (all.find(d => d.name === studentId)?.weekStart === currentWeekStart
-        ? (all.find(d => d.name === studentId)?.sessionsThisWeek || 0)
+        ? (all.find(d => d.name === studentId)?.weekCorrect || 0)
         : 0)
-    : srStats().ma;
+    : (all.find(d => d.name === studentId)?.totalCorrect || 0);
   const below = sorted.filter((d, i) => {
     const score = tab === 'week'
       ? (d.weekStart === currentWeekStart ? (d.sessionsThisWeek||0) : 0)
@@ -1159,9 +1183,9 @@ function lbRenderWithData(instance, all){
   listEl.innerHTML = top10.map((d,i) => {
     const isMe = d.name === studentId;
     const score = tab === 'week'
-      ? (d.weekStart === currentWeekStart ? (d.sessionsThisWeek||0) : 0)
-      : (d.mastered||0);
-    const scoreLbl = tab === 'week' ? ' 次' : ' 词';
+      ? (d.weekStart === currentWeekStart ? (d.weekCorrect||0) : 0)
+      : (d.totalCorrect||0);
+    const scoreLbl = ' 题';
     return `<div class="lb-row${isMe?' lb-me':''}">
       <span class="lb-rank ${rankCls(i)}">${i+1}</span>
       <span class="lb-emoji">${esc(d.emoji||'🐾')}</span>
@@ -1189,12 +1213,37 @@ function renderIdStrip(){
   const st = srStats();
   document.getElementById('id-avatar').textContent = emoji;
   document.getElementById('id-name').textContent = id;
-  document.getElementById('id-mastered').innerHTML = `${st.ma}<span> 词已掌握</span>`;
+  document.getElementById('id-mastered').innerHTML = `
+    <div class="id-stats">
+      <span class="id-stat"><strong style="font-family:'DM Mono',monospace">${st.nw}</strong>  待学习</span>
+      <span class="id-stat">·</span>
+      <span class="id-stat"><strong style="font-family:'DM Mono',monospace">${st.yo}</strong>  短期</span>
+      <span class="id-stat">·</span>
+      <span class="id-stat go"><strong style="font-family:'DM Mono',monospace">${st.ma}</strong>  长期</span>
+    </div>`;
+  const weakCount = Object.keys(weakWords).length;
+  const weakBtn = document.getElementById('id-weak-btn');
+  if(weakBtn){ weakBtn.textContent = `错词本 ${weakCount}`; }
   document.getElementById('id-strip').style.display = 'flex';
 }
 
+function weakWordsAutoRemove(){
+  let changed = false;
+  Object.keys(weakWords).forEach(term => {
+    if(sr[term] && sr[term].stage >= 3){ delete weakWords[term]; changed = true; }
+  });
+  if(changed) srSave();
+}
+
+function weakWordsMerge(){
+  Object.values(S.weak).forEach(({w, n}) => {
+    weakWords[w.term] = (weakWords[w.term] || 0) + n;
+  });
+  srSave();
+}
+
 // ── SETUP INIT ────────────────────────────────────
-async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); renderIdStrip(); lbRender('lb-list-setup','lb-footer-setup'); }
+async function init(){ await srLoad(); histLoad(); weakWordsAutoRemove(); buildUnits(); updDue(); histRender(); renderIdStrip(); lbRender('lb-list-setup','lb-footer-setup'); }
 
 function buildUnits(){
   const g = document.getElementById('unit-grid'); 
@@ -1213,10 +1262,10 @@ function buildUnits(){
     const isSel = S.units.has(u);
     
     // Smart label hierarchy
-    let statusStr = '未学';
+    let statusStr = '待学习';
     if (due > 0) statusStr = `${due} 循环复习`;
-    else if (mat > 0) statusStr = `${mat} 已掌握`;
-    else if (prog > 0) statusStr = `${prog} 学习中`;
+    else if (mat > 0) statusStr = `${mat} 长期记忆`;
+    else if (prog > 0) statusStr = `${prog} 短期记忆`;
 
     const c = document.createElement('div');
     c.className = 'unit' + (isSel ? ' sel' : '');
@@ -1508,7 +1557,6 @@ function onWrong(){
   if(Math.random()<0.5) toast(msgs[Math.floor(Math.random()*msgs.length)],'enc-bad');
 }
 
-
 // Level tiers
 const LEVELS =[
   {min:0,  max:9,   name:'新苗',    caption:'继续加油，迈出第一步！'},
@@ -1519,13 +1567,16 @@ const LEVELS =[
   {min:150,max:249, name:'准AP选手', caption:'距离满分只差一步！'},
   {min:250,max:999, name:'AP高手',   caption:'词汇全面，考试有把握！'},
 ];
+
 function getLevel(mastered){
   return LEVELS.find(l=>mastered>=l.min&&mastered<=l.max)||LEVELS[LEVELS.length-1];
 }
 
+
 function showResults(){
   const pct=S.score.tot>0?Math.round(S.score.ok/S.score.tot*100):0;
   histAdd(pct, S.score.ok, S.score.tot);
+  weakWordsMerge();
   lbSave().then(()=>lbRender('lb-list-results','lb-footer-results'));
   document.getElementById('rn').textContent=pct;
   document.getElementById('r-detail').textContent=`${S.score.ok} / ${S.score.tot} 准确率`;
@@ -1560,19 +1611,9 @@ function showResults(){
   document.getElementById('r-young').textContent=st.yo;
   document.getElementById('r-mat').textContent=st.ma;
 
-  const wa=Object.values(S.weak).sort((a,b)=>b.n-a.n);
-  document.getElementById('w-cnt').textContent=wa.length;
-  const wl=document.getElementById('w-list'); wl.innerHTML='';
-  const rb=document.getElementById('retry-btn');
-  if(!wa.length){ wl.innerHTML='<div class="wempty">本次练习全部正确</div>'; rb.disabled=true; }
-  else{
-    rb.disabled=false;
-    wa.forEach(({w,n})=>{
-      const d=document.createElement('div'); d.className='witem';
-      d.innerHTML=`<div><div class="wterm">${esc(w.term)}</div><div class="wzh">${esc(w.zh)}</div>${w.def&&w.def.length>10?`<div class="wdef">${esc(w.def)}</div>`:''}</div><div class="wmiss">${n}×</div>`;
-      wl.appendChild(d);
-    });
-  }
+  document.getElementById('wtab-session').classList.add('active');
+  document.getElementById('wtab-history').classList.remove('active');
+  renderSessionWeak();
   show('screen-results');
 }
 
@@ -1580,6 +1621,94 @@ function cpWeak(){
   const wa=Object.values(S.weak); if(!wa.length)return;
   const t=wa.map(({w})=>`${w.term} | ${w.zh}${w.def&&w.def.length>10?'\n  '+w.def:''}`).join('\n\n');
   navigator.clipboard.writeText(t).then(()=>{ const b=document.querySelector('.wcopy'); b.textContent='已复制'; setTimeout(()=>b.textContent='复制',2000); });
+}
+
+function switchWeakTab(tab){
+  document.getElementById('wtab-session').classList.toggle('active', tab==='session');
+  document.getElementById('wtab-history').classList.toggle('active', tab==='history');
+  if(tab==='session'){
+    renderSessionWeak();
+  } else {
+    renderHistoryWeak();
+  }
+}
+
+function renderSessionWeak(){
+  const wa = Object.values(S.weak).sort((a,b) => b.n - a.n);
+  document.getElementById('w-cnt').textContent = wa.length;
+  const wl = document.getElementById('w-list'); wl.innerHTML='';
+  const rb = document.getElementById('retry-btn');
+  if(!wa.length){ wl.innerHTML='<div class="wempty">本次练习全部正确</div>'; rb.disabled=true; return; }
+  rb.disabled=false;
+  wa.forEach(({w,n}) => {
+    const d = document.createElement('div'); d.className='witem';
+    d.innerHTML=`<div><div class="wterm">${esc(w.term)}</div><div class="wzh">${esc(w.zh)}</div>${w.def&&w.def.length>10?`<div class="wdef">${esc(w.def)}</div>`:''}</div><div class="wmiss">${n}×</div>`;
+    wl.appendChild(d);
+  });
+}
+
+function renderHistoryWeak(){
+  const entries = Object.entries(weakWords).sort((a,b) => b[1]-a[1]);
+  document.getElementById('w-cnt').textContent = entries.length;
+  const wl = document.getElementById('w-list'); wl.innerHTML='';
+  if(!entries.length){ wl.innerHTML='<div class="wempty">暂无历史错词</div>'; return; }
+  entries.forEach(([term, count]) => {
+    const w = VOCAB.find(v => v.term === term);
+    if(!w) return;
+    const d = document.createElement('div'); d.className='witem';
+    d.innerHTML=`<div><div class="wterm">${esc(w.term)}</div><div class="wzh">${esc(w.zh)}</div>${w.def&&w.def.length>10?`<div class="wdef">${esc(w.def)}</div>`:''}</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <div class="wmiss">${count}×</div>
+      <button style="font-size:.55rem;padding:2px 6px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer" onclick="removeWeakWord('${esc(term)}')">清除</button>
+    </div>`;
+    wl.appendChild(d);
+  });
+}
+
+function removeWeakWord(term){
+  delete weakWords[term];
+  srSave();
+  renderHistoryWeak();
+  renderIdStrip();
+}
+
+function openWeakModal(){
+  document.getElementById('weak-overlay').classList.remove('hidden');
+  renderWeakModal();
+}
+
+function closeWeakModal(){
+  document.getElementById('weak-overlay').classList.add('hidden');
+}
+
+function renderWeakModal(){
+  const entries = Object.entries(weakWords).sort((a,b) => b[1]-a[1]);
+  document.getElementById('weak-modal-count').textContent = `共 ${entries.length} 个错词`;
+  const list = document.getElementById('weak-modal-list');
+  list.innerHTML = '';
+  if(!entries.length){ list.innerHTML='<div class="wempty">暂无错词，继续练习吧！</div>'; return; }
+  entries.forEach(([term, count]) => {
+    const w = VOCAB.find(v => v.term === term);
+    if(!w) return;
+    const isLongTerm = sr[term] && sr[term].stage >= 3;
+    const d = document.createElement('div'); d.className='witem';
+    d.style.padding = '12px 20px';
+    d.innerHTML=`<div><div class="wterm">${esc(w.term)}${isLongTerm?'<span style="font-size:.55rem;color:var(--go);margin-left:6px;font-family:\'DM Mono\',monospace">长期记忆</span>':''}</div><div class="wzh">${esc(w.zh)}</div>${w.def&&w.def.length>10?`<div class="wdef">${esc(w.def)}</div>`:''}</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <div class="wmiss">${count}×</div>
+      <button style="font-size:.55rem;padding:2px 6px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer" onclick="removeWeakWord('${esc(term)}');renderWeakModal();renderIdStrip()">清除</button>
+    </div>`;
+    list.appendChild(d);
+  });
+}
+
+function clearLongTermWeak(){
+  Object.keys(weakWords).forEach(term => {
+    if(sr[term] && sr[term].stage >= 3) delete weakWords[term];
+  });
+  srSave();
+  renderWeakModal();
+  renderIdStrip();
 }
 
 function replaySession(){
