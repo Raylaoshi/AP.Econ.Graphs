@@ -397,6 +397,28 @@ body {
 .name-input:focus { border-color:var(--hi); }
 .name-btn { width:100%; padding:13px; border-radius:8px; background:var(--ink); color:var(--bg); border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:opacity .15s; }
 .name-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+/* ── LEADERBOARD ── */
+.lb-section { margin: 16px 20px 0; }
+.lb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.lb-hdr { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.lb-hdr-title { font-size: .58rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.lb-hdr-sub { font-size: .58rem; color: var(--ghost); }
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+.lb-row:last-child { border-bottom: none; }
+.lb-row.lb-me { background: var(--hi-dim); border-left: 2px solid var(--hi); }
+.lb-rank { font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--muted); width: 16px; text-align: right; flex-shrink: 0; }
+.lb-rank.gold { color: #f5c842; }
+.lb-rank.silver { color: #a0aab4; }
+.lb-rank.bronze { color: #cd7f47; }
+.lb-name { flex: 1; font-size: .8rem; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-name.lb-me-name { color: var(--hi); }
+.lb-score { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--go); font-weight: 700; flex-shrink: 0; }
+.lb-score-lbl { font-size: .52rem; color: var(--muted); margin-left: 2px; }
+.lb-footer { padding: 10px 14px; background: var(--surface); font-size: .68rem; color: var(--sub); text-align: center; }
+.lb-footer strong { color: var(--ink); }
+.lb-empty { padding: 20px; text-align: center; font-size: .7rem; color: var(--ghost); }
+.lb-loading { padding: 16px; text-align: center; font-size: .65rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -430,7 +452,7 @@ body {
       <div class="hero-pills">
         <span class="pill">729 词</span>
         <span class="pill">间隔重复</span>
-        <span class="pill">v2.1</span>
+        <span class="pill">v2.2</span>
         <span class="pill">6 单元</span>
       </div>
     </div>
@@ -445,6 +467,19 @@ body {
         <div class="hist-empty">暂无记录，完成第一次练习后显示</div>
       </div>
       <div class="hist-avg" id="hist-avg-line" style="display:none">近期平均正确率 <strong id="hist-avg-text"></strong></div>
+    </div>
+
+
+    <!-- Leaderboard -->
+    <div class="lb-section">
+      <div class="lb-card">
+        <div class="lb-hdr">
+          <span class="lb-hdr-title">排行榜</span>
+          <span class="lb-hdr-sub">掌握词数 · Top 10</span>
+        </div>
+        <div id="lb-list-setup"><div class="lb-loading">加载中…</div></div>
+        <div class="lb-footer" id="lb-footer-setup"></div>
+      </div>
     </div>
 
     <!-- Mode -->
@@ -609,6 +644,17 @@ body {
       <div class="sr-cell"><div class="sr-num" id="r-mat">0</div><div class="sr-lbl">已掌握</div></div>
     </div>
 
+    <div class="rlabel">排行榜</div>
+    <div class="lb-section" style="margin-top:0">
+      <div class="lb-card">
+        <div class="lb-hdr">
+          <span class="lb-hdr-title">排行榜</span>
+          <span class="lb-hdr-sub">掌握词数 · Top 10</span>
+        </div>
+        <div id="lb-list-results"><div class="lb-loading">加载中…</div></div>
+        <div class="lb-footer" id="lb-footer-results"></div>
+      </div>
+    </div>
     <div class="rlabel">需加强的词汇</div>
     <div class="weak-card">
       <div class="weak-hdr">
@@ -638,6 +684,7 @@ const SENTENCES = {"opportunity cost":["When Maria decided to attend college ful
 const app = cloudbase.init({ env: 'ray-econ-vocab-2gf6huwr5ea1b34b', region: 'ap-shanghai' });
 const db = app.database();
 const progressCol = db.collection('progress');
+const lbCol = db.collection('leaderboard');
 let studentId = localStorage.getItem('student_id') || '';
 
 const SR_KEY = 'raylaoshi_sr_v5';
@@ -759,7 +806,77 @@ let S={
 };
 
 // ── SETUP INIT ────────────────────────────────────
-async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); }
+
+// ── LEADERBOARD ──────────────────────────────────
+async function lbSave(){
+  if(!studentId) return;
+  const st = srStats();
+  try{
+    const existing = await lbCol.doc(studentId).get();
+    if(existing.data && existing.data.length > 0){
+      await lbCol.doc(studentId).update({
+        mastered: st.ma,
+        sessions: hist.length,
+        lastActive: today()
+      });
+    } else {
+      await lbCol.add({
+        _id: studentId,
+        name: studentId,
+        mastered: st.ma,
+        sessions: hist.length,
+        lastActive: today()
+      });
+    }
+  } catch(e){ console.error('lbSave error:', e); }
+}
+
+async function lbLoad(){
+  try{
+    const res = await lbCol.get();
+    return res.data || [];
+  } catch(e){ return []; }
+}
+
+async function lbRender(listId, footerId){
+  const listEl = document.getElementById(listId);
+  const footerEl = document.getElementById(footerId);
+  if(!listEl) return;
+  listEl.innerHTML = '<div class="lb-loading">加载中…</div>';
+  const all = await lbLoad();
+  if(!all.length){
+    listEl.innerHTML = '<div class="lb-empty">还没有同学上榜，快来第一个！</div>';
+    if(footerEl) footerEl.style.display = 'none';
+    return;
+  }
+  all.sort((a,b) => (b.mastered||0) - (a.mastered||0));
+  const top10 = all.slice(0, 10);
+  const myMastered = srStats().ma;
+  const below = all.filter(d => (d.mastered||0) < myMastered).length;
+  const percentile = all.length > 1 ? Math.round(below / (all.length - 1) * 100) : 100;
+  const myRank = all.findIndex(d => d.name === studentId) + 1;
+  const rankCls = i => i===0?'gold':i===1?'silver':i===2?'bronze':'';
+  listEl.innerHTML = top10.map((d,i) => {
+    const isMe = d.name === studentId;
+    return `<div class="lb-row${isMe?' lb-me':''}">
+      <span class="lb-rank ${rankCls(i)}">${i+1}</span>
+      <span class="lb-name${isMe?' lb-me-name':''}">${esc(d.name)}${isMe?' 👤':''}</span>
+      <span class="lb-score">${d.mastered||0}<span class="lb-score-lbl"> 词</span></span>
+    </div>`;
+  }).join('');
+  if(footerEl){
+    footerEl.style.display = '';
+    if(!studentId){
+      footerEl.innerHTML = '登录后查看你的排名';
+    } else if(myRank > 0){
+      footerEl.innerHTML = `你排第 <strong>${myRank}</strong> 名 · 超越了 <strong>${percentile}%</strong> 的同学`;
+    } else {
+      footerEl.innerHTML = `完成练习后上榜 · 目前共 <strong>${all.length}</strong> 人参与`;
+    }
+  }
+}
+
+async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); lbRender('lb-list-setup','lb-footer-setup'); }
 
 function buildUnits(){
   const g = document.getElementById('unit-grid'); 
@@ -1071,6 +1188,7 @@ function getLevel(mastered){
 function showResults(){
   const pct=S.score.tot>0?Math.round(S.score.ok/S.score.tot*100):0;
   histAdd(pct, S.score.ok, S.score.tot);
+  lbSave().then(()=>lbRender('lb-list-results','lb-footer-results'));
   document.getElementById('rn').textContent=pct;
   document.getElementById('r-detail').textContent=`${S.score.ok} / ${S.score.tot} 准确率`;
 
