@@ -398,7 +398,6 @@ body {
 .name-btn { width:100%; padding:13px; border-radius:8px; background:var(--ink); color:var(--bg); border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:opacity .15s; }
 .name-btn:disabled { opacity:.3; cursor:not-allowed; }
 
-/* ── LEADERBOARD ── */
 .lb-section { margin: 16px 20px 0; }
 .lb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .lb-hdr { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
@@ -419,6 +418,7 @@ body {
 .lb-footer strong { color: var(--ink); }
 .lb-empty { padding: 20px; text-align: center; font-size: .7rem; color: var(--ghost); }
 .lb-loading { padding: 16px; text-align: center; font-size: .65rem; color: var(--muted); }
+
 </style>
 </head>
 <body>
@@ -450,10 +450,11 @@ body {
     <div class="hero">
       <div class="hero-title">词汇积累</div>
       <div class="hero-pills">
+        <span class="pill">6 单元</span>        
         <span class="pill">729 词</span>
         <span class="pill">间隔重复</span>
-        <span class="pill">v2.2</span>
-        <span class="pill">6 单元</span>
+        <span class="pill">v2.0</span>
+
       </div>
     </div>
 
@@ -469,8 +470,6 @@ body {
       <div class="hist-avg" id="hist-avg-line" style="display:none">近期平均正确率 <strong id="hist-avg-text"></strong></div>
     </div>
 
-
-    <!-- Leaderboard -->
     <div class="lb-section">
       <div class="lb-card">
         <div class="lb-hdr">
@@ -655,6 +654,7 @@ body {
         <div class="lb-footer" id="lb-footer-results"></div>
       </div>
     </div>
+
     <div class="rlabel">需加强的词汇</div>
     <div class="weak-card">
       <div class="weak-hdr">
@@ -805,30 +805,18 @@ let S={
   score:{ok:0,tot:0}, streak:0, maxStreak:0, weak:{}
 };
 
-// ── SETUP INIT ────────────────────────────────────
-
 // ── LEADERBOARD ──────────────────────────────────
 async function lbSave(){
   if(!studentId) return;
   const st = srStats();
   try{
-    const existing = await lbCol.doc(studentId).get();
-    if(existing.data && existing.data.length > 0){
-      await lbCol.doc(studentId).update({
-        mastered: st.ma,
-        sessions: hist.length,
-        lastActive: today()
-      });
-    } else {
-      await lbCol.add({
-        _id: studentId,
-        name: studentId,
-        mastered: st.ma,
-        sessions: hist.length,
-        lastActive: today()
-      });
-    }
-  } catch(e){ console.error('lbSave error:', e); }
+    await lbCol.doc(studentId).set({
+      name: studentId,
+      mastered: st.ma,
+      sessions: hist.length,
+      lastActive: today()
+    });
+  } catch(e){}
 }
 
 async function lbLoad(){
@@ -876,6 +864,7 @@ async function lbRender(listId, footerId){
   }
 }
 
+// ── SETUP INIT ────────────────────────────────────
 async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); lbRender('lb-list-setup','lb-footer-setup'); }
 
 function buildUnits(){
@@ -968,7 +957,18 @@ function retryWeak(){
 }
 
 function goBack(){ buildUnits(); updDue(); histRender(); show('screen-setup'); }
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+function show(id, pushState=true){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(pushState && id !== 'screen-setup'){
+    history.pushState({ screen: id }, '');
+  }
+}
+
+window.addEventListener('popstate', function(e){
+  goBack();
+});
 
 // ── QUESTION TYPES ────────────────────────────────
 function isEcon(w){ return w.def&&w.def.length>20&&!['noun','verb','adjective','adverb','phrase','preposition','conjunction','noun phrase','phrasal verb'].includes(w.def.trim().toLowerCase().split(/[ .]/)[0]); }
