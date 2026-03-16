@@ -411,12 +411,17 @@ body {
 .name-dot { width:6px; height:6px; border-radius:50%; background:var(--line2); transition:background .2s; }
 .name-dot.active { background:var(--hi); }
 
-
+/* ── Leaderboard ── */
 .lb-section { margin: 16px 20px 0; }
 .lb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
-.lb-hdr { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.lb-hdr { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.lb-hdr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .lb-hdr-title { font-size: .58rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.lb-hdr-sub { font-size: .58rem; color: var(--ghost); }
+.lb-hdr-count { font-size: .58rem; color: var(--ghost); }
+.lb-tabs { display: flex; gap: 4px; }
+.lb-tab { flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .62rem; font-weight: 600; cursor: pointer; text-align: center; transition: all .15s; }
+.lb-tab.active { background: var(--hi-dim); border-color: var(--hi-bdr); color: var(--hi); }
+.lb-tab:active { transform: scale(.97); }
 .lb-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--line); }
 .lb-row:last-child { border-bottom: none; }
 .lb-row.lb-me { background: var(--hi-dim); border-left: 2px solid var(--hi); }
@@ -424,6 +429,7 @@ body {
 .lb-rank.gold { color: #f5c842; }
 .lb-rank.silver { color: #a0aab4; }
 .lb-rank.bronze { color: #cd7f47; }
+.lb-emoji { font-size: .9rem; flex-shrink: 0; line-height: 1; }
 .lb-name { flex: 1; font-size: .8rem; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-name.lb-me-name { color: var(--hi); }
 .lb-score { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--go); font-weight: 700; flex-shrink: 0; }
@@ -432,6 +438,13 @@ body {
 .lb-footer strong { color: var(--ink); }
 .lb-empty { padding: 20px; text-align: center; font-size: .7rem; color: var(--ghost); }
 .lb-loading { padding: 16px; text-align: center; font-size: .65rem; color: var(--muted); }
+
+/* ── IDENTITY STRIP ── */
+.id-strip { display:flex; align-items:center; gap:10px; margin:0 20px 16px; padding:12px 16px; background:var(--surface); border-radius:var(--r); border:1px solid var(--line); }
+.id-avatar { font-size:1.6rem; line-height:1; flex-shrink:0; }
+.id-name { font-size:.85rem; font-weight:700; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.id-mastered { font-size:.65rem; color:var(--go); font-weight:700; flex-shrink:0; }
+.id-mastered span { color:var(--muted); font-weight:400; }
 
 </style>
 </head>
@@ -485,9 +498,16 @@ body {
         <span class="pill">6 单元</span>        
         <span class="pill">729 词</span>
         <span class="pill">间隔重复</span>
-        <span class="pill">v2.0</span>
+        <span class="pill">v2.3</span>
 
       </div>
+    </div>
+
+    <!-- Identity Strip -->
+    <div class="id-strip" id="id-strip" style="display:none">
+      <div class="id-avatar" id="id-avatar"></div>
+      <div class="id-name" id="id-name"></div>
+      <div class="id-mastered" id="id-mastered"></div>
     </div>
 
     <!-- History Strip -->
@@ -502,11 +522,18 @@ body {
       <div class="hist-avg" id="hist-avg-line" style="display:none">近期平均正确率 <strong id="hist-avg-text"></strong></div>
     </div>
 
+    <!-- Leaderboard -->
     <div class="lb-section">
       <div class="lb-card">
         <div class="lb-hdr">
-          <span class="lb-hdr-title">排行榜</span>
-          <span class="lb-hdr-sub">掌握词数 · Top 10</span>
+          <div class="lb-hdr-top">
+            <span class="lb-hdr-title">排行榜</span>
+            <span class="lb-hdr-count" id="lb-count-setup">加载中…</span>
+          </div>
+          <div class="lb-tabs">
+            <button class="lb-tab active" id="lb-tab-total-setup" onclick="lbSwitchTab('setup','total')">总榜</button>
+            <button class="lb-tab" id="lb-tab-week-setup" onclick="lbSwitchTab('setup','week')">本周榜</button>
+          </div>
         </div>
         <div id="lb-list-setup"><div class="lb-loading">加载中…</div></div>
         <div class="lb-footer" id="lb-footer-setup"></div>
@@ -669,8 +696,14 @@ body {
     <div class="lb-section" style="margin-top:0">
       <div class="lb-card">
         <div class="lb-hdr">
-          <span class="lb-hdr-title">排行榜</span>
-          <span class="lb-hdr-sub">掌握词数 · Top 10</span>
+          <div class="lb-hdr-top">
+            <span class="lb-hdr-title">排行榜</span>
+            <span class="lb-hdr-count" id="lb-count-results">加载中…</span>
+          </div>
+          <div class="lb-tabs">
+            <button class="lb-tab active" id="lb-tab-total-results" onclick="lbSwitchTab('results','total')">总榜</button>
+            <button class="lb-tab" id="lb-tab-week-results" onclick="lbSwitchTab('results','week')">本周榜</button>
+          </div>
         </div>
         <div id="lb-list-results"><div class="lb-loading">加载中…</div></div>
         <div class="lb-footer" id="lb-footer-results"></div>
@@ -888,15 +921,39 @@ let S={
 };
 
 // ── LEADERBOARD ──────────────────────────────────
+
+function getMonday(){
+  const d = new Date();
+  const day = d.getDay();
+  const diff = (day === 0 ? -6 : 1 - day);
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+
 async function lbSave(){
   if(!studentId) return;
   const st = srStats();
-  try{
+  const currentWeekStart = getMonday();
+  try {
+    // Read existing doc to handle weekly reset
+    let sessionsThisWeek = 1;
+    try {
+      const existing = await lbCol.doc(studentId).get();
+      if(existing.data && existing.data.length > 0){
+        const doc = existing.data[0];
+        if(doc.weekStart === currentWeekStart){
+          sessionsThisWeek = (doc.sessionsThisWeek || 0) + 1;
+        }
+      }
+    } catch(e){}
+
     await lbCol.doc(studentId).set({
       name: studentId,
       emoji: localStorage.getItem('student_emoji') || '',
       mastered: st.ma,
       sessions: hist.length,
+      sessionsThisWeek,
+      weekStart: currentWeekStart,
       lastActive: today()
     });
   } catch(e){}
@@ -904,37 +961,98 @@ async function lbSave(){
 
 async function lbLoad(){
   try{
-    const res = await lbCol.get();
+    // Use a where clause to fetch all documents — fixes single-user bug
+    const res = await lbCol.where({ lastActive: db.command.exists(true) }).get();
     return res.data || [];
-  } catch(e){ return []; }
+  } catch(e){
+    try{
+      const res = await lbCol.get();
+      return res.data || [];
+    } catch(e2){ return []; }
+  }
+}
+
+// Track active tab state per board instance
+const _lbTab = { setup: 'total', results: 'total' };
+
+function lbSwitchTab(instance, tab){
+  _lbTab[instance] = tab;
+  document.getElementById(`lb-tab-total-${instance}`).classList.toggle('active', tab === 'total');
+  document.getElementById(`lb-tab-week-${instance}`).classList.toggle('active', tab === 'week');
+  // Re-render with cached data if available
+  if(window._lbCache){
+    lbRenderWithData(instance, window._lbCache);
+  }
 }
 
 async function lbRender(listId, footerId){
+  // Extract instance name from id e.g. 'lb-list-setup' → 'setup'
+  const instance = listId.replace('lb-list-','');
   const listEl = document.getElementById(listId);
-  const footerEl = document.getElementById(footerId);
   if(!listEl) return;
   listEl.innerHTML = '<div class="lb-loading">加载中…</div>';
   const all = await lbLoad();
+  window._lbCache = all;
+  lbRenderWithData(instance, all);
+}
+
+function lbRenderWithData(instance, all){
+  const listEl = document.getElementById(`lb-list-${instance}`);
+  const footerEl = document.getElementById(`lb-footer-${instance}`);
+  const countEl = document.getElementById(`lb-count-${instance}`);
+  if(!listEl) return;
+
+  if(countEl) countEl.textContent = `${all.length} 位同学参与`;
+
   if(!all.length){
     listEl.innerHTML = '<div class="lb-empty">还没有同学上榜，快来第一个！</div>';
     if(footerEl) footerEl.style.display = 'none';
     return;
   }
-  all.sort((a,b) => (b.mastered||0) - (a.mastered||0));
-  const top10 = all.slice(0, 10);
-  const myMastered = srStats().ma;
-  const below = all.filter(d => (d.mastered||0) < myMastered).length;
-  const percentile = all.length > 1 ? Math.round(below / (all.length - 1) * 100) : 100;
-  const myRank = all.findIndex(d => d.name === studentId) + 1;
+
+  const tab = _lbTab[instance] || 'total';
+  const currentWeekStart = getMonday();
+
+  // Sort by active tab metric
+  const sorted = [...all].sort((a,b) => {
+    if(tab === 'week'){
+      const aW = a.weekStart === currentWeekStart ? (a.sessionsThisWeek||0) : 0;
+      const bW = b.weekStart === currentWeekStart ? (b.sessionsThisWeek||0) : 0;
+      return bW - aW;
+    }
+    return (b.mastered||0) - (a.mastered||0);
+  });
+
+  const top10 = sorted.slice(0, 10);
+  const myRank = sorted.findIndex(d => d.name === studentId) + 1;
+  const myScore = tab === 'week'
+    ? (all.find(d => d.name === studentId)?.weekStart === currentWeekStart
+        ? (all.find(d => d.name === studentId)?.sessionsThisWeek || 0)
+        : 0)
+    : srStats().ma;
+  const below = sorted.filter((d, i) => {
+    const score = tab === 'week'
+      ? (d.weekStart === currentWeekStart ? (d.sessionsThisWeek||0) : 0)
+      : (d.mastered||0);
+    return score < myScore;
+  }).length;
+  const percentile = sorted.length > 1 ? Math.round(below / (sorted.length - 1) * 100) : 100;
   const rankCls = i => i===0?'gold':i===1?'silver':i===2?'bronze':'';
+
   listEl.innerHTML = top10.map((d,i) => {
     const isMe = d.name === studentId;
+    const score = tab === 'week'
+      ? (d.weekStart === currentWeekStart ? (d.sessionsThisWeek||0) : 0)
+      : (d.mastered||0);
+    const scoreLbl = tab === 'week' ? ' 次' : ' 词';
     return `<div class="lb-row${isMe?' lb-me':''}">
       <span class="lb-rank ${rankCls(i)}">${i+1}</span>
-      <span class="lb-name${isMe?' lb-me-name':''}">${esc(d.name)}${isMe?' 👤':''}</span>
-      <span class="lb-score">${d.mastered||0}<span class="lb-score-lbl"> 词</span></span>
+      <span class="lb-emoji">${esc(d.emoji||'🐾')}</span>
+      <span class="lb-name${isMe?' lb-me-name':''}">${esc(d.name)}</span>
+      <span class="lb-score">${score}<span class="lb-score-lbl">${scoreLbl}</span></span>
     </div>`;
   }).join('');
+
   if(footerEl){
     footerEl.style.display = '';
     if(!studentId){
@@ -947,8 +1065,19 @@ async function lbRender(listId, footerId){
   }
 }
 
+function renderIdStrip(){
+  const id = localStorage.getItem('student_id');
+  const emoji = localStorage.getItem('student_emoji');
+  if(!id || !emoji) return;
+  const st = srStats();
+  document.getElementById('id-avatar').textContent = emoji;
+  document.getElementById('id-name').textContent = id;
+  document.getElementById('id-mastered').innerHTML = `${st.ma}<span> 词已掌握</span>`;
+  document.getElementById('id-strip').style.display = 'flex';
+}
+
 // ── SETUP INIT ────────────────────────────────────
-async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); lbRender('lb-list-setup','lb-footer-setup'); }
+async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); renderIdStrip(); lbRender('lb-list-setup','lb-footer-setup'); }
 
 function buildUnits(){
   const g = document.getElementById('unit-grid'); 
