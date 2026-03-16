@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>词汇积累 · AP 微观经济学 · Ray's Economics</title>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.js"></script>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.auth.js"></script>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.database.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────
+   TOKENS  ·  Design v3
+───────────────────────────────────────────────── */
+:root {
+  --bg:      #111112;
+  --surface: #18181a;
+  --card:    #1e1e20;
+  --card2:   #242427;
+  --line:    #2c2c30;
+  --line2:   #3a3a3f;
+
+  --ink:     #f0eff0;
+  --sub:     #96959e;
+  --muted:   #575660;
+  --ghost:   #363540;
+
+  /* Selection accent — brighter white, clearly visible */
+  --hi:      #ffffff;
+  --hi-dim:  rgba(255,255,255,.10);
+  --hi-bdr:  rgba(255,255,255,.32);
+
+  /* Semantic — correct / wrong only, not used for decoration */
+  --go:      #2cb56e;
+  --go-glow: rgba(44, 181, 110, 0.15);
+  --err:     #DC0000;
+  --err-glow:rgba(220, 0, 0, 0.15);
+
+  /* Brand red — "Ray's" text + wrong feedback only */
+  --red:     #DC0000;
+
+  --zh: 'PingFang SC','Hiragino Sans GB','Microsoft YaHei UI','Microsoft YaHei',sans-serif;
+  
+  --max-w:   480px;
+  --r:       10px;
+  --bar:     52px;
+  --safe-b:  env(safe-area-inset-bottom, 0px);
+  --safe-t:  env(safe-area-inset-top, 0px);
+}
+
+/* ─────────────────────────────────────────────────
+   RESET + GLOBAL
+───────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  font-family: inherit;
+}
+html {
+  height: 100%; height: 100dvh;
+  font-family: var(--zh), 'Outfit', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg); color: var(--ink);
+}
+
+body {
+  font-weight: 400; line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0; transition: opacity .28s;
+  overflow-x: hidden;
+  min-height: 100%; min-height: 100dvh;
+  display: flex; justify-content: center;
+}
+
+#app-shell {
+  width: 100%; max-width: var(--max-w);
+  min-height: 100dvh; position: relative;
+  background: var(--bg);
+  box-shadow: none;
+}
+
+.screen { display: none; width: 100%; }
+.screen.active { display: flex; flex-direction: column; min-height: 100dvh; }
+
+/* ── TOPBAR ── */
+.topbar {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: calc(var(--bar) + var(--safe-t)); padding-top: var(--safe-t);
+  background: rgba(17,17,18,.96); backdrop-filter: blur(14px);
+  z-index: 50; position: sticky; top: 0;
+}
+.brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: .84rem; letter-spacing: -.01em; color: var(--sub); text-decoration: none; }
+.brand em { color: var(--ink); font-style: normal; }
+.nav { display: flex; gap: 4px; }
+.nav a, .nav-item { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 600; color: var(--sub); text-decoration: none; padding: 4px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); transition: all .15s; }
+.nav a:active { color: var(--ink); border-color: var(--line2); background: var(--card2); }
+
+/* ── COMMON UI ── */
+.section { padding: 16px 20px 0; }
+.label {
+  font-size: .68rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px;
+}
+.scroll-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: calc(24px + var(--safe-b)); }
+
+/* ═══════════════════════════════════════════════════
+   SETUP SCREEN
+═══════════════════════════════════════════════════ */
+.hero { padding: 28px 24px 22px; text-align: center; }
+.hero-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.4rem; line-height: 1; letter-spacing: -.03em; color: var(--ink); }
+.hero-title em { color: var(--red); font-style: normal; }
+.hero-pills { display: flex; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.pill { font-size: .6rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 3px 9px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
+
+/* History Strip */
+.hist { padding: 12px 20px 14px; background: var(--surface); border-radius: 12px; margin: 0 20px;}
+.hist-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.hist-label { font-size: .68rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.hist-count { font-size: .6rem; color: var(--ghost); }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 32px; width: 100%; }
+.bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; transition: height .3s; }
+.bar.go  { background: var(--go); opacity: .7; }
+.bar.mid { background: var(--sub); opacity: .5; }
+.bar.low { background: var(--muted); opacity: .4; }
+.hist-empty { width: 100%; text-align: center; font-size: .65rem; color: var(--ghost); align-self: center; }
+.hist-avg { font-size: .68rem; color: var(--ghost); margin-top: 5px; }
+.hist-avg strong { color: var(--sub); }
+
+/* Mode */
+.mode-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.mode-btn { padding: 13px 14px; border-radius: var(--r); border: 1px solid var(--line); background: var(--card); cursor: pointer; text-align: left; transition: all .15s; }
+.mode-btn:active { transform: scale(.98); }
+.mode-btn.active { border-color: var(--hi-bdr); background: var(--hi-dim); }
+.mode-btn-name { font-size: .82rem; font-weight: 700; color: var(--sub); line-height: 1; }
+.mode-btn.active .mode-btn-name { color: var(--hi); }
+.mode-btn-sub { font-size: .62rem; color: var(--muted); margin-top: 4px; line-height: 1.3; }
+
+.due-info { border-radius: var(--r); padding: 12px 14px; background: var(--card); border: 1px solid var(--line); font-size: .75rem; color: var(--sub); margin-top: 8px; display: none; }
+.due-info.show { display: block; }
+.due-info strong { color: var(--ink); font-weight: 700; }
+
+/* Units */
+.unit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.unit { padding: 11px 13px; border-radius: var(--r); border: 1px solid var(--line); background: var(--card); cursor: pointer; position: relative; display: flex; flex-direction: column; gap: 5px; transition: all .15s; user-select: none; }
+.unit:active { transform: scale(.98); }
+.unit.sel { border-color: var(--hi-bdr); background: var(--hi-dim); }
+.unit::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0 1px 1px 0; background: var(--line2); transition: background .15s; }
+.unit.sel::before { background: var(--hi); }
+.unit-num { font-family: 'DM Mono', monospace; font-size: .65rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; }
+.unit.sel .unit-num { color: var(--sub); }
+.unit-name { font-size: .78rem; font-weight: 700; color: var(--sub); line-height: 1.25; }
+.unit.sel .unit-name { color: var(--hi); }
+.unit-meta { font-size: .68rem; color: var(--muted); }
+.unit-bar { height: 2px; background: var(--line); border-radius: 1px; margin-top: 2px; overflow: hidden; }
+.unit-bar-fill { height: 100%; border-radius: 1px; background: var(--sub); opacity: .5; transition: width .3s; }
+.unit.sel .unit-bar-fill { background: var(--hi); opacity: .4; }
+
+/* Size */
+.size-row { display: flex; gap: 6px; }
+.sz { flex: 1; padding: 10px 4px; border-radius: var(--r); border: 1px solid var(--line); background: var(--card); color: var(--sub); cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all .15s; }
+.sz:active { transform: scale(.96); }
+.sz-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--ink); line-height: 1; }
+.sz-t { font-size: .65rem; color: var(--ghost); }
+.sz.sel { border-color: var(--hi-bdr); background: var(--hi-dim); }
+.sz.sel .sz-n { color: var(--hi); }
+.sz.sel .sz-t { color: var(--sub); }
+
+/* Start */
+.start-wrap { padding: 16px 20px 0; }
+.start { width: 100%; padding: 15px; border-radius: var(--r); background: var(--ink); color: var(--bg); border: none; font-size: .95rem; font-weight: 700; cursor: pointer; letter-spacing: .01em; transition: opacity .15s, transform .1s; }
+.start:active { transform: scale(.98); opacity: .9; }
+.start:disabled { opacity: .2; cursor: not-allowed; }
+.start-err { color: var(--red); font-size: .65rem; text-align: center; margin-top: 6px; display: none; }
+
+/* Sync */
+.sync-wrap { padding: 12px 20px 0; }
+.sync { width: 100%; padding: 9px 13px; border-radius: var(--r); border: 1px solid var(--line); background: transparent; color: var(--ghost); font-size: .7rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all .15s; }
+.sync:hover { border-color: var(--line2); color: var(--sub); }
+.sync-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--line2); flex-shrink: 0; }
+.sync-drawer { display: none; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: var(--surface); margin-top: 6px; }
+.sync-drawer.open { display: block; }
+.sync-inner { padding: 14px; }
+.sync-note { font-size: .68rem; color: var(--sub); line-height: 1.6; margin-bottom: 12px; }
+.sync-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.sync-code-box { flex: 1; padding: 9px 11px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); font-family: 'DM Mono', monospace; font-size: .62rem; color: var(--muted); word-break: break-all; }
+.sync-act { padding: 9px 13px; border-radius: 6px; border: 1px solid var(--line); background: var(--card2); color: var(--ink); cursor: pointer; font-size: .7rem; font-weight: 700; white-space: nowrap; transition: all .15s; }
+.sync-act:active { background: var(--line); }
+.sync-input-box { flex: 1; padding: 9px 11px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--ink); outline: none; }
+.sync-input-box:focus { border-color: var(--sub); }
+.sync-msg { font-size: .65rem; min-height: 1em; }
+.sync-msg.ok { color: var(--go); } .sync-msg.err { color: var(--err); }
+
+/* ═══════════════════════════════════════════════════
+   QUIZ SCREEN
+═══════════════════════════════════════════════════ */
+.quiz-prog { flex-shrink: 0; padding: 10px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin: 12px 16px 0; }
+.qprog-row { display: flex; align-items: center; gap: 12px; }
+.prog-center { flex: 1; min-width: 0; }
+.prog-nums { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--muted); white-space: nowrap; }
+.prog-center { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.bar-track { flex: 1; height: 43px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.streak-tag { display: none; font-size: .6rem; font-weight: 700; color: var(--sub); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; background: var(--surface); }
+.streak-tag.on { display: inline-block; }
+.bar-track { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--hi); opacity: .7; border-radius: 2px; transition: width .4s ease; }
+.score-chip { font-family: 'DM Mono', monospace; font-size: .7rem; font-weight: 900;  color: var(--go); flex-shrink: 0; }
+
+.qtype {
+  display: inline-flex; align-items: center;
+  font-size: .62rem; font-weight: 600; color: var(--sub); letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+.sr-chip { float: right; font-size: .68rem; font-weight: 500; padding: 2px 6px; border-radius: 4px; margin-top: 2px; }
+.sc-new { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+.sc-learn { background: var(--err-glow); color: var(--err); border: 1px solid rgba(220,0,0,.3); }
+.sc-young { background: var(--card2); color: var(--ink); border: 1px solid var(--line2); }
+.sc-done  { background: var(--go-glow); color: var(--go); border: 1px solid rgba(44,181,110,.3); }
+
+/* Main Question */
+.q-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; margin-bottom: 12px; min-height: 130px; }
+.qtext-zh { font-size: clamp(1.8rem, 8vw, 2.8rem); font-weight: 700; line-height: 1.25; color: var(--ink); word-break: break-word; }
+.qtext-en { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: clamp(1.2rem, 4vw, 1.6rem); line-height: 1.4; color: var(--ink); }
+.qtext-def { font-size: .95rem; line-height: 1.7; color: var(--ink); }
+.qtext-fill { font-size: .95rem; line-height: 1.8; color: var(--ink); }
+.fill-blank { display: inline-block; border-bottom: 1px solid var(--ink); min-width: 60px; padding: 0 4px; font-family: 'DM Mono', monospace; color: var(--ink); }
+.q-hint { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: .8rem; line-height: 1.6; color: var(--sub); }
+.q-hint em { font-style: normal; color: var(--muted); font-weight: 600; font-size: .65rem; letter-spacing: .05em; text-transform: uppercase; margin-right: 6px; }
+
+/* Options */
+.opts-list { display: none; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin-bottom: 12px; }
+.opt-btn {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 15px 16px;
+  border: none; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink);
+  cursor: pointer; text-align: left; transition: background .15s;
+}
+.opts-list .opt-btn:last-child { border-bottom: none; }
+.opt-btn:active { background: var(--card2); }
+.opt-btn:disabled { cursor: default; }
+.opt-key {
+  width: 24px; height: 24px; border-radius: 4px; flex-shrink: 0;
+  border: 1px solid var(--line2); background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--muted); font-weight: 500; transition: all .15s;
+}
+.opt-text { flex: 1; font-size: .9rem; line-height: 1.4; color: var(--ink); }
+.opt-btn.ok  { background: var(--go-glow); }
+.opt-btn.ok .opt-key  { background: var(--go); border-color: var(--go); color: #fff; }
+.opt-btn.ok .opt-text { color: var(--go); font-weight: 600; }
+.opt-btn.bad { background: var(--err-glow); }
+.opt-btn.bad .opt-key { background: var(--err); border-color: var(--err); color: #fff; }
+.opt-btn.bad .opt-text { color: var(--err); }
+
+/* Spelling */
+.spell-wrap { margin-bottom: 12px; display: none; }
+.spell-inner { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.spell-lbl { font-size: .68rem; font-weight: 600; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+.spell-input { width: 100%; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); font-family: 'DM Mono', monospace; font-size: .95rem; color: var(--ink); outline: none; transition: border-color .15s; }
+.spell-input:focus { border-color: var(--line2); }
+.spell-input.ok  { border-color: var(--go); background: var(--go-glow); color: var(--go); }
+.spell-input.bad { border-color: var(--err); background: var(--err-glow); color: var(--err); }
+.spell-go { width: 100%; margin-top: 10px; padding: 12px; border-radius: 6px; border: none; background: var(--ink); color: var(--bg); font-size: .85rem; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+.spell-go:active { opacity: .8; }
+.spell-go:disabled { opacity: .3; cursor: default; }
+
+/* Feedback */
+.feedback { border-radius: var(--r); padding: 12px 16px; margin-bottom: 12px; display: none; font-size: .85rem; font-weight: 600; }
+.feedback.ok  { background: var(--go-glow); border: 1px solid rgba(44,181,110,.2); color: var(--go); }
+.feedback.bad { background: var(--err-glow); border: 1px solid rgba(220,0,0,.2); color: var(--err); }
+.fb-ans { font-size: .75rem; font-weight: 400; color: var(--sub); margin-top: 4px; }
+.fb-int { font-size: .62rem; color: var(--muted); margin-top: 6px; }
+
+/* Confidence */
+.conf-wrap { display: none; margin-bottom: 12px; }
+.conf-lbl { font-size: .65rem; color: var(--muted); text-align: center; margin-bottom: 8px; }
+.conf-row { display: flex; gap: 6px; }
+.conf-btn {
+  flex: 1; padding: 12px 4px; border-radius: var(--r);
+  border: 1px solid var(--line); background: var(--card);
+  color: var(--sub); cursor: pointer; transition: all .15s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.conf-btn:active { transform: scale(.96); }
+.conf-txt  { font-size: .85rem; font-weight: 700; }
+.conf-sub  { font-size: .9rem; color: var(--ghost); }
+.conf-btn:hover { border-color: var(--line2); background: var(--card2); color: var(--ink); }
+
+.next-btn { width: 100%; padding: 14px; border-radius: var(--r); border: 1px solid var(--line2); background: var(--card2); color: var(--ink); font-size: .9rem; font-weight: 700; cursor: pointer; display: none; transition: background .15s; }
+.next-btn.on { display: block; }
+.next-btn:active { background: var(--line); }
+
+/* ═══════════════════════════════════════════════════
+   RESULTS SCREEN
+═══════════════════════════════════════════════════ */
+.res-hero { padding: 40px 20px 30px; text-align: center; border-bottom: 1px solid var(--line); }
+.res-grade-tag { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 99px; font-size: .68rem; font-weight: 700; letter-spacing: .08em; margin-bottom: 14px; border: 1px solid currentColor; }
+.res-pct { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(4rem, 18vw, 6rem); line-height: 1; letter-spacing: -.03em; }
+.res-pct span { font-size: .5em; opacity: .5; padding-left: 2px; }
+.res-msg { font-size: .95rem; font-weight: 600; margin-top: 12px; color: var(--ink); }
+.res-sub-detail { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--ghost); margin-top: 6px; }
+
+.res-badges { display: flex; gap: 8px; padding: 20px 20px 0; overflow-x: auto; scrollbar-width: none; }
+.res-badges::-webkit-scrollbar { display: none; }
+.res-badge { flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); min-width: 80px; }
+.res-badge-val { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 1.1rem; line-height: 1; color: var(--ink); }
+.res-badge-lbl { font-size: .68rem; font-weight: 600; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+
+.res-level-block { margin: 16px 20px 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.res-level-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.res-level-name { font-size: .85rem; font-weight: 700; color: var(--ink); }
+.res-level-xp { font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--ghost); }
+.res-level-bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.res-level-fill { height: 100%; border-radius: 2px; background: var(--hi); opacity: .7; transition: width .8s ease; }
+
+.sr-trio { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 16px 20px 0; }
+.sr-cell { padding: 14px 8px; text-align: center; border-right: 1px solid var(--line); }
+.sr-cell:last-child { border-right: none; }
+.sr-num { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 1.4rem; line-height: 1; color: var(--ink); }
+.sr-lbl { font-size: .6rem; font-weight: 600; font-family: var(--zh), 'Microsoft YaHei UI'; color: var(--muted); margin-top: 6px; letter-spacing: .05em; text-transform: uppercase; }
+
+.rlabel { font-size: .65rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 24px 20px 10px; }
+.weak-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 0 20px 16px; }
+.weak-hdr { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); display: flex; align-items: center; justify-content: space-between; font-size: .7rem; font-weight: 600; color: var(--ink); }
+.wcnt { background: var(--line2); color: var(--ink); border-radius: 4px; padding: 2px 6px; font-family: 'DM Mono', monospace; font-size: .6rem; }
+.wcopy { border: 1px solid var(--line); background: transparent; border-radius: 4px; padding: 3px 8px; font-size: .65rem; color: var(--sub); cursor: pointer; transition: all .15s; }
+.wcopy:active { background: var(--line); color: var(--ink); }
+.weak-scroll { max-height: 250px; overflow-y: auto; }
+.witem { padding: 14px 16px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.witem:last-child { border-bottom: none; }
+.wterm { font-weight: 700; font-size: .9rem; color: var(--ink); font-family: 'Outfit', sans-serif; }
+.wzh { font-size: .75rem; color: var(--sub); margin-top: 4px; }
+.wdef { font-size: .7rem; color: var(--muted); line-height: 1.5; grid-column: 1/-1; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); }
+.wmiss { background: var(--line2); color: var(--ink); font-family: 'DM Mono', monospace; font-size: .65rem; border-radius: 4px; padding: 2px 6px; align-self: start; }
+.wempty { padding: 30px; text-align: center; color: var(--muted); font-size: .8rem; }
+
+.res-btns { display: flex; flex-direction: column; gap: 8px; padding: 0 20px; }
+.rbtn-primary { padding: 15px; border-radius: var(--r); border: none; background: var(--ink); color: var(--bg); font-size: .95rem; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+.rbtn-primary:active { opacity: .8; }
+.rbtn-secondary { padding: 14px; border-radius: var(--r); border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+.rbtn-secondary:active { background: var(--surface); }
+.rbtn-secondary:disabled { opacity: .3; cursor: not-allowed; }
+.rbtn-ghost { padding: 12px; border-radius: var(--r); border: none; background: transparent; color: var(--sub); font-size: .8rem; font-weight: 600; cursor: pointer; transition: color .15s; }
+.rbtn-ghost:hover { color: var(--ink); }
+
+/* Toasts */
+.enc-toast {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-10px);
+  background: var(--card); border: 1px solid var(--line2);
+  border-radius: 20px; padding: 8px 16px;
+  font-size: .75rem; font-weight: 600; color: var(--ink);
+  z-index: 999; pointer-events: none;
+  opacity: 0; transition: all .2s;
+  text-align: center; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.5);
+}
+.enc-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.enc-toast.enc-good { color: var(--go); border-color: var(--go); }
+.enc-toast.enc-bad { color: var(--sub); }
+
+/* ── DESKTOP / TABLET OPTIMIZATION ── */
+@media (min-width: 768px) {
+  :root {
+    --max-w: 720px; /* Wider and more comfortable for reading */
+  }
+  
+  body {
+    align-items: center;
+    background: var(--bg);
+  }
+
+  #app-shell {
+    min-height: auto;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  /* Upgrade the Unit layout to utilize the wider screen */
+  .unit-grid {
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columns instead of 2 */
+  }
+}
+
+
+/* ── IDENTITY MODAL ── */
+.name-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:24px; }
+.name-overlay.hidden { display:none; }
+.name-card { background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:32px 28px 28px; width:100%; max-width:360px; box-shadow:0 24px 60px rgba(0,0,0,.6); overflow:hidden; }
+.name-step { display:none; }
+.name-step.active { display:block; }
+.name-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; letter-spacing:-.02em; color:var(--ink); margin-bottom:6px; }
+.name-sub { font-size:.72rem; color:var(--muted); line-height:1.6; margin-bottom:22px; }
+.name-input { width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line2); background:var(--surface); font-size:.95rem; color:var(--ink); outline:none; transition:border-color .15s; margin-bottom:12px; font-family:var(--zh),'Outfit',sans-serif; }
+.name-input:focus { border-color:var(--hi); }
+.name-input.err { border-color:var(--err); }
+.name-err { font-size:.65rem; color:var(--err); margin-bottom:10px; display:none; min-height:1em; }
+.name-btn { width:100%; padding:13px; border-radius:8px; background:var(--ink); color:var(--bg); border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:opacity .15s; }
+.name-btn:disabled { opacity:.3; cursor:not-allowed; }
+.name-back { display:block; text-align:center; margin-top:12px; font-size:.7rem; color:var(--muted); cursor:pointer; transition:color .15s; background:none; border:none; width:100%; }
+.name-back:hover { color:var(--sub); }
+.emoji-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:20px; }
+.emoji-btn { font-size:1.5rem; padding:8px 4px; border-radius:8px; border:2px solid transparent; background:var(--surface); cursor:pointer; text-align:center; transition:all .15s; line-height:1; }
+.emoji-btn:hover { background:var(--card2); transform:scale(1.1); }
+.emoji-btn.sel { border-color:var(--hi-bdr); background:var(--hi-dim); transform:scale(1.15); }
+.name-dots { display:flex; justify-content:center; gap:6px; margin-bottom:24px; }
+.name-dot { width:6px; height:6px; border-radius:50%; background:var(--line2); transition:background .2s; }
+.name-dot.active { background:var(--hi); }
+
+/* ── Leaderboard ── */
+.lb-section { margin: 16px 20px 0; }
+.lb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.lb-hdr { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.lb-hdr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.lb-hdr-title { font-size: .68rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.lb-hdr-count { font-size: .68rem; color: var(--ghost); }
+.lb-tabs { display: flex; gap: 4px; }
+.lb-tab { flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .62rem; font-weight: 600; cursor: pointer; text-align: center; transition: all .15s; }
+.lb-tab.active { background: var(--hi-dim); border-color: var(--hi-bdr); color: var(--hi); }
+.lb-tab:active { transform: scale(.97); }
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+.lb-row:last-child { border-bottom: none; }
+.lb-row.lb-me { background: var(--hi-dim); border-left: 2px solid var(--hi); }
+.lb-rank { font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--muted); width: 16px; text-align: right; flex-shrink: 0; }
+.lb-rank.gold { color: #f5c842; }
+.lb-rank.silver { color: #a0aab4; }
+.lb-rank.bronze { color: #cd7f47; }
+.lb-emoji { font-size: .9rem; flex-shrink: 0; line-height: 1; }
+.lb-name { flex: 1; font-size: .8rem; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-name.lb-me-name { color: var(--hi); }
+.lb-score { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--go); font-weight: 700; flex-shrink: 0; }
+.lb-score-lbl { font-size: .65rem; color: var(--muted); margin-left: 2px; }
+.lb-footer { padding: 10px 14px; background: var(--surface); font-size: .68rem; color: var(--sub); text-align: center; }
+.lb-footer strong { color: var(--ink); }
+.lb-empty { padding: 20px; text-align: center; font-size: .7rem; color: var(--ghost); }
+.lb-loading { padding: 16px; text-align: center; font-size: .65rem; color: var(--muted); }
+
+/* ── IDENTITY STRIP ── */
+.id-strip { display:flex; align-items:center; gap:10px; margin:0 20px 16px; padding:12px 16px; background:var(--surface); border-radius:var(--r); border:1px solid var(--line); }
+.id-avatar { font-size:1.6rem; line-height:1; flex-shrink:0; }
+.id-name { font-size:.85rem; font-weight:700; color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.id-mastered { font-size:.65rem; color:var(--go); font-weight:700; flex-shrink:0; }
+.id-mastered span { color:var(--muted); font-weight:400; }
+
+</style>
+</head>
+<body>
+
+<div id="app-shell">
+<div class="enc-toast" id="enc-toast"></div>
+
+<!-- ── IDENTITY MODAL ── -->
+<div class="name-overlay hidden" id="name-overlay">
+  <div class="name-card">
+    <div class="name-dots" id="name-dots" style="display:none">
+      <div class="name-dot active" id="dot-1"></div>
+      <div class="name-dot" id="dot-2"></div>
+    </div>
+
+    <!-- Step 0: path selector -->
+    <div class="name-step active" id="name-step-0">
+      <div class="name-title">你好，同学！</div>
+      <div class="name-sub">请选择你的身份</div>
+      <button class="name-btn" onclick="choosePath('new')" style="margin-bottom:10px">我是新同学 →</button>
+      <button class="name-btn" onclick="choosePath('returning')" style="background:var(--card2);color:var(--ink);border:1px solid var(--line2)">我已有账号 →</button>
+    </div>
+
+    <!-- Step 1: new user name -->
+    <div class="name-step" id="name-step-1">
+      <div class="name-title">给自己一个专属昵称</div>
+      <div class="name-sub">昵称会出现在排行榜上，好好挑一个响亮的名字</div>
+      <input class="name-input" id="name-input" type="text" placeholder="例：经济小天才" maxlength="20" autocomplete="off" autocorrect="off" onkeydown="if(event.key==='Enter')nameNext()">
+      <div class="name-err" id="name-err"></div>
+      <button class="name-btn" id="name-btn-1" onclick="nameNext()" disabled>下一步 →</button>
+      <button class="name-back" onclick="goToStep0()">← 返回</button>
+    </div>
+
+    <!-- Step 2: emoji picker -->
+    <div class="name-step" id="name-step-2">
+      <div class="name-title">选择你的守护动物</div>
+      <div class="name-sub">一旦选定，伴你始终</div>
+      <div class="emoji-grid" id="emoji-grid"></div>
+      <button class="name-btn" id="name-btn-2" onclick="confirmIdentity()" disabled>开始学习 →</button>
+      <button class="name-back" onclick="nameBack()">← 返回修改昵称</button>
+    </div>
+
+    <!-- Step returning: existing user -->
+    <div class="name-step" id="name-step-returning">
+      <div class="name-title">欢迎回来！</div>
+      <div class="name-sub">输入你之前设置的昵称</div>
+      <input class="name-input" id="name-input-returning" type="text" placeholder="输入你的昵称" maxlength="20" autocomplete="off" autocorrect="off" onkeydown="if(event.key==='Enter')returningLogin()">
+      <div class="name-err" id="name-err-returning"></div>
+      <button class="name-btn" id="name-btn-returning" onclick="returningLogin()" disabled>登录 →</button>
+      <button class="name-back" onclick="goToStep0()">← 返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ SETUP ══════════════════ -->
+<div class="screen active" id="screen-setup">
+  <header class="topbar">
+    <a class="brand" href="https://raylaoshi.github.io/"><em>Ray's</em> Economics</a>
+    <nav class="nav">
+      <a href="https://raylaoshi.github.io/AP.Econ.Graphs/">图表库</a>
+      <a href="https://raylaoshi.github.io/">主页</a>
+    </nav>
+  </header>
+
+  <div class="scroll-body">
+    
+    <div class="hero">
+      <div class="hero-title">词汇积累</div>
+      <div class="hero-pills">
+        <span class="pill">6 单元</span>        
+        <span class="pill">729 词</span>
+        <span class="pill">间隔重复</span>
+        <span class="pill">v2.3</span>
+
+      </div>
+    </div>
+
+    <!-- Identity Strip -->
+    <div class="id-strip" id="id-strip" style="display:none">
+      <div class="id-avatar" id="id-avatar"></div>
+      <div class="id-name" id="id-name"></div>
+      <div class="id-mastered" id="id-mastered"></div>
+    </div>
+
+    <!-- History Strip -->
+    <div class="hist">
+      <div class="hist-top">
+        <span class="hist-label">练习记录</span>
+        <span class="hist-count"><span id="hist-total">0</span> 次</span>
+      </div>
+      <div class="bars" id="hist-chart">
+        <div class="hist-empty">暂无记录，完成第一次练习后显示</div>
+      </div>
+      <div class="hist-avg" id="hist-avg-line" style="display:none">近期平均正确率 <strong id="hist-avg-text"></strong></div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="lb-section">
+      <div class="lb-card">
+        <div class="lb-hdr">
+          <div class="lb-hdr-top">
+            <span class="lb-hdr-title">排行榜</span>
+            <span class="lb-hdr-count" id="lb-count-setup">加载中…</span>
+          </div>
+          <div class="lb-tabs">
+            <button class="lb-tab active" id="lb-tab-total-setup" onclick="lbSwitchTab('setup','total')">总榜</button>
+            <button class="lb-tab" id="lb-tab-week-setup" onclick="lbSwitchTab('setup','week')">本周榜</button>
+          </div>
+        </div>
+        <div id="lb-list-setup"><div class="lb-loading">加载中…</div></div>
+        <div class="lb-footer" id="lb-footer-setup"></div>
+      </div>
+    </div>
+
+    <!-- Mode -->
+    <div class="section">
+      <div class="label">练习模式</div>
+      <div class="mode-row">
+        <div class="mode-btn active" id="mode-practice" onclick="selMode('practice')">
+          <div class="mode-btn-name">自主学习</div>
+          <div class="mode-btn-sub">选单元，选题量</div>
+        </div>
+        <div class="mode-btn" id="mode-review" onclick="selMode('review')">
+          <div class="mode-btn-name">记忆曲线复习</div>
+          <div class="mode-btn-sub">只复习，增强记忆</div>
+        </div>
+      </div>
+      <div class="due-info" id="due-info"></div>
+    </div>
+
+    <!-- Units -->
+    <div class="section" id="unit-sec">
+      <div class="label">选择单元</div>
+      <div class="unit-grid" id="unit-grid"></div>
+    </div>
+
+    <!-- Size -->
+    <div class="section" id="size-sec">
+      <div class="label">每次题量</div>
+      <div class="size-row">
+        <div class="sz" data-n="10" onclick="selSz(this)"><span class="sz-n">10</span><span class="sz-t">≈5 min</span></div>
+        <div class="sz sel" data-n="15" onclick="selSz(this)"><span class="sz-n">15</span><span class="sz-t">≈8 min</span></div>
+        <div class="sz" data-n="20" onclick="selSz(this)"><span class="sz-n">20</span><span class="sz-t">≈12 min</span></div>
+        <div class="sz" data-n="30" onclick="selSz(this)"><span class="sz-n">30</span><span class="sz-t">≈18 min</span></div>
+      </div>
+    </div>
+
+    <!-- Start -->
+    <div class="start-wrap">
+      <button class="start" id="start-btn" onclick="go()">开始练习 →</button>
+      <div class="start-err" id="start-err">请至少选择一个单元</div>
+    </div>
+
+  </div><!-- /.scroll-body -->
+</div><!-- /#screen-setup -->
+
+<!-- ══════════════════ QUIZ ══════════════════ -->
+<div class="screen" id="screen-quiz">
+    <header class="topbar">
+        <a class="brand" href="https://raylaoshi.github.io/"><em>Ray's</em> Economics</a>
+        <nav class="nav">
+        <!-- 1. New Back Button in Topbar -->
+        <a href="#" onclick="goBack(); return false;">返回</a>
+        </nav>
+    </header>
+
+    <div class="quiz-prog">
+        <div class="qprog-row">
+        <!-- 2. Old back button removed from here -->
+        <div class="prog-center">
+            <span class="prog-nums" id="q-prog">0 / 0</span>
+            <div class="bar-track"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>            
+            <span class="streak-tag" id="streak-tag">连对 <span id="streak-n">0</span></span>
+        </div>
+        <div class="score-chip" id="score-chip">0 ✔</div>
+        </div>
+    </div>
+
+    <div class="scroll-body" style="padding: 16px 20px;">
+        <!-- 3. Cleaned up Question Type Pill (Ready for JS injection) -->
+        <div class="qtype" id="qtype" style="margin-bottom: 12px;">中 → 英</div>
+
+    <div class="q-card">
+      <div style="margin-bottom:10px;"><div id="sr-slot"></div><div class="label" id="q-prompt" style="margin-bottom:0">提示</div></div>
+      <div id="q-main"></div>
+      <div class="q-hint" id="q-hint" style="display:none"></div>
+    </div>
+
+    <div class="opts-list" id="opts-list"></div>
+
+    <div class="spell-wrap" id="spell-wrap">
+      <div class="spell-inner">
+        <div class="spell-lbl">拼写英文词汇</div>
+        <input class="spell-input" id="spell-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Type the English term…" onkeydown="if(event.key==='Enter')doSpell()">
+        <button class="spell-go" id="spell-go" onclick="doSpell()">确认提交 →</button>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="conf-wrap" id="conf-wrap">
+      <div class="conf-lbl">熟悉程度</div>
+      <div class="conf-row">
+        <button class="conf-btn cf-bad" onclick="rate(0,this)">
+          <span class="conf-txt">模糊</span>
+          <span class="conf-sub">😳</span>
+        </button>
+        <button class="conf-btn cf-ok" onclick="rate(2,this)">
+          <span class="conf-txt">记得</span>
+          <span class="conf-sub">👌</span>
+        </button>
+        <button class="conf-btn cf-ez" onclick="rate(3,this)">
+          <span class="conf-txt">熟练</span>
+          <span class="conf-sub">🔥</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="next-btn" id="next-btn" onclick="nextQ()">下一题 →</button>
+  </div>
+</div>
+
+<!-- ══════════════════ RESULTS ══════════════════ -->
+<div class="screen" id="screen-results">
+  <header class="topbar">
+    <a class="brand" href="https://raylaoshi.github.io/"><em>Ray's</em> Economics</a>
+    <nav class="nav">
+      <a href="https://raylaoshi.github.io/AP.Econ.Graphs/">图表库</a>
+      <a href="https://raylaoshi.github.io/">主页</a>
+    </nav>
+  </header>
+  <div class="scroll-body">
+
+    <div class="res-hero">
+      <div class="res-grade-tag" id="r-grade-tag">· · ·</div>
+      <div class="res-pct" id="r-pct-big"><span id="rn">--</span><span>%</span></div>
+      <div class="res-msg" id="r-msg"></div>
+      <div class="res-sub-detail" id="r-detail"></div>
+    </div>
+
+    <div class="res-badges" id="r-badges">
+      <div class="res-badge">
+        <div class="res-badge-val" id="rb-correct">--</div>
+        <div class="res-badge-lbl">答对</div>
+      </div>
+      <div class="res-badge">
+        <div class="res-badge-val" id="rb-streak">--</div>
+        <div class="res-badge-lbl">最长连对</div>
+      </div>
+      <div class="res-badge">
+        <div class="res-badge-val" id="rb-mastered">--</div>
+        <div class="res-badge-lbl">掌握词</div>
+      </div>
+      <div class="res-badge">
+        <div class="res-badge-val" id="rb-sessions">--</div>
+        <div class="res-badge-lbl">累计练习</div>
+      </div>
+    </div>
+
+    <div class="rlabel">间隔重复进度</div>
+    <div class="sr-trio">
+      <div class="sr-cell"><div class="sr-num" id="r-new">0</div><div class="sr-lbl">新词</div></div>
+      <div class="sr-cell"><div class="sr-num" id="r-young">0</div><div class="sr-lbl">学习中</div></div>
+      <div class="sr-cell"><div class="sr-num" id="r-mat">0</div><div class="sr-lbl">已掌握</div></div>
+    </div>
+
+    <div class="rlabel">排行榜</div>
+    <div class="lb-section" style="margin-top:0">
+      <div class="lb-card">
+        <div class="lb-hdr">
+          <div class="lb-hdr-top">
+            <span class="lb-hdr-title">排行榜</span>
+            <span class="lb-hdr-count" id="lb-count-results">加载中…</span>
+          </div>
+          <div class="lb-tabs">
+            <button class="lb-tab active" id="lb-tab-total-results" onclick="lbSwitchTab('results','total')">总榜</button>
+            <button class="lb-tab" id="lb-tab-week-results" onclick="lbSwitchTab('results','week')">本周榜</button>
+          </div>
+        </div>
+        <div id="lb-list-results"><div class="lb-loading">加载中…</div></div>
+        <div class="lb-footer" id="lb-footer-results"></div>
+      </div>
+    </div>
+
+    <div class="rlabel">需加强的词汇</div>
+    <div class="weak-card">
+      <div class="weak-hdr">
+        <span>错词列表</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="wcnt" id="w-cnt">0</span>
+          <button class="wcopy" onclick="cpWeak()">复制</button>
+        </div>
+      </div>
+      <div class="weak-scroll" id="w-list"></div>
+    </div>
+
+    <div class="res-btns">
+      <button class="rbtn-primary" onclick="replaySession()">再练一组 →</button>
+      <button class="rbtn-secondary" id="retry-btn" onclick="retryWeak()">重练错词</button>
+      <button class="rbtn-ghost" onclick="goBack()">返回首页</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────
+const VOCAB =[{"unit":"Unit 1","term":"capital","zh":"资本","def":"manufactured goods used to make other goods and services; also called physical capital."},{"unit":"Unit 1","term":"economics","zh":"经济学","def":"the study of scarcity and choice."},{"unit":"Unit 1","term":"entrepreneurship","zh":"企业家能力","def":"the efforts of entrepreneurs in organizing resources for production, taking risks to create new enterprises, and innovating to develop new products and production processes."},{"unit":"Unit 1","term":"factor of production (resource)","zh":"生产要素（资源）","def":"anything that can be used to produce something else; also called factor of production."},{"unit":"Unit 1","term":"firm","zh":"企业","def":"any organization that produces goods and services for sale."},{"unit":"Unit 1","term":"household","zh":"家庭","def":"a person or group of people who share their income."},{"unit":"Unit 1","term":"individual choice","zh":"个人选择","def":"decisions by individuals about what to do, which necessitate decisions about what not to do."},{"unit":"Unit 1","term":"labor","zh":"劳动力","def":"the effort of workers."},{"unit":"Unit 1","term":"land","zh":"土地","def":"all resources that come from nature, such as timber, wind, and petroleum."},{"unit":"Unit 1","term":"marginal analysis","zh":"边际分析","def":"the study of the costs and benefits of doing a little bit more of an activity versus a little bit less."},{"unit":"Unit 1","term":"microeconomics","zh":"微观经济学","def":"the branch of economics that studies how individuals, households, and firms make decisions and how those decisions interact."},{"unit":"Unit 1","term":"opportunity cost","zh":"机会成本","def":"the real cost of an item: the value of the next best alternative that you must give up in order to get that item."},{"unit":"Unit 1","term":"scarce","zh":"稀缺","def":"when a resource is not available in sufficient quantities to satisfy all the various ways a society wants to use it."},{"unit":"Unit 1","term":"trade-off","zh":"权衡、取舍","def":"when you give up something in order to have something else."},{"unit":"Unit 1","term":"command economy (planned economy)","zh":"命令/计划经济","def":"an economy in which the factors of production are publicly owned and a central authority makes production and consumption decisions."},{"unit":"Unit 1","term":"economy","zh":"经济","def":"a system for coordinating a society's productive and consumptive activities."},{"unit":"Unit 1","term":"incentives","zh":"激励","def":"reward or punishment that motivates particular choices; in supply-side policy, incentives are motivation for household and business to work, save, and invest."},{"unit":"Unit 1","term":"macroeconomics","zh":"宏观经济学","def":"the branch of economics that is concerned with the overall ups and downs of the economy."},{"unit":"Unit 1","term":"market economy","zh":"市场经济","def":"an economy in which the factors of production are privately owned and the decisions of individual producers and consumers largely determine what, how, and for whom to produce."},{"unit":"Unit 1","term":"mixed economy","zh":"混合经济","def":"economy which combines elements of traditional, market, and command economies."},{"unit":"Unit 1","term":"property rights","zh":"产权","def":"establish ownership and grant individuals the right to trade goods and services with each other."},{"unit":"Unit 1","term":"traditional economy","zh":"传统经济","def":"economic system in which production and consumption decisions are based on precedent."},{"unit":"Unit 1","term":"allocative efficiency","zh":"配置效率","def":"occurs when the society benefits the most, i.e., when total surplus is maximized or marginal benefit of consumption equals marginal cost of production"},{"unit":"Unit 1","term":"productive efficiency","zh":"生产效率","def":"occurs when the economy or firm uses least amount of resources to produce greatest amount of goods, i.e., an economy produces at a point on its production possibilities curve or a firm is producing at the minimum cost"},{"unit":"Unit 1","term":"concave","zh":"相对于原点是凸起的","def":"bowed outwards"},{"unit":"Unit 1","term":"convex","zh":"相对于原点是凹陷的","def":"bowed inwards"},{"unit":"Unit 1","term":"economic growth","zh":"经济增长","def":"an increase in the maximum amount of goods and services an economy can produce."},{"unit":"Unit 1","term":"efficient","zh":"具有效率的","def":"describes a market or economy in which there is no way to make anyone better off without making at least one person worse off."},{"unit":"Unit 1","term":"model","zh":"模型","def":"a simplified representation used to better understand a real-life situation."},{"unit":"Unit 1","term":"increasing marginal cost","zh":"边际成本递增","def":"each additional unit costs more to produce than the previous one."},{"unit":"Unit 1","term":"linear","zh":"线性的","def":"straight"},{"unit":"Unit 1","term":"other things equal (ceteris paribus) assumption","zh":"其他条件不变假设","def":"in the development of a model, the assumption that all other relevant factors remain unchanged; also known as the ceteris paribus assumption."},{"unit":"Unit 1","term":"production possibilities curve/frontier (PPC/PPF)","zh":"生产可能性曲线/边界","def":"illustrates the necessary trade-offs in an economy that produces only two goods; shows the maximum quantity of one good that can be produced for each possible quantity of the other good produced."},{"unit":"Unit 1","term":"technology","zh":"技术","def":"the technical means for producing goods and services."},{"unit":"Unit 1","term":"absolute advantage","zh":"绝对优势","def":"the advantage held by an individual when producing a good or service if they can make produce more with a given amount of time and resources; contrasted with comparative advantage."},{"unit":"Unit 1","term":"comparative advantage","zh":"比较优势","def":"the advantage held by an individual if their opportunity cost of producing a good or service is lowest among the people who could produce that good or service; contrasted with absolute advantage."},{"unit":"Unit 1","term":"gains from trade","zh":"贸易利得","def":"an economic principle that states that people can get more of what they want through trade than they could if they tried to be self-sufficient; this increase in output is due to specialization."},{"unit":"Unit 1","term":"specialization","zh":"专业化","def":"situation in which each person specializes in the task that they are good at performing; key source of the gains from trade."},{"unit":"Unit 1","term":"terms of trade","zh":"贸易条件","def":"indicate the rate at which one good can be exchanged for another."},{"unit":"Unit 1","term":"trade","zh":"贸易","def":"when, in a market economy, individuals provide goods and services to others and receive goods and services in return."},{"unit":"Unit 1","term":"cost-benefit analysis","zh":"成本效益分析","def":"the process of comparing the costs and the benefits of an option."},{"unit":"Unit 1","term":"rational agents","zh":"理性人","def":"consumers, producers, and others who behave rationally and make optimal decisions."},{"unit":"Unit 1","term":"sunk cost","zh":"沉没成本","def":"a cost that has already been incurred and is nonrecoverable; should be ignored in a decision about future actions."},{"unit":"Unit 1","term":"budget constraint","zh":"预算约束","def":"limits the cost of a consumer's consumption bundle to no more than the consumer's income."},{"unit":"Unit 1","term":"budget line","zh":"预算线","def":"shows the consumption bundles available to a consumer who spends all of their income."},{"unit":"Unit 1","term":"marginal utility","zh":"边际效用","def":"(of a good or service) the change in total utility generated by consuming one additional unit of a good or service."},{"unit":"Unit 1","term":"marginal utility curve","zh":"边际效用曲线","def":"shows how marginal utility depends on the quantity of a good or service consumed."},{"unit":"Unit 1","term":"optimal consumption bundle","zh":"最优消费组合","def":"the consumption bundle that maximizes the consumer's total utility given that consumer's budget constraint."},{"unit":"Unit 1","term":"optimal consumption rule","zh":"最优消费原则","def":"says that in order to maximize utility, a consumer must equate the marginal utility per dollar spent on each good and service in the consumption bundle."},{"unit":"Unit 1","term":"principle of diminishing marginal utility","zh":"边际效用递减原理","def":"states that each successive unit of a good or service consumed adds less to total utility than does the previous unit."},{"unit":"Unit 1","term":"util","zh":"效用单位","def":"a unit of utility."},{"unit":"Unit 1","term":"utility","zh":"效用","def":"utility a measure of personal satisfaction."},{"unit":"Unit 1","term":"alternative","zh":"替代方案","def":"noun"},{"unit":"Unit 1","term":"annual","zh":"每年的","def":"adj"},{"unit":"Unit 1","term":"assume","zh":"假设","def":"verb"},{"unit":"Unit 1","term":"additional","zh":"额外的","def":"adjective"},{"unit":"Unit 1","term":"advertisement","zh":"广告","def":"noun"},{"unit":"Unit 1","term":"allocate","zh":"分配","def":"verb"},{"unit":"Unit 1","term":"axes","zh":"坐标轴","def":"noun"},{"unit":"Unit 1","term":"competitive market","zh":"竞争性市场","def":"noun phrase"},{"unit":"Unit 1","term":"constant","zh":"恒定的","def":"adjective"},{"unit":"Unit 1","term":"consume","zh":"消费；消耗","def":"verb"},{"unit":"Unit 1","term":"current","zh":"当前的","def":"adjective"},{"unit":"Unit 1","term":"desire","zh":"欲望","def":"noun"},{"unit":"Unit 1","term":"directional change","zh":"方向变化","def":"noun"},{"unit":"Unit 1","term":"discount","zh":"折扣","def":"noun"},{"unit":"Unit 1","term":"double","zh":"加倍；双倍的","def":"verb / adjective"},{"unit":"Unit 1","term":"economic growth","zh":"经济增长","def":"noun"},{"unit":"Unit 1","term":"economy","zh":"经济","def":"noun"},{"unit":"Unit 1","term":"effectively","zh":"有效地","def":"adverb"},{"unit":"Unit 1","term":"efficiently","zh":"有效率地","def":"adverb"},{"unit":"Unit 1","term":"expense","zh":"开销，费用","def":"noun"},{"unit":"Unit 1","term":"explain","zh":"解释","def":"verb"},{"unit":"Unit 1","term":"feasible","zh":"可行的","def":"adjective"},{"unit":"Unit 1","term":"fee","zh":"费用","def":"noun"},{"unit":"Unit 1","term":"financial institution","zh":"金融机构","def":"noun phrase"},{"unit":"Unit 1","term":"fixed","zh":"固定的","def":"adjective"},{"unit":"Unit 1","term":"friend","zh":"朋友","def":"noun"},{"unit":"Unit 1","term":"frontier","zh":"边界；前沿","def":"noun"},{"unit":"Unit 1","term":"full-time","zh":"全职的","def":"adj"},{"unit":"Unit 1","term":"good","zh":"商品，物品","def":"noun"},{"unit":"Unit 1","term":"government","zh":"政府","def":"noun"},{"unit":"Unit 1","term":"household","zh":"家庭","def":"noun"},{"unit":"Unit 1","term":"independent","zh":"独立的","def":"adjective"},{"unit":"Unit 1","term":"industry","zh":"行业","def":"noun"},{"unit":"Unit 1","term":"inefficiency","zh":"无效率","def":"noun"},{"unit":"Unit 1","term":"intercept","zh":"截距","def":"noun"},{"unit":"Unit 1","term":"inward shift","zh":"向内移动","def":"noun"},{"unit":"Unit 1","term":"linear","zh":"线性的","def":"adjective"},{"unit":"Unit 1","term":"machinery","zh":"机器","def":"noun"},{"unit":"Unit 1","term":"consumption","zh":"消费","def":"noun"},{"unit":"Unit 1","term":"marginal analysis","zh":"边际分析","def":"noun"},{"unit":"Unit 1","term":"maximum","zh":"最大的；极大值","def":"adjective / noun"},{"unit":"Unit 1","term":"negative","zh":"负的；消极的","def":"adjective"},{"unit":"Unit 1","term":"net benefit","zh":"净收益","def":"noun"},{"unit":"Unit 1","term":"numerical","zh":"数值的","def":"adjective"},{"unit":"Unit 1","term":"option","zh":"选择","def":"noun"},{"unit":"Unit 1","term":"outward shift","zh":"向外移动","def":"noun"},{"unit":"Unit 1","term":"pay","zh":"薪水，支付","def":"noun/verb"},{"unit":"Unit 1","term":"plot","zh":"作图","def":"verb"},{"unit":"Unit 1","term":"positive","zh":"正的；积极的","def":"adjective"},{"unit":"Unit 1","term":"price","zh":"价格","def":"noun"},{"unit":"Unit 1","term":"produce","zh":"生产","def":"verb"},{"unit":"Unit 1","term":"production","zh":"生产","def":"noun"},{"unit":"Unit 1","term":"program","zh":"项目，课程","def":"noun"},{"unit":"Unit 1","term":"decrease","zh":"减少","def":"noun/verb"},{"unit":"Unit 1","term":"ratio","zh":"比率","def":"noun"},{"unit":"Unit 1","term":"rational","zh":"理性的","def":"adjective"},{"unit":"Unit 1","term":"reasoning","zh":"推理；论证","def":"noun"},{"unit":"Unit 1","term":"salary","zh":"薪水","def":"noun"},{"unit":"Unit 1","term":"savings","zh":"储蓄","def":"noun"},{"unit":"Unit 1","term":"scenario","zh":"情境","def":"noun"},{"unit":"Unit 1","term":"self-sufficient","zh":"自给自足的","def":"adjective"},{"unit":"Unit 1","term":"service","zh":"服务","def":"noun"},{"unit":"Unit 1","term":"society","zh":"社会","def":"noun"},{"unit":"Unit 1","term":"specialize","zh":"专门化","def":"verb"},{"unit":"Unit 1","term":"technology","zh":"技术","def":"noun"},{"unit":"Unit 1","term":"ticket","zh":"票，门票","def":"noun"},{"unit":"Unit 1","term":"tool","zh":"工具","def":"noun"},{"unit":"Unit 1","term":"trade","zh":"贸易；交易","def":"noun/verb"},{"unit":"Unit 1","term":"trade-off","zh":"权衡取舍","def":"noun"},{"unit":"Unit 1","term":"tuition","zh":"学费","def":"noun"},{"unit":"Unit 1","term":"unemployment","zh":"失业","def":"noun"},{"unit":"Unit 1","term":"value","zh":"价值","def":"noun"},{"unit":"Unit 1","term":"various","zh":"各种各样的","def":"adjective"},{"unit":"Unit 1","term":"warehouse","zh":"仓库","def":"noun"},{"unit":"Unit 1","term":"worker","zh":"工人","def":"noun"},{"unit":"Unit 1","term":"firm","zh":"公司，企业","def":"noun"},{"unit":"Unit 1","term":"illustrate","zh":"阐明；说明","def":"verb"},{"unit":"Unit 1","term":"individual","zh":"个人","def":"noun"},{"unit":"Unit 1","term":"prompt","zh":"提示；促使","def":"verb/noun"},{"unit":"Unit 1","term":"purchase","zh":"购买","def":"verb"},{"unit":"Unit 1","term":"combination","zh":"组合","def":"noun"},{"unit":"Unit 1","term":"determine","zh":"决定","def":"verb"},{"unit":"Unit 1","term":"entire","zh":"整个的","def":"adjective"},{"unit":"Unit 1","term":"identify","zh":"识别；确定","def":"verb"},{"unit":"Unit 1","term":"maintain","zh":"保持","def":"verb"},{"unit":"Unit 1","term":"obtain","zh":"获取","def":"verb"},{"unit":"Unit 1","term":"optimal","zh":"最优的","def":"adjective"},{"unit":"Unit 1","term":"outcome","zh":"结果","def":"noun"},{"unit":"Unit 2","term":"change in demand","zh":"需求变化","def":"a shift of the demand curve, which changes the quantity demanded at any given price."},{"unit":"Unit 2","term":"complements (in consumption)","zh":"互补品（在消费中的）","def":"two goods (often consumed together) for which a rise in the price of one of the goods leads to a decrease in the demand for the other good."},{"unit":"Unit 2","term":"demand curve","zh":"需求曲线","def":"a graphical representation of the demand schedule; shows the relationship between quantity demanded and price."},{"unit":"Unit 2","term":"demand schedule","zh":"需求表","def":"a table that shows how much of a good or service consumers will be willing and able to buy at different prices."},{"unit":"Unit 2","term":"income effect","zh":"收入效应","def":"(of a change in the price of a good) the change in the quantity of a good demanded that results from a change in the consumer's purchasing power when the price of the good changes."},{"unit":"Unit 2","term":"individual demand curve","zh":"个人需求曲线","def":"illustrates the relationship between quantity demanded and price for an individual consumer."},{"unit":"Unit 2","term":"inferior good","zh":"低档品","def":"describes a good for which a rise in income decreases the demand for the good."},{"unit":"Unit 2","term":"law of demand","zh":"需求定律","def":"says that a higher price for a good or service, all other things being equal, leads people to demand a smaller quantity of that good or service."},{"unit":"Unit 2","term":"movement along the demand curve","zh":"沿需求曲线的移动","def":"a change in the quantity demanded of a good that is the result of a change in that good's price."},{"unit":"Unit 2","term":"normal good","zh":"正常品","def":"describes a good for which a rise in income increases the demand for the good."},{"unit":"Unit 2","term":"quantity demanded","zh":"需求数量","def":"the actual amount of a good or service consumers are willing and able to buy at some specific price; shown as a single point in the demand schedule or along a demand curve."},{"unit":"Unit 2","term":"substitutes (in consumption)","zh":"替代品（在消费中的）","def":"two goods for which a rise in the price of one of the goods leads to an increase in the demand for the other good."},{"unit":"Unit 2","term":"substitution effect","zh":"替代效应","def":"(of a change in the price of a good) the change in the quantity of a good demanded as the consumer substitutes the good that has become relatively cheaper for the good that has become relatively more expensive."},{"unit":"Unit 2","term":"supply and demand model","zh":"供求模型","def":"a model of how a competitive market works."},{"unit":"Unit 2","term":"change in supply","zh":"供给变化","def":"a shift of the supply curve, which indicates a change in the quantity supplied at any given price."},{"unit":"Unit 2","term":"complements in production","zh":"互补品（在生产中的）","def":"describes two goods for which increased production of either good creates more of the other."},{"unit":"Unit 2","term":"individual supply curve","zh":"个人供给曲线","def":"illustrates the relationship between quantity supplied and price for an individual producer."},{"unit":"Unit 2","term":"input","zh":"投入","def":"a good or service that is used to produce another good or service."},{"unit":"Unit 2","term":"law of supply","zh":"供给定律","def":"says that, other things being equal, the price and quantity supplied of a good are positively related."},{"unit":"Unit 2","term":"movement along the supply curve","zh":"沿供给曲线的移动","def":"a change in the quantity supplied of a good arising from a change in the good's price."},{"unit":"Unit 2","term":"quantity supplied","zh":"供给数量","def":"the actual amount of a good or service people are willing to sell at some specific price."},{"unit":"Unit 2","term":"substitutes in production","zh":"替代品（在生产中的）","def":"describes two goods for which producers can use the same inputs to make either."},{"unit":"Unit 2","term":"supply curve","zh":"供给曲线","def":"shows the relationship between the quantity supplied and the price."},{"unit":"Unit 2","term":"supply schedule","zh":"供给表","def":"shows how much of a good or service producers would supply at different prices."},{"unit":"Unit 2","term":"elastic demand","zh":"富有弹性的需求","def":"when the price elasticity of demand is greater than 1."},{"unit":"Unit 2","term":"inelastic demand","zh":"缺乏弹性的需求","def":"when the price elasticity of demand is less than 1."},{"unit":"Unit 2","term":"perfectly elastic demand","zh":"完全弹性需求","def":"when any price increase will cause the quantity demanded to drop to zero; when demand is perfectly elastic, the demand curve is a horizontal line."},{"unit":"Unit 2","term":"perfectly inelastic demand","zh":"完全无弹性需求","def":"when the quantity demanded does not respond at all to changes in the price; when demand is perfectly inelastic, the demand curve is a vertical line."},{"unit":"Unit 2","term":"price elasticity of demand","zh":"需求价格弹性","def":"the ratio of the percentage change in the quantity demanded to the percentage change in the price as we move along the demand curve (dropping the minus sign)."},{"unit":"Unit 2","term":"total revenue","zh":"总收入","def":"the total value of sales of a good or service; equal to the price multiplied by the quantity sold."},{"unit":"Unit 2","term":"unit-elastic demand","zh":"单位弹性需求","def":"when the price elasticity of demand is exactly 1."},{"unit":"Unit 2","term":"perfectly elastic supply","zh":"完全弹性供给","def":"when the quantity supplied is zero below some price and approaches infinity above that price; a perfectly elastic supply curve is a horizontal line."},{"unit":"Unit 2","term":"perfectly inelastic supply","zh":"完全无弹性供给","def":"when the price elasticity of supply is zero, so that changes in the price of the good have no effect on the quantity supplied; a perfectly inelastic supply curve is a vertical line."},{"unit":"Unit 2","term":"price elasticity of supply","zh":"供给价格弹性","def":"a measure of the responsiveness of the quantity of a good supplied to changes in the price of that good; the ratio of the percentage change in the quantity supplied to the percentage change in the price as we move along the supply curve."},{"unit":"Unit 2","term":"cross-price elasticity of demand","zh":"交叉价格弹性","def":"(between two goods) measures the effect of the change in one good's price on the quantity demanded of another good; is equal to the percentage change in the quantity demanded of one good divided by the percentage change in the other good's price."},{"unit":"Unit 2","term":"income elasticity of demand","zh":"收入弹性","def":"the percentage change in the quantity of a good demanded when a consumer's income changes divided by the percentage change in the consumer's income; it measures how changes in income affect the demand for a good."},{"unit":"Unit 2","term":"income-elastic demand","zh":"收入弹性需求","def":"when the income elasticity of demand for a good is greater than 1."},{"unit":"Unit 2","term":"income-inelastic demand","zh":"收入无弹性需求","def":"when the income elasticity of demand for a good is positive but less than 1."},{"unit":"Unit 2","term":"consumer surplus","zh":"消费者剩余","def":"the difference between the amount paid for a good and the consumer's (or consumers') willingness to pay for the units purchased; can be used to refer to both individual consumer surplus and total consumer surplus."},{"unit":"Unit 2","term":"cost","zh":"成本","def":"the lowest price at which a seller is willing to sell a good."},{"unit":"Unit 2","term":"equilibrium","zh":"均衡","def":"an economic situation in which no individual would be better off doing something different; a competitive market is in equilibrium when the supply and demand curves intersect."},{"unit":"Unit 2","term":"equilibrium price","zh":"均衡价格","def":"in a competitive market, the price of a good at which the quantity demanded of that good equals the quantity supplied of that good; also known as the market-clearing price."},{"unit":"Unit 2","term":"equilibrium quantity","zh":"均衡数量","def":"the quantity of a good bought and sold at its equilibrium price."},{"unit":"Unit 2","term":"producer surplus","zh":"生产者剩余","def":"the difference between the price received and the seller's (or sellers') cost; refers to both individual and total producer surplus."},{"unit":"Unit 2","term":"willingness to accept","zh":"接受意愿","def":"the minimum price at which a producer would produce a good, equals the cost of production"},{"unit":"Unit 2","term":"willingness to pay","zh":"支付意愿","def":"the maximum price at which a consumer would buy a good."},{"unit":"Unit 2","term":"disequilibrium","zh":"失衡","def":"when the market price is above or below the price that equates the quantity demanded with the quantity supplied."},{"unit":"Unit 2","term":"shortage (excess demand)","zh":"短缺（过剩需求）","def":"when the quantity demanded of a good or service exceeds the quantity supplied; occurs when the price is below its equilibrium level; also known as excess demand."},{"unit":"Unit 2","term":"surplus (excess supply)","zh":"过剩（过剩供给）","def":"when the quantity supplied of a good or service exceeds the quantity demanded; occurs when the price is above its equilibrium level; also known as excess supply."},{"unit":"Unit 2","term":"total surplus","zh":"总剩余","def":"the total net gain to consumers and producers from trading in a market; the sum of consumer surplus and producer surplus."},{"unit":"Unit 2","term":"deadweight loss","zh":"无谓损失","def":"the net loss to society resulting from an inefficient quantity of output; when quantity is inefficiently low, that loss is the total surplus forgone on the transactions that would provide a net gain to society but did not occur."},{"unit":"Unit 2","term":"excise tax","zh":"消费税","def":"a tax on sales of a particular good or service."},{"unit":"Unit 2","term":"lump-sum tax","zh":"定额税","def":"a tax of a fixed amount paid by all taxpayers."},{"unit":"Unit 2","term":"per-unit tax","zh":"单位税","def":"a fixed amount of tax for each unit of a good or service sold"},{"unit":"Unit 2","term":"subsidy","zh":"补贴","def":"a government payment made to assist or incentivize producers or consumers."},{"unit":"Unit 2","term":"tax incidence (burden)","zh":"税负（负担）","def":"the distribution of the tax burden."},{"unit":"Unit 2","term":"tax revenue","zh":"税收总额","def":"the income that is collected by governments through taxation"},{"unit":"Unit 2","term":"black market","zh":"黑市*","def":"a market in which goods or services are bought and sold illegally — either because it is illegal to sell them at all or because the prices charged are legally prohibited by a price ceiling."},{"unit":"Unit 2","term":"license","zh":"许可证","def":"gives its owner the right to supply a good or service; a form of quantity control, as only those who are licensed can supply the good or service."},{"unit":"Unit 2","term":"minimum wage","zh":"最低工资","def":"a legal floor on the hourly wage rate paid for a worker's labor."},{"unit":"Unit 2","term":"price ceiling","zh":"价格上限","def":"a maximum price that sellers are allowed to charge for a good or service."},{"unit":"Unit 2","term":"price controls","zh":"价格管制","def":"legal restrictions on how high or low a market price may go; typically take the form of either a price ceiling or a price floor."},{"unit":"Unit 2","term":"price floor","zh":"价格下限","def":"a minimum price that buyers are required to pay for a good or service."},{"unit":"Unit 2","term":"quantity control (quota)","zh":"数量控制（配额）","def":"an upper limit on the quantity of some good that can be bought or sold."},{"unit":"Unit 2","term":"quota rent","zh":"配额租金*","def":"the earnings that accrue to the license-holder from ownership of the right to sell the good; this is the difference between the demand and supply price at the quota amount and is equal to the market price of the license when the licenses are traded."},{"unit":"Unit 2","term":"import quota","zh":"进口配额","def":"a limit on the quantity of a good that can be imported within a given period."},{"unit":"Unit 2","term":"protectionism","zh":"保护主义*","def":"the practice of limiting trade to protect domestic industries."},{"unit":"Unit 2","term":"tariffs","zh":"关税","def":"taxes on imports."},{"unit":"Unit 2","term":"affect","zh":"影响","def":"verb"},{"unit":"Unit 2","term":"associated with","zh":"与...相关","def":"phrase"},{"unit":"Unit 2","term":"binding","zh":"有约束力的","def":"adjective"},{"unit":"Unit 2","term":"conclude","zh":"推断出，得出结论","def":"verb"},{"unit":"Unit 2","term":"definitely","zh":"肯定地，确定地","def":"adverb"},{"unit":"Unit 2","term":"depicted","zh":"描绘的","def":"adjective"},{"unit":"Unit 2","term":"absence","zh":"缺乏，不存在","def":"noun"},{"unit":"Unit 2","term":"campaign","zh":"(宣传)活动","def":"noun"},{"unit":"Unit 2","term":"concerning","zh":"关于","def":"preposition"},{"unit":"Unit 2","term":"describe","zh":"描述","def":"verb"},{"unit":"Unit 2","term":"determinant","zh":"决定因素","def":"noun"},{"unit":"Unit 2","term":"drastically","zh":"急剧地，大大地","def":"adverb"},{"unit":"Unit 2","term":"due to","zh":"由于，因为","def":"phrase"},{"unit":"Unit 2","term":"effective","zh":"有效的","def":"adjective"},{"unit":"Unit 2","term":"efficiency","zh":"效率","def":"noun"},{"unit":"Unit 2","term":"domestic","zh":"国内的","def":"adjective"},{"unit":"Unit 2","term":"horizontal summation","zh":"水平加总","def":"noun phrase"},{"unit":"Unit 2","term":"imposition","zh":"施加，实行","def":"noun"},{"unit":"Unit 2","term":"indeterminate","zh":"不确定的","def":"adjective"},{"unit":"Unit 2","term":"input","zh":"投入，生产要素","def":"noun"},{"unit":"Unit 2","term":"issue","zh":"发布，公布","def":"verb"},{"unit":"Unit 2","term":"jointly","zh":"共同地，联合地","def":"adverb"},{"unit":"Unit 2","term":"launch","zh":"发起，推出","def":"verb"},{"unit":"Unit 2","term":"lie on","zh":"位于...上","def":"phrasal verb"},{"unit":"Unit 2","term":"most likely","zh":"最有可能","def":"phrase"},{"unit":"Unit 2","term":"motivate","zh":"激励，驱使","def":"verb"},{"unit":"Unit 2","term":"preference","zh":"偏好","def":"noun"},{"unit":"Unit 2","term":"pressure","zh":"压力","def":"noun"},{"unit":"Unit 2","term":"refer to","zh":"指的是","def":"phrasal verb"},{"unit":"Unit 2","term":"relating to","zh":"与...有关的","def":"phrase"},{"unit":"Unit 2","term":"residue","zh":"残留物","def":"noun"},{"unit":"Unit 2","term":"response to","zh":"对...的反应","def":"phrase"},{"unit":"Unit 2","term":"result in","zh":"导致","def":"phrasal verb"},{"unit":"Unit 2","term":"schedule","zh":"表，一览表","def":"noun"},{"unit":"Unit 2","term":"situation","zh":"情况，情形","def":"noun"},{"unit":"Unit 2","term":"substance","zh":"物质","def":"noun"},{"unit":"Unit 2","term":"suppose","zh":"假设，设想","def":"verb"},{"unit":"Unit 2","term":"unusually","zh":"异常地，不寻常地","def":"adverb"},{"unit":"Unit 2","term":"abroad","zh":"在国外，到国外","def":"adverb"},{"unit":"Unit 2","term":"absolute value","zh":"绝对值","def":"noun phrase"},{"unit":"Unit 2","term":"actually","zh":"实际上地","def":"adverb"},{"unit":"Unit 2","term":"alleviate","zh":"缓解，减轻","def":"verb"},{"unit":"Unit 2","term":"assist","zh":"帮助，协助","def":"verb"},{"unit":"Unit 2","term":"auction","zh":"拍卖","def":"noun"},{"unit":"Unit 2","term":"availability","zh":"可获得性","def":"noun"},{"unit":"Unit 2","term":"available","zh":"可获得的","def":"adjective"},{"unit":"Unit 2","term":"certain","zh":"某一，特定的","def":"adjective"},{"unit":"Unit 2","term":"coefficient","zh":"系数","def":"noun"},{"unit":"Unit 2","term":"completely","zh":"完全地","def":"adverb"},{"unit":"Unit 2","term":"concept","zh":"概念","def":"noun"},{"unit":"Unit 2","term":"decline","zh":"下降，减少","def":"verb"},{"unit":"Unit 2","term":"determined","zh":"确定，决定","def":"verb"},{"unit":"Unit 2","term":"directional","zh":"方向性的","def":"adjective"},{"unit":"Unit 2","term":"dislike","zh":"不喜欢","def":"verb"},{"unit":"Unit 2","term":"drought","zh":"干旱","def":"noun"},{"unit":"Unit 2","term":"eliminate","zh":"消除，排除","def":"verb"},{"unit":"Unit 2","term":"employment","zh":"就业","def":"noun"},{"unit":"Unit 2","term":"exist","zh":"存在","def":"verb"},{"unit":"Unit 2","term":"existing","zh":"现有的，目前的","def":"adjective"},{"unit":"Unit 2","term":"expenditure","zh":"支出，花费","def":"noun"},{"unit":"Unit 2","term":"financial","zh":"财政的，金融的","def":"adjective"},{"unit":"Unit 2","term":"gladly","zh":"乐意地，高兴地","def":"adverb"},{"unit":"Unit 2","term":"imply","zh":"暗示，意味着","def":"verb"},{"unit":"Unit 2","term":"intention","zh":"意图，目的","def":"noun"},{"unit":"Unit 2","term":"intervention","zh":"干预","def":"noun"},{"unit":"Unit 2","term":"net gain","zh":"净收益","def":"noun phrase"},{"unit":"Unit 2","term":"observe","zh":"观察到","def":"verb"},{"unit":"Unit 2","term":"patent","zh":"专利","def":"noun"},{"unit":"Unit 2","term":"protected","zh":"受保护的","def":"adjective"},{"unit":"Unit 2","term":"refuse","zh":"拒绝","def":"verb"},{"unit":"Unit 2","term":"relative","zh":"相对的","def":"adjective"},{"unit":"Unit 2","term":"relatively","zh":"相对地","def":"adverb"},{"unit":"Unit 2","term":"remain constant","zh":"保持不变","def":"verb phrase"},{"unit":"Unit 2","term":"impact","zh":"影响","def":"noun"},{"unit":"Unit 2","term":"required","zh":"要求的，必需的","def":"adjective"},{"unit":"Unit 2","term":"resulting","zh":"由此导致的","def":"adjective"},{"unit":"Unit 2","term":"severe","zh":"严重的","def":"adjective"},{"unit":"Unit 2","term":"shaded","zh":"涂上阴影的","def":"adjective"},{"unit":"Unit 2","term":"tend to","zh":"倾向于","def":"phrasal verb"},{"unit":"Unit 2","term":"transit authority","zh":"公共交通管理部门","def":"noun phrase"},{"unit":"Unit 2","term":"impossible","zh":"不可能的","def":"adjective"},{"unit":"Unit 2","term":"violate","zh":"违反","def":"verb"},{"unit":"Unit 2","term":"welfare","zh":"福利","def":"noun"},{"unit":"Unit 2","term":"significant","zh":"重大的，显著的","def":"adjective"},{"unit":"Unit 2","term":"unaffected","zh":"未受影响的","def":"adjective"},{"unit":"Unit 2","term":"vary","zh":"变化，不同","def":"verb"},{"unit":"Unit 2","term":"desirable","zh":"值得拥有的，令人向往的","def":"adjective"},{"unit":"Unit 2","term":"enable","zh":"使能够","def":"verb"},{"unit":"Unit 2","term":"engage in","zh":"从事，参与","def":"phrasal verb"},{"unit":"Unit 2","term":"establish","zh":"设立，建立","def":"verb"},{"unit":"Unit 2","term":"exceed","zh":"超过","def":"verb"},{"unit":"Unit 2","term":"impose","zh":"强制实行，征收","def":"verb"},{"unit":"Unit 2","term":"indicate","zh":"指出，标示","def":"verb"},{"unit":"Unit 2","term":"initially","zh":"最初，起初","def":"adverb"},{"unit":"Unit 2","term":"necessarily","zh":"必然地，必定","def":"adverb"},{"unit":"Unit 2","term":"occur","zh":"发生","def":"verb"},{"unit":"Unit 2","term":"portion","zh":"部分","def":"noun"},{"unit":"Unit 2","term":"represent","zh":"代表，表示","def":"verb"},{"unit":"Unit 2","term":"typically","zh":"通常，一般地","def":"adverb"},{"unit":"Unit 2","term":"willingness","zh":"意愿，乐意","def":"noun"},{"unit":"Unit 3","term":"average product","zh":"平均产量","def":"the total product divided by the quantity of an input."},{"unit":"Unit 3","term":"average product curve","zh":"平均产量曲线","def":"shows the relationship between the average product and the quantity of an input."},{"unit":"Unit 3","term":"diminishing returns to an input","zh":"某种投入的边际收益递减","def":"when an increase in the quantity of that input, holding the levels of all other inputs fixed, leads to a decline in the marginal product of that input."},{"unit":"Unit 3","term":"fixed input","zh":"固定投入","def":"an input whose quantity is fixed for a period of time and cannot be varied."},{"unit":"Unit 3","term":"long run","zh":"长期","def":"the time period in which all inputs or prices (including nominal wages) are fully flexible or can be varied."},{"unit":"Unit 3","term":"marginal product","zh":"边际产量","def":"the additional quantity of output produced by using one more unit of an input."},{"unit":"Unit 3","term":"production function","zh":"生产函数","def":"the relationship between the quantity of inputs a firm uses and the quantity of output it produces."},{"unit":"Unit 3","term":"short run","zh":"短期","def":"the time period in which many production costs, including nominal wages, are not fully flexible; time period in which at least one input is fixed."},{"unit":"Unit 3","term":"total product curve","zh":"总产量曲线","def":"shows how the quantity of output depends on the quantity of the variable input, for a given quantity of the fixed input."},{"unit":"Unit 3","term":"variable input","zh":"可变投入","def":"an input whose quantity the firm can vary at any time."},{"unit":"Unit 3","term":"average fixed cost (AFC)","zh":"平均固定成本","def":"the fixed cost per unit of output."},{"unit":"Unit 3","term":"average total cost (ATC; average cost)","zh":"平均总成本","def":"total cost divided by quantity of output produced; also known as average cost."},{"unit":"Unit 3","term":"average variable cost (AVC)","zh":"平均可变成本","def":"the variable cost per unit of output."},{"unit":"Unit 3","term":"fixed cost (FC)","zh":"固定成本","def":"a cost that does not depend on the quantity of output produced; the cost of the fixed input."},{"unit":"Unit 3","term":"marginal cost (MC)","zh":"边际成本","def":"the cost of producing one more unit of output, which can be found as the increase in total cost when one more unit is made."},{"unit":"Unit 3","term":"marginal cost curve","zh":"边际成本曲线","def":"shows how the cost of producing one more unit depends on the quantity that has already been produced."},{"unit":"Unit 3","term":"minimum-cost output","zh":"最低成本产量","def":"the quantity of output at which average total cost is lowest; corresponds to the bottom of the U-shaped average total cost curve."},{"unit":"Unit 3","term":"total cost (TC)","zh":"总成本","def":"the sum of the fixed cost and the variable cost of producing a given quantity of output."},{"unit":"Unit 3","term":"total cost curve","zh":"总成本曲线","def":"shows how total cost depends on the quantity of output."},{"unit":"Unit 3","term":"variable cost (VC)","zh":"可变成本","def":"a cost that depends on the quantity of output produced; the cost of the variable input."},{"unit":"Unit 3","term":"constant returns to scale","zh":"规模收益不变","def":"when output increases directly in proportion to an increase in all inputs."},{"unit":"Unit 3","term":"decreasing returns to scale","zh":"规模收益递减","def":"when output increases less than in proportion to an increase in all inputs."},{"unit":"Unit 3","term":"diseconomies of scale","zh":"规模不经济","def":"when long-run average total cost increases as output increases."},{"unit":"Unit 3","term":"economies of scale","zh":"规模经济","def":"when long-run average total cost declines as output increases."},{"unit":"Unit 3","term":"increasing returns to scale","zh":"规模收益递增","def":"when output increases more than in proportion to an increase in all inputs; for example, doubling all inputs would cause output to more than double."},{"unit":"Unit 3","term":"long-run average total cost curve (LRATC)","zh":"长期平均总成本曲线","def":"shows the relationship between output and average total cost when fixed cost has been chosen to minimize average total cost for each level of output."},{"unit":"Unit 3","term":"minimum efficient scale","zh":"最低效率规模","def":"the smallest quantity at which a firm's long-run average total costs is minimized."},{"unit":"Unit 3","term":"scale","zh":"规模","def":"size of the firm"},{"unit":"Unit 3","term":"accounting profit","zh":"会计利润","def":"a business's total revenue minus the explicit cost and depreciation."},{"unit":"Unit 3","term":"economic profit","zh":"经济利润","def":"a business's total revenue minus the opportunity cost of its resources; usually less than the accounting profit."},{"unit":"Unit 3","term":"explicit cost","zh":"显性成本","def":"a cost that involves actually paying out money."},{"unit":"Unit 3","term":"implicit cost","zh":"隐性成本","def":"a cost that does not require an outlay of money; it is measured by the value, in dollar terms, of benefits that are foregone."},{"unit":"Unit 3","term":"normal profit","zh":"正常利润","def":"an economic profit equal to zero; an economic profit just high enough to keep a firm engaged in its current activity."},{"unit":"Unit 3","term":"marginal revenue (MR)","zh":"边际收益","def":"the change in total revenue generated by an additional unit of output."},{"unit":"Unit 3","term":"marginal revenue curve","zh":"边际收益曲线","def":"shows how marginal revenue varies as output varies."},{"unit":"Unit 3","term":"principle of marginal analysis","zh":"边际分析原理","def":"says that every activity should continue until marginal benefit equals marginal cost."},{"unit":"Unit 3","term":"profit-maximizing rule","zh":"利润最大化规则","def":"says that profit is maximized by producing the quantity of output at which the marginal revenue of the last unit produced is equal to its marginal cost."},{"unit":"Unit 3","term":"average revenue (AR)","zh":"平均收益","def":"the average amount of revenue received per unit of output; it equals the price if every unit sells for the same price and can be found as the total revenue divided by the quantity of output."},{"unit":"Unit 3","term":"break-even price","zh":"保本价格","def":"the market price at which a price-taking firm earns zero (normal) profit."},{"unit":"Unit 3","term":"short-run firm supply curve","zh":"短期企业供给曲线","def":"shows how an individual firm's profit-maximizing level of output depends on the market price, taking the fixed cost as given."},{"unit":"Unit 3","term":"shut-down price","zh":"停产价格","def":"the market price at which a firm ceases production in the short run; equal to minimum average variable cost."},{"unit":"Unit 3","term":"sunk cost","zh":"沉没成本","def":"a cost that has already been incurred and is nonrecoverable; should be ignored in a decision about future actions."},{"unit":"Unit 3","term":"allocative efficiency","zh":"配置效率","def":"occurs when the society benefits the most, i.e., when total surplus is maximized or marginal benefit of consumption equals marginal cost of production"},{"unit":"Unit 3","term":"commodity (standardized product)","zh":"商品（标准化产品，大宗商品）","def":"describes a good produced by different firms, but that consumers regard as the same good."},{"unit":"Unit 3","term":"constant-cost industry","zh":"成本不变行业","def":"industry in which the firms' cost curves are unaffected by changes in the size of the industry and the long-run industry supply curve is horizontal."},{"unit":"Unit 3","term":"decreasing-cost industry","zh":"成本递减行业","def":"industry in which the firms' production costs decrease as the industry grows and the long-run supply curve is downward-sloping."},{"unit":"Unit 3","term":"free entry and exit","zh":"自由进出","def":"when new firms can easily enter into an industry and existing firms can easily leave that industry."},{"unit":"Unit 3","term":"increasing-cost industry","zh":"成本递增行业","def":"industry in which the firms' production costs increase with the size of the industry and the long-run industry supply curve is upward-sloping."},{"unit":"Unit 3","term":"industry supply curve","zh":"行业供给曲线","def":"shows the relationship between the price of a good and the total output of the industry as a whole; also known as market supply curve."},{"unit":"Unit 3","term":"long-run industry supply curve","zh":"长期行业供给曲线","def":"shows how the quantity supplied responds to the price once firms have had time to enter or exit the industry."},{"unit":"Unit 3","term":"long-run market equilibrium","zh":"长期市场均衡","def":"when the quantity supplied equals the quantity demanded, given that sufficient time has elapsed for producers to enter and exit the industry."},{"unit":"Unit 3","term":"market share","zh":"市场份额","def":"the fraction of the total industry output accounted for by a given firm's output."},{"unit":"Unit 3","term":"perfectly competitive industry","zh":"完全竞争行业","def":"an industry in which firms are price-takers."},{"unit":"Unit 3","term":"perfectly competitive market","zh":"完全竞争市场","def":"a market in which all market participants are price-takers."},{"unit":"Unit 3","term":"price-taking consumer","zh":"接受价格的消费者","def":"a consumer whose actions have no effect on the market price of the good or service purchased."},{"unit":"Unit 3","term":"price-taking firm","zh":"接受价格的企业","def":"a firm whose actions have no effect on the market price of the good or service it sells."},{"unit":"Unit 3","term":"productive efficiency","zh":"生产效率","def":"achieved when firms minimize the average cost of producing their goods."},{"unit":"Unit 3","term":"short-run industry supply curve","zh":"短期行业供给曲线","def":"shows how the quantity supplied by an industry depends on the market price, given a fixed number of firms."},{"unit":"Unit 3","term":"anticipate","zh":"预期，预料","def":"verb"},{"unit":"Unit 3","term":"aware","zh":"意识到的，知道的","def":"adjective"},{"unit":"Unit 3","term":"barrier","zh":"障碍，壁垒","def":"noun"},{"unit":"Unit 3","term":"characterize","zh":"描述...的特征","def":"verb"},{"unit":"Unit 3","term":"consistent with","zh":"与...一致","def":"phrase"},{"unit":"Unit 3","term":"continuously","zh":"连续不断地","def":"adverb"},{"unit":"Unit 3","term":"eventually","zh":"最终，最后","def":"adverb"},{"unit":"Unit 3","term":"exhibit","zh":"表现出，呈现","def":"verb"},{"unit":"Unit 3","term":"acquire","zh":"获得，购得","def":"verb"},{"unit":"Unit 3","term":"incur","zh":"招致，蒙受 (费用、损失等)","def":"verb"},{"unit":"Unit 3","term":"approximately","zh":"大约，近似地","def":"adverb"},{"unit":"Unit 3","term":"attain","zh":"达到，获得","def":"verb"},{"unit":"Unit 3","term":"combined","zh":"结合的，总和的","def":"adjective"},{"unit":"Unit 3","term":"consistently","zh":"一贯地，持续地","def":"adverb"},{"unit":"Unit 3","term":"deduct","zh":"扣除，减去","def":"verb"},{"unit":"Unit 3","term":"diminishing","zh":"递减的，逐渐减少的","def":"adjective"},{"unit":"Unit 3","term":"distance","zh":"距离","def":"noun"},{"unit":"Unit 3","term":"estimated","zh":"估计的，估算的","def":"adjective"},{"unit":"Unit 3","term":"explicit","zh":"明确的，(经济学中) 显性的","def":"adjective"},{"unit":"Unit 3","term":"implicit","zh":"含蓄的，(经济学中) 隐性的","def":"adjective"},{"unit":"Unit 3","term":"inventory","zh":"库存，存货","def":"noun"},{"unit":"Unit 3","term":"maximize","zh":"使最大化","def":"verb"},{"unit":"Unit 3","term":"necessary","zh":"必要的，必需的","def":"adjective"},{"unit":"Unit 3","term":"minimize","zh":"使最小化","def":"verb"},{"unit":"Unit 3","term":"regarding","zh":"关于，至于","def":"preposition"},{"unit":"Unit 3","term":"relationship","zh":"关系","def":"noun"},{"unit":"Unit 3","term":"set in","zh":"(某种状况) 开始出现并持续","def":"phrasal verb"},{"unit":"Unit 3","term":"vertical","zh":"垂直的","def":"adjective"},{"unit":"Unit 3","term":"voluntarily","zh":"自愿地，主动地","def":"adverb"},{"unit":"Unit 3","term":"circumstance","zh":"情况，环境","def":"noun"},{"unit":"Unit 3","term":"differentiation","zh":"差异化，区别","def":"noun"},{"unit":"Unit 3","term":"dissuade","zh":"劝阻，阻止","def":"verb"},{"unit":"Unit 3","term":"duration","zh":"持续时间","def":"noun"},{"unit":"Unit 3","term":"essential","zh":"本质的，基本的","def":"adjective"},{"unit":"Unit 3","term":"process","zh":"过程，流程","def":"noun"},{"unit":"Unit 3","term":"exit","zh":"退出 (市场)","def":"verb / noun"},{"unit":"Unit 3","term":"homogeneous","zh":"同质的 (完全相同的)","def":"adjective"},{"unit":"Unit 3","term":"horizontal","zh":"水平的","def":"adjective"},{"unit":"Unit 3","term":"indistinguishable","zh":"难以区分的","def":"adjective"},{"unit":"Unit 3","term":"operate","zh":"运营，经营","def":"verb"},{"unit":"Unit 3","term":"phase","zh":"阶段","def":"noun"},{"unit":"Unit 3","term":"presence","zh":"存在","def":"noun"},{"unit":"Unit 3","term":"proportionate","zh":"成比例的","def":"adjective"},{"unit":"Unit 3","term":"realize","zh":"实现 (利润或损失)","def":"verb"},{"unit":"Unit 3","term":"reduce","zh":"减少","def":"verb"},{"unit":"Unit 3","term":"region","zh":"区域，范围","def":"noun"},{"unit":"Unit 3","term":"segment","zh":"片段，部分","def":"noun"},{"unit":"Unit 3","term":"shut down","zh":"停产，关闭","def":"phrasal verb"},{"unit":"Unit 3","term":"representative","zh":"有代表性的","def":"adjective"},{"unit":"Unit 3","term":"temporarily","zh":"暂时地","def":"adverb"},{"unit":"Unit 3","term":"transaction","zh":"交易","def":"noun"},{"unit":"Unit 3","term":"unique","zh":"独一无二的","def":"adjective"},{"unit":"Unit 3","term":"usage","zh":"使用量，用法","def":"noun"},{"unit":"Unit 3","term":"adjust","zh":"调整","def":"verb"},{"unit":"Unit 3","term":"analysis","zh":"分析","def":"noun"},{"unit":"Unit 3","term":"contract","zh":"收缩，缩小","def":"verb"},{"unit":"Unit 3","term":"dairy","zh":"乳制品的","def":"adjective"},{"unit":"Unit 3","term":"despite","zh":"尽管","def":"preposition"},{"unit":"Unit 3","term":"emphasize","zh":"强调","def":"verb"},{"unit":"Unit 3","term":"sustain","zh":"承受 (损失)，维持","def":"verb"},{"unit":"Unit 3","term":"expand","zh":"扩张，扩大","def":"verb"},{"unit":"Unit 3","term":"generate","zh":"产生，得出","def":"verb"},{"unit":"Unit 3","term":"initial","zh":"最初的，初始的","def":"adjective"},{"unit":"Unit 3","term":"line of reasoning","zh":"推理过程","def":"noun phrase"},{"unit":"Unit 3","term":"manufacture","zh":"制造","def":"verb"},{"unit":"Unit 3","term":"minimizing","zh":"使...最小化","def":"verb (participle)"},{"unit":"Unit 3","term":"respectively","zh":"分别地，依序地","def":"adverb"},{"unit":"Unit 3","term":"shade","zh":"涂阴影 (在图表中)","def":"verb"},{"unit":"Unit 3","term":"side-by-side","zh":"并排的","def":"adjective"},{"unit":"Unit 3","term":"typical","zh":"典型的","def":"adjective"},{"unit":"Unit 3","term":"uncertain","zh":"不确定的 (无法判断的)","def":"adjective"},{"unit":"Unit 3","term":"identical","zh":"完全相同的","def":"adjective"},{"unit":"Unit 3","term":"intersect","zh":"相交，交叉","def":"verb"},{"unit":"Unit 3","term":"potential","zh":"潜力，可能性","def":"noun"},{"unit":"Unit 3","term":"relative to","zh":"相对于","def":"phrase"},{"unit":"Unit 3","term":"structure","zh":"结构","def":"noun"},{"unit":"Unit 4","term":"concentration ratios","zh":"集中度比率","def":"measure of the percentage of industry sales accounted for by the \"X\" largest firms; for example, the four-firm concentration ratio or the eight-firm concentration ratio."},{"unit":"Unit 4","term":"imperfectly competitive","zh":"不完全竞争的","def":"describes a market that does not meet the requirements for perfect competition."},{"unit":"Unit 4","term":"market power","zh":"市场权力","def":"refers to a firm's ability to influence the price it charges for a good or service."},{"unit":"Unit 4","term":"monopolist","zh":"垄断者","def":"a firm that is the only producer of a good that has no close substitutes."},{"unit":"Unit 4","term":"monopolistic competition","zh":"垄断竞争","def":"market structure in which there are many competing firms in an industry, each firm sells a differentiated product, and there is free entry into and exit from the industry in the long run."},{"unit":"Unit 4","term":"monopoly","zh":"垄断","def":"an industry with only one firm; an industry controlled by a monopolist."},{"unit":"Unit 4","term":"oligopolist","zh":"寡头垄断者","def":"a producer in an oligopoly."},{"unit":"Unit 4","term":"oligopoly","zh":"寡头垄断","def":"an industry with only a small number of firms."},{"unit":"Unit 4","term":"product differentiation","zh":"产品差异化","def":"an attempt by a firm to convince buyers that its product is different from the products of other firms in the industry."},{"unit":"Unit 4","term":"barrier to entry","zh":"进入壁垒","def":"protects a monopolist (and allows it to persist and earn economic profits) by preventing other firms from entering the industry."},{"unit":"Unit 4","term":"copyright","zh":"版权","def":"gives the copyright holder for a literary or artistic work the sole right to profit from that work for a specified period of time."},{"unit":"Unit 4","term":"natural monopoly","zh":"自然垄断","def":"when economies of scale provide a large cost advantage to a single firm that produces all of an industry's output."},{"unit":"Unit 4","term":"patent","zh":"专利","def":"gives the owner a temporary monopoly in the use or sale of an invention."},{"unit":"Unit 4","term":"price regulation","zh":"价格管制","def":"limits the price that a firm is allowed to charge, which is a form of price ceiling."},{"unit":"Unit 4","term":"public ownership","zh":"公有化","def":"(of a monopoly) when a good is supplied by the government, or by a firm owned by the government, instead of by a monopolist."},{"unit":"Unit 4","term":"public utility","zh":"公共事业","def":"an entity that provides goods or services to the general public (such as light, power, or water)."},{"unit":"Unit 4","term":"perfect price discrimination","zh":"完全价格歧视","def":"when a monopolist charges each consumer their willingness to pay — the maximum that the consumer is willing to pay."},{"unit":"Unit 4","term":"price discrimination","zh":"价格歧视","def":"when firms charge different prices to different consumers for the same good."},{"unit":"Unit 4","term":"single-price monopolist","zh":"单一价格垄断者","def":"firm that charges all consumers the same price."},{"unit":"Unit 4","term":"brand name","zh":"品牌名称","def":"a name owned by a particular firm that distinguishes its products from those of other firms."},{"unit":"Unit 4","term":"excess capacity","zh":"过剩产能","def":"when firms in a monopolistically competitive industry produce less than the output at which average total cost is minimized."},{"unit":"Unit 4","term":"antitrust policy","zh":"反垄断政策","def":"involves efforts by the government to prevent oligopolistic industries from becoming or behaving like monopolies."},{"unit":"Unit 4","term":"cartel","zh":"卡特尔","def":"a group of firms that agree to increase prices and reduce output in order to raise their joint profits."},{"unit":"Unit 4","term":"collusion","zh":"勾结","def":"when firms cooperate to raise their joint profits."},{"unit":"Unit 4","term":"dominant strategy","zh":"支配策略","def":"a player's best action regardless of the action taken by the other player."},{"unit":"Unit 4","term":"duopolist","zh":"双头垄断者","def":"each of the two firms in a duopoly."},{"unit":"Unit 4","term":"duopoly","zh":"双头垄断","def":"an oligopoly consisting of only two firms."},{"unit":"Unit 4","term":"game theory","zh":"博弈论","def":"the study of behavior in situations of interdependence."},{"unit":"Unit 4","term":"interdependent","zh":"相互依赖的","def":"when the outcome (profit) of each firm depends on the actions of the other firms in the market."},{"unit":"Unit 4","term":"Nash equilibrium (noncooperative equilibrium)","zh":"纳什均衡（非合作均衡","def":"the result when each player in a game chooses the action that maximizes their payoff, given the actions of other players; also called noncooperative equilibrium."},{"unit":"Unit 4","term":"noncooperative behavior","zh":"非合作行为","def":"when firms act in their own self-interest, ignoring the effects of their actions on each other's profits."},{"unit":"Unit 4","term":"nonprice competition","zh":"非价格竞争","def":"when firms that have a tacit understanding not to compete on price use advertising and other means to try to increase their sales."},{"unit":"Unit 4","term":"payoff","zh":"收益","def":"the reward received by a player in a game, such as the profit earned by an oligopolist."},{"unit":"Unit 4","term":"payoff matrix","zh":"收益矩阵","def":"shows how the payoff to each of the participants in a two-player game depends on the actions of both. Such a matrix helps us analyze situations of interdependence."},{"unit":"Unit 4","term":"price leadership","zh":"价格领导","def":"one firm sets its price first, and other firms then follow."},{"unit":"Unit 4","term":"price war","zh":"价格战","def":"when tacit collusion breaks down and aggressive price competition causes prices to collapse."},{"unit":"Unit 4","term":"prisoner's dilemma","zh":"囚徒困境","def":"a game based on two premises: (1) each player has an incentive to choose an action that benefits itself at the other player's expense; and (2) when both players follow this incentive, both are worse off than if they had acted cooperatively."},{"unit":"Unit 4","term":"strategic behavior","zh":"战略行为","def":"when a firm attempts to influence the future behavior of other firms."},{"unit":"Unit 4","term":"tacit collusion","zh":"默契勾结","def":"when firms limit production and raise prices in a way that raises each other's profits, even though they have not made any formal agreement."},{"unit":"Unit 4","term":"tit for tat","zh":"以牙还牙","def":"a strategy that involves playing cooperatively at first, then doing whatever the other player did in the previous period."},{"unit":"Unit 4","term":"account for","zh":"占 (比例)，构成","def":"phrasal verb"},{"unit":"Unit 4","term":"adopt","zh":"采用，采纳 (新技术或方法)","def":"verb"},{"unit":"Unit 4","term":"altruistic","zh":"利他的，无私的","def":"adjective"},{"unit":"Unit 4","term":"approach","zh":"接近，临近","def":"verb"},{"unit":"Unit 4","term":"borne","zh":"由...承担","def":"verb (participle)"},{"unit":"Unit 4","term":"burden","zh":"负担 (指税负)","def":"noun"},{"unit":"Unit 4","term":"capture","zh":"获取，捕获 (消费者剩余)","def":"verb"},{"unit":"Unit 4","term":"cheat","zh":"欺骗，作弊 (指违反卡特尔协议)","def":"verb"},{"unit":"Unit 4","term":"collude","zh":"串通，勾结","def":"verb"},{"unit":"Unit 4","term":"condition","zh":"条件，状况","def":"noun"},{"unit":"Unit 4","term":"constantly","zh":"持续不断地","def":"adverb"},{"unit":"Unit 4","term":"cooperate","zh":"合作","def":"verb"},{"unit":"Unit 4","term":"currently","zh":"目前，现在","def":"adverb"},{"unit":"Unit 4","term":"departure","zh":"出发，离开 (指航班)","def":"noun"},{"unit":"Unit 4","term":"differ","zh":"不同，相异","def":"verb"},{"unit":"Unit 4","term":"display","zh":"展示，陈列","def":"noun"},{"unit":"Unit 4","term":"distinct","zh":"不同的，明显的","def":"adjective"},{"unit":"Unit 4","term":"dominant","zh":"占优势的，支配的","def":"adjective"},{"unit":"Unit 4","term":"effect","zh":"效果，实施","def":"noun"},{"unit":"Unit 4","term":"enact","zh":"颁布，制定 (法律或政策)","def":"verb"},{"unit":"Unit 4","term":"enforce","zh":"执行，实施 (法律)","def":"verb"},{"unit":"Unit 4","term":"ensure","zh":"确保","def":"verb"},{"unit":"Unit 4","term":"existence","zh":"存在","def":"noun"},{"unit":"Unit 4","term":"experience","zh":"经历，遭受","def":"verb"},{"unit":"Unit 4","term":"fraudulent","zh":"欺诈的","def":"adjective"},{"unit":"Unit 4","term":"grant","zh":"授予，给予 (补贴或权利)","def":"verb"},{"unit":"Unit 4","term":"incentive","zh":"激励，刺激","def":"noun"},{"unit":"Unit 4","term":"independently","zh":"独立地","def":"adverb"},{"unit":"Unit 4","term":"inefficient","zh":"低效率的","def":"adjective"},{"unit":"Unit 4","term":"innovation","zh":"创新","def":"noun"},{"unit":"Unit 4","term":"interdependence","zh":"相互依赖","def":"noun"},{"unit":"Unit 4","term":"legislation","zh":"立法，法律","def":"noun"},{"unit":"Unit 4","term":"liability","zh":"责任，债务","def":"noun"},{"unit":"Unit 4","term":"lie","zh":"位于","def":"verb"},{"unit":"Unit 4","term":"matrix","zh":"矩阵","def":"noun"},{"unit":"Unit 4","term":"merging","zh":"合并","def":"verb (gerund)"},{"unit":"Unit 4","term":"mode","zh":"方式，模式","def":"noun"},{"unit":"Unit 4","term":"mutual","zh":"相互的","def":"adjective"},{"unit":"Unit 4","term":"perform","zh":"执行，表现","def":"verb"},{"unit":"Unit 4","term":"practice","zh":"实行，从事","def":"verb"},{"unit":"Unit 4","term":"predictable","zh":"可预测的","def":"adjective"},{"unit":"Unit 4","term":"prevent","zh":"阻止，防止","def":"verb"},{"unit":"Unit 4","term":"primarily","zh":"主要地","def":"adverb"},{"unit":"Unit 4","term":"primary","zh":"主要的，首要的","def":"adjective"},{"unit":"Unit 4","term":"proposal","zh":"提议，建议","def":"noun"},{"unit":"Unit 4","term":"rationale","zh":"基本原理，理由","def":"noun"},{"unit":"Unit 4","term":"recognize","zh":"认识到，承认","def":"verb"},{"unit":"Unit 4","term":"reflect","zh":"反映","def":"verb"},{"unit":"Unit 4","term":"regulate","zh":"管制，监管","def":"verb"},{"unit":"Unit 4","term":"require","zh":"要求","def":"verb"},{"unit":"Unit 4","term":"respect","zh":"方面","def":"noun"},{"unit":"Unit 4","term":"restrict","zh":"限制","def":"verb"},{"unit":"Unit 4","term":"scheme","zh":"计划，方案","def":"noun"},{"unit":"Unit 4","term":"select","zh":"选择","def":"verb"},{"unit":"Unit 4","term":"separate","zh":"分开，区分","def":"verb"},{"unit":"Unit 4","term":"simultaneously","zh":"同时地","def":"adverb"},{"unit":"Unit 4","term":"slightly","zh":"稍微，略微","def":"adverb"},{"unit":"Unit 4","term":"strategy","zh":"策略","def":"noun"},{"unit":"Unit 4","term":"strictly","zh":"严格地","def":"adverb"},{"unit":"Unit 4","term":"subsidy","zh":"补贴","def":"noun"},{"unit":"Unit 4","term":"substantially","zh":"大幅度地，实质上","def":"adverb"},{"unit":"Unit 4","term":"subtract","zh":"减去","def":"verb"},{"unit":"Unit 4","term":"suffer","zh":"遭受 (损失)","def":"verb"},{"unit":"Unit 4","term":"tempted","zh":"受诱惑的，想要做...的","def":"adjective"},{"unit":"Unit 4","term":"unregulated","zh":"无论管制的，非管制的","def":"adjective"},{"unit":"Unit 4","term":"utilize","zh":"利用，使用","def":"verb"},{"unit":"Unit 4","term":"whereas","zh":"然而，反之","def":"conjunction"},{"unit":"Unit 5","term":"derived demand","zh":"衍生需求","def":"demand for a factor that results from (that is, it is derived from) the demand for the output being produced."},{"unit":"Unit 5","term":"economic rent","zh":"经济租金","def":"the payment to a factor of production in excess of the minimum payment necessary to employ that factor."},{"unit":"Unit 5","term":"equilibrium marginal revenue product","zh":"均衡边际收益产品","def":"the additional revenue generated by the last unit of a factor employed in the factor market as a whole."},{"unit":"Unit 5","term":"human capital","zh":"人力资本","def":"the improvement in labor created by the education and knowledge that is embodied in the workforce."},{"unit":"Unit 5","term":"individual labor supply curve","zh":"个人劳动供给曲线","def":"shows how the quantity of labor supplied by an individual depends on that individual's wage rate."},{"unit":"Unit 5","term":"leisure","zh":"休闲","def":"the time available for purposes other than earning money to buy marketed goods."},{"unit":"Unit 5","term":"marginal factor cost (MFC)","zh":"边际要素成本","def":"the additional cost of employing an additional unit of a factor of production; also called the marginal resource cost (MRC)."},{"unit":"Unit 5","term":"marginal revenue product (MRP)","zh":"边际产品收益","def":"the additional revenue generated by employing one more unit of a factor."},{"unit":"Unit 5","term":"marginal revenue product curve","zh":"边际产品收益曲线","def":"shows how the marginal revenue product of a factor depends on the quantity of that factor employed."},{"unit":"Unit 5","term":"physical capital","zh":"物质资本","def":"often referred to simply as capital — consists of manufactured (human-made) goods, such as equipment, buildings and machines, used to produce other goods and services."},{"unit":"Unit 5","term":"rental rate","zh":"租金率","def":"the cost, explicit or implicit, of using a unit of an asset, either land or capital, for a given period of time."},{"unit":"Unit 5","term":"unions","zh":"工会","def":"organizations of workers that try to raise wages and improve working conditions for their members by bargaining collectively."},{"unit":"Unit 5","term":"cost-minimization rule","zh":"成本最小化规则","def":"employ factors so that the marginal product per dollar spent on each factor is the same; this rule is used by a firm to determine the cost-minimizing combination of inputs."},{"unit":"Unit 5","term":"monopsonist","zh":"买方垄断者","def":"a single buyer in a factor market."},{"unit":"Unit 5","term":"monopsony","zh":"买方垄断","def":"a market in which there is a monopsonist."},{"unit":"Unit 5","term":"aircraft","zh":"飞机，航空器","def":"noun"},{"unit":"Unit 5","term":"breakthrough","zh":"突破 (指技术或医学上的)","def":"noun"},{"unit":"Unit 5","term":"civilian","zh":"平民的，非军职的","def":"adjective"},{"unit":"Unit 5","term":"coal","zh":"煤炭","def":"noun"},{"unit":"Unit 5","term":"derived","zh":"派生的","def":"adjective"},{"unit":"Unit 5","term":"dramatically","zh":"剧烈地，显著地","def":"adverb"},{"unit":"Unit 5","term":"gap","zh":"差距","def":"noun"},{"unit":"Unit 5","term":"incurable","zh":"无法治愈的","def":"adjective"},{"unit":"Unit 5","term":"invested","zh":"投入的","def":"adjective"},{"unit":"Unit 5","term":"leisure","zh":"闲暇，休闲","def":"noun"},{"unit":"Unit 5","term":"license","zh":"执照，许可证","def":"noun"},{"unit":"Unit 5","term":"mechanic","zh":"技工，机械师","def":"noun"},{"unit":"Unit 5","term":"observation","zh":"观察，观测到的事实","def":"noun"},{"unit":"Unit 5","term":"permit","zh":"许可证","def":"noun"},{"unit":"Unit 5","term":"productivity","zh":"生产力，生产率","def":"noun"},{"unit":"Unit 5","term":"relocate","zh":"搬迁，迁移","def":"verb"},{"unit":"Unit 5","term":"restriction","zh":"限制，约束","def":"noun"},{"unit":"Unit 5","term":"revoke","zh":"撤销，吊销","def":"verb"},{"unit":"Unit 5","term":"significantly","zh":"显著地，极大地","def":"adverb"},{"unit":"Unit 5","term":"techniques","zh":"技术，技巧","def":"noun"},{"unit":"Unit 5","term":"unskilled","zh":"非熟练的，无特殊技能的","def":"adjective"},{"unit":"Unit 5","term":"utility","zh":"效用 (满足感)","def":"noun"},{"unit":"Unit 5","term":"addition","zh":"增加","def":"noun"},{"unit":"Unit 5","term":"calculate","zh":"计算","def":"verb"},{"unit":"Unit 5","term":"contribution","zh":"贡献 (指工人对收入的贡献)","def":"noun"},{"unit":"Unit 5","term":"develop","zh":"开发，研发","def":"verb"},{"unit":"Unit 5","term":"estimate","zh":"估算，估计","def":"verb"},{"unit":"Unit 5","term":"harvest","zh":"收割，收获","def":"verb"},{"unit":"Unit 5","term":"interim","zh":"过渡期，期间","def":"noun / adj"},{"unit":"Unit 5","term":"lay off","zh":"解雇，裁员","def":"phrasal verb"},{"unit":"Unit 5","term":"manufacturer","zh":"制造商","def":"noun"},{"unit":"Unit 5","term":"negotiate","zh":"谈判，协商","def":"verb"},{"unit":"Unit 5","term":"plant","zh":"工厂","def":"noun"},{"unit":"Unit 5","term":"predict","zh":"预测","def":"verb"},{"unit":"Unit 5","term":"profitability","zh":"盈利能力","def":"noun"},{"unit":"Unit 5","term":"profitable","zh":"有利可图的","def":"adjective"},{"unit":"Unit 5","term":"workforce","zh":"劳动力，全体员工","def":"noun"},{"unit":"Unit 5","term":"achieve","zh":"达到，实现","def":"verb"},{"unit":"Unit 5","term":"complex","zh":"综合大楼，建筑群","def":"noun"},{"unit":"Unit 5","term":"contractor","zh":"承包商","def":"noun"},{"unit":"Unit 5","term":"derive","zh":"得出，推导","def":"verb"},{"unit":"Unit 5","term":"employ","zh":"雇用，使用","def":"verb"},{"unit":"Unit 5","term":"manage","zh":"管理","def":"verb"},{"unit":"Unit 5","term":"rent","zh":"租用","def":"verb"},{"unit":"Unit 5","term":"rental rate","zh":"租赁价格 (资本的价格)","def":"noun phrase"},{"unit":"Unit 5","term":"respective","zh":"分别的，各自的","def":"adjective"},{"unit":"Unit 5","term":"spending","zh":"开销，支出","def":"noun"},{"unit":"Unit 5","term":"substitute","zh":"替代品；替代","def":"noun / verb"},{"unit":"Unit 5","term":"substituted for","zh":"用...代替...","def":"phrase"},{"unit":"Unit 5","term":"accompanying","zh":"附随的，附带的","def":"adjective"},{"unit":"Unit 5","term":"competitor","zh":"竞争者","def":"noun"},{"unit":"Unit 5","term":"employer","zh":"雇主","def":"noun"},{"unit":"Unit 5","term":"geographic","zh":"地理的","def":"adjective"},{"unit":"Unit 5","term":"local","zh":"当地的","def":"adjective"},{"unit":"Unit 5","term":"lumber","zh":"木材","def":"noun"},{"unit":"Unit 5","term":"regulation","zh":"规章，管制","def":"noun"},{"unit":"Unit 5","term":"single","zh":"单一的，唯一的","def":"adjective"},{"unit":"Unit 6","term":"marginal social benefit (MSB)","zh":"边际社会效益","def":"the additional benefit to society as a whole from an additional unit."},{"unit":"Unit 6","term":"marginal social cost (MSC)","zh":"边际社会成本","def":"the additional cost imposed on society as a whole by one additional unit."},{"unit":"Unit 6","term":"socially efficient","zh":"具有社会效率","def":"the level of output that maximizes the net gains for society by equating the marginal social cost and the marginal social benefit."},{"unit":"Unit 6","term":"socially optimal quantity","zh":"社会最优数量","def":"the quantity that society would choose, taking all costs and benefits into account."},{"unit":"Unit 6","term":"Coase theorem","zh":"科斯定理","def":"states that payment between private parties can achieve an efficient solution to externality problems as long as transaction costs are sufficiently low."},{"unit":"Unit 6","term":"external benefit","zh":"外部效益","def":"a benefit that an individual or a firm confers on others without receiving compensation."},{"unit":"Unit 6","term":"external cost","zh":"外部成本","def":"an uncompensated cost that an individual or a firm imposes on others."},{"unit":"Unit 6","term":"externalities","zh":"外部性","def":"external costs and external benefits."},{"unit":"Unit 6","term":"internalize the externalities","zh":"内部化外部性","def":"when individuals take external costs or external benefits into account."},{"unit":"Unit 6","term":"marginal external benefit (MEB)","zh":"边际外部效益","def":"the addition to external benefits created by one more unit of the good."},{"unit":"Unit 6","term":"marginal external cost (MEC)","zh":"边际外部成本","def":"the increase in external costs to society created by one more unit of the good."},{"unit":"Unit 6","term":"marginal private benefit (MPB)","zh":"边际私人效益","def":"the marginal benefit that accrues to consumers of the good, not including any external benefits."},{"unit":"Unit 6","term":"marginal private cost (MPC)","zh":"边际私人成本","def":"the marginal cost of producing the good, not including any external costs."},{"unit":"Unit 6","term":"market failure","zh":"市场失灵","def":"when the outcome in a market is inefficient."},{"unit":"Unit 6","term":"negative consumption externality","zh":"消费负外部性","def":"a negative externality created by the consumption of a good or service."},{"unit":"Unit 6","term":"negative externalities","zh":"负外部性","def":"external costs."},{"unit":"Unit 6","term":"negative production externality","zh":"生产负外部性","def":"a negative externality caused by the production of a good or service."},{"unit":"Unit 6","term":"positive consumption externality","zh":"消费正外部性","def":"positive externality created by the consumption of a good or service."},{"unit":"Unit 6","term":"positive externalities","zh":"正外部性","def":"external benefits."},{"unit":"Unit 6","term":"positive production externality","zh":"生产正外部性","def":"a positive externality arising from the production of a good or service."},{"unit":"Unit 6","term":"transaction costs","zh":"交易成本","def":"the costs to individuals of making a deal."},{"unit":"Unit 6","term":"artificially scarce good (club good)","zh":"人为稀缺品（俱乐物品）","def":"a good that is excludable but nonrival in consumption."},{"unit":"Unit 6","term":"common resource","zh":"公共资源","def":"nonexcludable and rival in consumption; you can't stop others from consuming the good, and when they consume it, less of the good is available for you."},{"unit":"Unit 6","term":"excludable","zh":"可排他的","def":"a good is excludable if the supplier of that good can prevent people who do not pay from consuming it."},{"unit":"Unit 6","term":"free-rider problem","zh":"搭便车问题","def":"goods that are nonexcludable suffer from the free-rider problem: Individuals have no incentive to pay for their own consumption and instead will take a \"free ride\" on anyone who does pay."},{"unit":"Unit 6","term":"nonexcludable","zh":"不可排他的","def":"when a good is nonexcludable, the supplier cannot prevent consumption by people who do not pay for it."},{"unit":"Unit 6","term":"nonrival in consumption","zh":"消费非竞争性的","def":"a good is nonrival in consumption if more than one person can consume the same unit of the good at the same time."},{"unit":"Unit 6","term":"private good","zh":"私人物品","def":"a good that is both excludable and rival in consumption."},{"unit":"Unit 6","term":"public good","zh":"公共物品","def":"a good that is both nonexcludable and nonrival in consumption."},{"unit":"Unit 6","term":"rival in consumption","zh":"消费竞争性的","def":"a good is rival in consumption if the same unit of the good cannot be consumed by more than one person at the same time."},{"unit":"Unit 6","term":"average cost pricing","zh":"平均成本定价","def":"occurs when regulators set a monopoly's price equal to its average cost to prevent the firm from incurring a loss."},{"unit":"Unit 6","term":"environmental standards","zh":"环境标准","def":"rules that protect the environment by specifying limits for or actions by producers and consumers."},{"unit":"Unit 6","term":"marginal cost pricing","zh":"边际成本定价","def":"occurs when regulators set a monopoly's price equal to its marginal cost to achieve efficiency."},{"unit":"Unit 6","term":"Pigouvian subsidy","zh":"庇古税补贴","def":"a payment designed to correct for the inefficiencies of external benefits."},{"unit":"Unit 6","term":"Pigouvian taxes","zh":"庇古税","def":"taxes designed to correct for the inefficiencies of external costs."},{"unit":"Unit 6","term":"Gini coefficient","zh":"基尼系数","def":"a number that summarizes a country's level of income inequality based on how unequally income is distributed."},{"unit":"Unit 6","term":"Lorenz curve","zh":"洛伦兹曲线","def":"shows the percentage of all income received by the poorest members of the population, from the poorest 0% to the poorest 100%."},{"unit":"Unit 6","term":"progressive tax","zh":"累进税","def":"a tax that rises more than in proportion to income."},{"unit":"Unit 6","term":"proportional tax","zh":"比例税","def":"a tax that rises in proportion to income."},{"unit":"Unit 6","term":"regressive tax","zh":"累退税","def":"a tax that rises less than in proportion to income."},{"unit":"Unit 6","term":"accumulated","zh":"积累的","def":"adjective"},{"unit":"Unit 6","term":"antitrust","zh":"反垄断的","def":"adjective"},{"unit":"Unit 6","term":"comparative","zh":"比较的","def":"adjective"},{"unit":"Unit 6","term":"congestion","zh":"拥堵","def":"noun"},{"unit":"Unit 6","term":"degree","zh":"程度","def":"noun"},{"unit":"Unit 6","term":"delivery","zh":"递送，交付","def":"noun"},{"unit":"Unit 6","term":"depict","zh":"描绘，描述","def":"verb"},{"unit":"Unit 6","term":"depletable","zh":"会耗尽的，可消耗的","def":"adjective"},{"unit":"Unit 6","term":"discourage","zh":"阻碍，使气馁","def":"verb"},{"unit":"Unit 6","term":"dropout","zh":"辍学者","def":"noun"},{"unit":"Unit 6","term":"emission","zh":"排放物","def":"noun"},{"unit":"Unit 6","term":"equate","zh":"使相等","def":"verb"},{"unit":"Unit 6","term":"equitable","zh":"公平的，公正的","def":"adjective"},{"unit":"Unit 6","term":"equity","zh":"公平","def":"noun"},{"unit":"Unit 6","term":"estate","zh":"遗产，财产","def":"noun"},{"unit":"Unit 6","term":"evaluate","zh":"评估，评价","def":"verb"},{"unit":"Unit 6","term":"excludable","zh":"可排他的","def":"adjective"},{"unit":"Unit 6","term":"extent","zh":"程度，范围","def":"noun"},{"unit":"Unit 6","term":"forecast","zh":"预测，预报","def":"verb"},{"unit":"Unit 6","term":"granting","zh":"授予，给予","def":"verb (gerund)"},{"unit":"Unit 6","term":"guarantee","zh":"保证，担保","def":"verb"},{"unit":"Unit 6","term":"historical","zh":"历史的","def":"adjective"},{"unit":"Unit 6","term":"ignore","zh":"忽视，忽略","def":"verb"},{"unit":"Unit 6","term":"inheritance","zh":"遗产，继承","def":"noun"},{"unit":"Unit 6","term":"initiate","zh":"发起，创始","def":"verb"},{"unit":"Unit 6","term":"install","zh":"安装","def":"verb"},{"unit":"Unit 6","term":"insufficient","zh":"不足的，不够的","def":"adjective"},{"unit":"Unit 6","term":"introduction","zh":"引入，出台","def":"noun"},{"unit":"Unit 6","term":"justification","zh":"正当理由，辩护","def":"noun"},{"unit":"Unit 6","term":"lawsuit","zh":"诉讼，起诉","def":"noun"},{"unit":"Unit 6","term":"levy","zh":"征收","def":"verb"},{"unit":"Unit 6","term":"lump-sum","zh":"一次性总付的","def":"adjective"},{"unit":"Unit 6","term":"manipulation","zh":"操纵","def":"noun"},{"unit":"Unit 6","term":"misallocate","zh":"错误分配 (资源)","def":"verb"},{"unit":"Unit 6","term":"monopolize","zh":"垄断，独占","def":"verb"},{"unit":"Unit 6","term":"motivation","zh":"动机，积极性","def":"noun"},{"unit":"Unit 6","term":"nearby","zh":"附近的","def":"adjective"},{"unit":"Unit 6","term":"negotiation","zh":"谈判，协商","def":"noun"},{"unit":"Unit 6","term":"obligatory","zh":"强制性的，义务的","def":"adjective"},{"unit":"Unit 6","term":"occupation","zh":"职业","def":"noun"},{"unit":"Unit 6","term":"overstate","zh":"夸大，高估","def":"verb"},{"unit":"Unit 6","term":"passive","zh":"被动的","def":"adjective"},{"unit":"Unit 6","term":"persistent","zh":"持续的，不断发生的","def":"adjective"},{"unit":"Unit 6","term":"perspective","zh":"视角，观点","def":"noun"},{"unit":"Unit 6","term":"poverty","zh":"贫困","def":"noun"},{"unit":"Unit 6","term":"progressive","zh":"累进的","def":"adjective"},{"unit":"Unit 6","term":"proper","zh":"适当的，正确的","def":"adjective"},{"unit":"Unit 6","term":"proportional","zh":"按比例的","def":"adjective"},{"unit":"Unit 6","term":"prosecute","zh":"起诉，检举","def":"verb"},{"unit":"Unit 6","term":"pulp","zh":"纸浆","def":"noun"},{"unit":"Unit 6","term":"pure","zh":"纯粹的","def":"adjective"},{"unit":"Unit 6","term":"quintile","zh":"五分位数","def":"noun"},{"unit":"Unit 6","term":"recommendation","zh":"建议，推荐","def":"noun"},{"unit":"Unit 6","term":"redistribute","zh":"重新分配","def":"verb"},{"unit":"Unit 6","term":"regressive","zh":"累退的","def":"adjective"},{"unit":"Unit 6","term":"remedy","zh":"补救措施，解决办法","def":"noun"},{"unit":"Unit 6","term":"resident","zh":"居民","def":"noun"},{"unit":"Unit 6","term":"retrain","zh":"重新培训","def":"verb"},{"unit":"Unit 6","term":"rivalrous","zh":"竞争性的","def":"adjective"},{"unit":"Unit 6","term":"scarce","zh":"稀缺的","def":"adjective"},{"unit":"Unit 6","term":"sector","zh":"部门","def":"noun"},{"unit":"Unit 6","term":"siren","zh":"警报器","def":"noun"},{"unit":"Unit 6","term":"sole","zh":"唯一的，独占的","def":"adjective"},{"unit":"Unit 6","term":"succeeding","zh":"随后的，以后的","def":"adjective"},{"unit":"Unit 6","term":"vaccine","zh":"疫苗","def":"noun"},{"unit":"Unit 6","term":"volume","zh":"量，体积","def":"noun"},{"unit":"Unit 6","term":"with respect to","zh":"相对于...，关于...","def":"phrase"},{"unit":"Unit 6","term":"retirement","zh":"退休","def":"noun"}];
+const SENTENCES = {"opportunity cost":["When Maria decided to attend college full-time, she gave up her full-time salary — this forgone income is the ___ of her decision.","The ___ of producing one more unit of good X is the amount of good Y that must be sacrificed."],"comparative advantage":["Even if Country A is better at producing both wheat and cloth, Country B should specialize in cloth if it has a ___ in cloth production.","Trade is beneficial when each country produces the good in which it has a ___, meaning the lowest opportunity cost."],"absolute advantage":["Japan can produce 10 cars per hour while Mexico produces 4; Japan has an ___ in car production.","Having an ___ means you can produce more output with the same amount of resources than your trading partner."],"specialization":["By focusing on the good it produces most efficiently, each country gains from trade through ___.","Adam Smith argued that ___ in pin manufacturing dramatically increased the total number of pins produced per day."],"scarcity":["Because resources are limited but human wants are unlimited, ___ is the fundamental economic problem.","___ forces individuals and societies to make choices about how to allocate their limited resources."],"trade-off":["Every government faces a ___ between spending on education and spending on defense when its budget is fixed.","The production possibilities curve illustrates the ___ a society faces when allocating resources between two goods."],"marginal analysis":["A firm uses ___ to decide whether producing one more unit adds more to revenue than it does to cost.","According to ___, a student should study one more hour only if the expected benefit exceeds the expected cost."],"sunk cost":["The $500 you already spent on a non-refundable concert ticket is a ___ and should not affect your decision to attend.","Economists advise that a ___ should be ignored when making future decisions, since it cannot be recovered."],"marginal utility":["The ___ of the third slice of pizza is less than the ___ of the first slice, illustrating diminishing returns to consumption.","A consumer maximizes utility by equating the ___ per dollar spent across all goods in the consumption bundle."],"principle of diminishing marginal utility":["The ___ states that each additional unit of a good consumed adds less satisfaction than the previous unit.","Because of the ___, a consumer's demand curve slopes downward: willingness to pay falls as more is consumed."],"gains from trade":["When countries specialize and exchange goods, both nations can consume beyond their own PPF, capturing the ___ from trade.","The ___ arise because specialization based on comparative advantage allows total output to increase."],"production possibilities curve/frontier (PPC/PPF)":["A point inside the ___ represents an inefficient use of resources, while a point outside is currently unattainable.","Economic growth shifts the ___ outward, allowing the economy to produce more of both goods."],"productive efficiency":["___ is achieved when a firm produces output at the lowest possible average total cost.","A perfectly competitive market achieves ___ in the long run because firms operate at the minimum of their ATC curves."],"allocative efficiency":["___ occurs when the mix of goods produced best reflects consumer preferences, with P = MC for every good.","A monopoly fails to achieve ___ because it produces below the socially optimal quantity, creating a deadweight loss."],"law of demand":["According to the ___, when the price of coffee rises, consumers will buy fewer cups per week, all else equal.","The ___ explains why demand curves slope downward: higher prices lead to lower quantities demanded."],"law of supply":["The ___ states that as the price of a good rises, producers are willing to supply a greater quantity.","According to the ___, higher wheat prices encourage more farmers to plant wheat, increasing quantity supplied."],"equilibrium":["At the market ___, the quantity of goods supplied exactly equals the quantity demanded, so there is no tendency for price to change.","If supply increases while demand stays constant, the ___ price will fall and the ___ quantity will rise."],"equilibrium price":["The ___ is the price at which there is neither a surplus nor a shortage in the market.","When demand increases, the ___ rises because buyers are willing to pay more at every quantity."],"shortage (excess demand)":["When a price ceiling is set below the equilibrium price, a ___ results because quantity demanded exceeds quantity supplied.","A ___ puts upward pressure on prices as buyers compete for the limited supply available."],"surplus (excess supply)":["A price floor set above equilibrium causes a ___ because quantity supplied exceeds quantity demanded.","When the wheat harvest is unexpectedly large, a ___ drives prices down until the market clears."],"consumer surplus":["___ is the difference between the maximum price a consumer is willing to pay and the price they actually pay.","A decrease in the price of smartphones increases ___ because buyers pay less than their willingness to pay."],"producer surplus":["___ is the difference between the price a producer receives and the minimum price they would accept.","When market price rises, ___ increases because sellers receive more than their cost of production."],"total surplus":["___ is maximized at the competitive market equilibrium, where supply equals demand.","___ equals consumer surplus plus producer surplus, and represents the net benefit from market exchange."],"deadweight loss":["A tax on gasoline creates a ___ because some mutually beneficial trades no longer occur.","A monopolist restricts output below the competitive level, causing a ___ that represents lost value to society."],"price elasticity of demand":["If a 10% price increase causes a 20% drop in quantity demanded, the ___ is 2, which means demand is elastic.","Necessities such as insulin tend to have a low ___ because consumers must purchase them regardless of price."],"elastic demand":["Luxury goods tend to have ___ because consumers can easily postpone or substitute purchases when prices rise.","When demand is ___, a price increase leads to a proportionally larger drop in quantity demanded, lowering total revenue."],"inelastic demand":["Gasoline has relatively ___ because few close substitutes exist and it is a necessity for most drivers.","When demand is ___, producers can raise prices without losing many customers, increasing total revenue."],"price ceiling":["Rent control is an example of a ___, which sets a maximum legal rent below the equilibrium level.","A binding ___ causes a shortage because the price is kept artificially low, discouraging production."],"price floor":["A minimum wage is a type of ___ set above the equilibrium wage to protect low-income workers.","A binding ___ above equilibrium results in a surplus, as quantity supplied exceeds quantity demanded."],"excise tax":["A ___ on cigarettes raises the price paid by consumers and lowers the price received by producers.","The ___ on gasoline shifts the supply curve upward, raising the equilibrium price and reducing the equilibrium quantity."],"subsidy":["The government provides a ___ to electric vehicle manufacturers to encourage production and reduce prices.","A ___ shifts the supply curve downward, lowering the market price and increasing the quantity sold."],"tax incidence (burden)":["The ___ falls more heavily on whichever side of the market (buyers or sellers) has less elastic demand or supply.","Even if a tax is legally paid by sellers, the ___ is shared with consumers if sellers can raise prices."],"cross-price elasticity of demand":["The ___ between beef and chicken is positive, indicating they are substitutes: a rise in beef prices increases demand for chicken.","A negative ___ between coffee and cream suggests they are complements: a price increase in coffee reduces demand for cream."],"income elasticity of demand":["New cars have a high positive ___, making them a normal good whose demand rises significantly when incomes increase.","A negative ___ indicates an inferior good: as income rises, consumers buy less of it."],"tariffs":["When the government imposes ___ on imported steel, domestic steel producers are protected but consumers pay higher prices.","___ raise the domestic price above the world price, reducing the quantity of imports."],"marginal cost (MC)":["A firm should expand production as long as the price exceeds the ___, since each additional unit adds to profit.","The ___ curve is U-shaped and intersects the ATC curve at its minimum point."],"average total cost (ATC; average cost)":["In the long run, a perfectly competitive firm earns zero economic profit and produces where P = ___ = MC.","When ___ is falling, marginal cost must be below it; when ___ is rising, marginal cost is above it."],"fixed cost (FC)":["A factory's monthly rent is a ___ because it does not change regardless of how many units are produced.","In the short run, a firm should continue to operate as long as it can cover its variable costs, since ___ must be paid regardless."],"variable cost (VC)":["Labour wages and raw material costs are examples of ___ because they change with the level of output.","The ___ per unit is the average variable cost; it equals total variable cost divided by output."],"marginal revenue (MR)":["For a perfectly competitive firm, ___ equals the market price because selling one more unit brings in exactly the market price.","A monopolist faces a ___ curve that lies below its demand curve because it must lower the price on all units to sell more."],"economic profit":["A firm earns ___ when total revenue exceeds the full opportunity cost of all resources used, including implicit costs.","In the long run, ___ in a competitive industry is driven to zero as new firms enter and compete away excess returns."],"normal profit":["When a firm earns ___, its accounting profit is just enough to cover its implicit costs, and economic profit equals zero.","___ is the minimum return needed to keep a firm in its current line of business in the long run."],"accounting profit":["A firm reports $200,000 in ___ but once implicit costs are subtracted, the economic profit is only $50,000.","___ is calculated as total revenue minus explicit costs only, without subtracting the opportunity cost of owner-provided resources."],"break-even price":["At the ___, the firm's total revenue exactly covers total cost, and economic profit equals zero.","The ___ is found at the minimum of the ATC curve; below this price, the firm incurs an economic loss."],"shut-down price":["If the market price falls below the ___, the firm minimizes losses by producing nothing in the short run.","The ___ equals the minimum average variable cost; below this price, the firm cannot even cover its variable costs."],"economies of scale":["A large automaker benefits from ___ because spreading fixed costs over millions of cars reduces average cost per vehicle.","When ___ exist, the long-run average total cost curve slopes downward as output increases."],"diseconomies of scale":["___ occur when a firm grows so large that coordination problems cause average total cost to rise with output.","When a firm experiences ___, expanding production makes it less efficient, and the LRATC curve slopes upward."],"diminishing returns to an input":["As a restaurant hires more and more chefs for the same kitchen, it experiences ___ to labour.","___ explain why the marginal cost curve eventually slopes upward as output increases."],"monopoly":["A ___ maximizes profit by producing where MR = MC, which is always below the competitive output level.","Because a ___ faces no competition, it can set price above marginal cost, creating a deadweight loss."],"price discrimination":["An airline practices ___ by charging business travellers more than leisure travellers for the same flight.","___ allows a firm to capture consumer surplus by charging each customer closer to their willingness to pay."],"natural monopoly":["A water utility is often a ___ because the enormous fixed costs of pipes and infrastructure make it cheapest for a single firm to serve the whole market.","Regulators typically set price equal to average cost for a ___ to prevent economic losses while limiting market power."],"oligopoly":["In an ___, a small number of large firms dominate the market and must consider each other's reactions when setting prices.","The airline industry is an example of an ___ because a few major carriers control most of the market."],"monopolistic competition":["Restaurants operate in a market of ___ because there are many sellers, each offering a slightly differentiated product with free entry.","In the long run, a firm in ___ earns zero economic profit as new entrants compete away excess returns."],"cartel":["OPEC acts as a ___ by coordinating oil production cuts among member countries to raise world oil prices.","A ___ is unstable because each member has an incentive to cheat by producing more than its agreed quota."],"collusion":["When rival firms secretly agree to fix prices and restrict output, they engage in ___, which is illegal in most countries.","___ leads to higher prices and lower output than the competitive equilibrium, harming consumers."],"Nash equilibrium (noncooperative equilibrium)":["In the prisoner's dilemma, both prisoners confessing is the ___ because neither can benefit by changing strategy given the other's choice.","At the ___, each firm's strategy is the best response to the strategies of all other firms."],"prisoner's dilemma":["The ___ shows why two firms in an oligopoly may both choose to advertise heavily even though both would be better off if neither advertised.","In the ___, individually rational behaviour leads to a collectively worse outcome for all players."],"dominant strategy":["In a game theory matrix, if confessing is the best choice for Player A regardless of what Player B does, confessing is Player A's ___.","When both players have a ___, the game has a unique Nash equilibrium."],"game theory":["___ is used to analyse how firms in an oligopoly make pricing and output decisions, taking rivals' likely reactions into account.","The prisoner's dilemma is a classic example from ___ that illustrates why cooperation is difficult to sustain."],"barrier to entry":["A pharmaceutical company's patent on a new drug acts as a ___ that prevents rival firms from entering the market.","High start-up costs and government licences are examples of ___ that protect existing firms from new competition."],"excess capacity":["A monopolistically competitive firm has ___ in the long run because it produces less than the output that minimises ATC.","Because of ___, consumers in monopolistic competition pay a higher price than they would under perfect competition."],"marginal revenue product (MRP)":["A firm hires workers up to the point where the wage equals the ___, which is the additional revenue generated by one more worker.","The ___ curve is the firm's demand curve for labour; it slopes downward due to diminishing marginal product."],"derived demand":["The demand for construction workers is a ___ because it depends on the demand for new buildings.","Because factor demand is ___, a fall in demand for cars will reduce the demand for steel used to make them."],"monopsony":["A small town with a single large employer is an example of ___ in the local labour market.","A ___ hires fewer workers and pays a lower wage than a competitive labour market would produce."],"human capital":["A college degree increases a worker's ___ by providing skills and knowledge that raise their productivity.","Firms invest in employee training to increase ___, which in turn raises the MRP of their workforce."],"externalities":["Air pollution from a factory that harms nearby residents is an example of negative ___ in production.","When ___ exist, the market price does not reflect the true social cost or benefit, leading to market failure."],"negative externalities":["A steel plant that dumps waste into a river imposes ___ on downstream communities who bear costs without compensation.","___ cause the market to overproduce relative to the socially optimal quantity, since private costs are lower than social costs."],"positive externalities":["Education generates ___ because an educated workforce benefits not just graduates but all of society.","Markets underprovide goods with ___ because producers are not compensated for the benefits they create for third parties."],"market failure":["Externalities, public goods, and information asymmetry are common causes of ___ where markets produce inefficient outcomes.","When ___ occurs, government intervention such as taxes, subsidies, or regulation may improve social welfare."],"Pigouvian taxes":["___ on carbon emissions are designed to make polluters pay the full social cost of their production.","By raising the private cost to equal the social cost, ___ can correct the overproduction caused by negative externalities."],"Pigouvian subsidy":["A government ___ for flu vaccinations encourages more people to get vaccinated, internalising the positive externality.","A ___ shifts the supply curve downward, increasing output to the socially optimal level."],"public good":["National defence is a ___ because it is both nonexcludable and nonrival: protecting one citizen does not reduce protection for others.","Markets tend to underprovide ___ because of the free-rider problem — individuals can benefit without paying."],"free-rider problem":["Lighthouses suffer from the ___ because ships benefit from the light whether or not their owners contributed to its cost.","The ___ means that individuals have little incentive to pay voluntarily for nonexcludable goods."],"Coase theorem":["According to the ___, a factory and nearby residents could negotiate a private solution to a pollution problem if transaction costs are low.","The ___ suggests that government intervention is unnecessary to solve externality problems when property rights are well-defined and bargaining is costless."],"progressive tax":["Income taxes in most countries are ___ because high earners pay a larger fraction of their income in taxes.","A ___ is intended to reduce income inequality by redistributing income from higher to lower earners."],"regressive tax":["A flat sales tax is often considered ___ because lower-income households spend a larger share of their income on consumption.","A ___ places a proportionally greater burden on those with lower incomes."],"Gini coefficient":["A country with a ___ close to 1 has extreme income inequality, while a ___ close to 0 indicates near-perfect equality.","The ___ is derived from the Lorenz curve and provides a single number summarising a country's income distribution."],"common resource":["Ocean fish stocks are a ___ because they are nonexcludable but rival — one fisher's catch reduces what remains for others.","Without regulation, a ___ tends to be overused because individuals have no incentive to conserve what others can freely exploit."]};
+
+// ── SR ENGINE ─────────────────────────────────────
+const app = cloudbase.init({ env: 'ray-econ-vocab-2gf6huwr5ea1b34b', region: 'ap-shanghai' });
+const db = app.database();
+const progressCol = db.collection('progress');
+const lbCol = db.collection('leaderboard');
+let studentId = localStorage.getItem('student_id') || '';
+
+const SR_KEY = 'raylaoshi_sr_v5';
+const HIST_KEY = 'raylaoshi_hist_v6';
+let hist =[];
+function histLoad(){ try{ hist=JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); }catch{ hist=[]; } }
+function histSave(){ try{ localStorage.setItem(HIST_KEY,JSON.stringify(hist)); }catch{} }
+function histAdd(pct,ok,tot){
+  hist.push({date:today(),pct,ok,tot});
+  if(hist.length>20) hist=hist.slice(-20);
+  histSave();
+}
+function histRender(){
+  const n=hist.length;
+  document.getElementById('hist-total').textContent=n;
+  const chart=document.getElementById('hist-chart');
+  const avgLine=document.getElementById('hist-avg-line');
+  if(!n){ chart.innerHTML='<div class="hist-empty">暂无记录，完成第一次练习后显示</div>'; avgLine.style.display='none'; return; }
+  const shown=hist.slice(-15);
+  const avg=Math.round(shown.reduce((a,s)=>a+s.pct,0)/shown.length);
+  chart.innerHTML=shown.map(s=>{
+    const h=Math.max(4, s.pct);
+    const colClass=s.pct>=80?'go':s.pct>=60?'mid':'low';
+    return `<div class="bar ${colClass}" style="height:${h}%" title="${s.date}: ${s.pct}%"></div>`;
+  }).join('');
+  avgLine.style.display='block';
+  document.getElementById('hist-avg-text').textContent=`${avg}%`;
+}
+let sr = {};
+async function srLoad(){
+  try{ await app.auth().anonymousAuthProvider().signIn(); } catch(e){}
+  const studentEmoji = localStorage.getItem('student_emoji') || '';
+  if(!studentId || !studentEmoji){ await showNameModal(); }
+  try{
+    const res = await progressCol.doc(studentId).get();
+    sr = res.data[0]?.sr || {};
+  } catch(e){ sr={}; }
+}
+
+const ANIMALS = ['🐯','🦁','🐻','🐼','🐨','🦊','🐺','🐸','🐬','🦋','🦅','🦄','🐲','🐙','🦓','🦒','🐘','🦜','🐧','🦩','🐠','🦈','🐝','🦔'];
+let _selectedEmoji = '';
+
+function normalizeName(v){
+  return v.replace(/[\/\\.#$\[\]]/g,'').replace(/\s+/g,' ').trim();
+}
+
+function showNameModal(){
+  return new Promise(resolve => {
+    const overlay = document.getElementById('name-overlay');
+    overlay.classList.remove('hidden');
+
+    // Build emoji grid
+    const grid = document.getElementById('emoji-grid');
+    grid.innerHTML = '';
+    ANIMALS.forEach(e => {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-btn';
+      btn.textContent = e;
+      btn.onclick = () => {
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        _selectedEmoji = e;
+        document.getElementById('name-btn-2').disabled = false;
+      };
+      grid.appendChild(btn);
+    });
+
+    // Reset to step 0
+    document.querySelectorAll('.name-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('name-step-0').classList.add('active');
+    document.getElementById('name-dots').style.display = 'none';
+    document.getElementById('dot-1').classList.add('active');
+    document.getElementById('dot-2').classList.remove('active');
+
+    // Wire new user input
+    const input = document.getElementById('name-input');
+    const btn1 = document.getElementById('name-btn-1');
+    input.value = '';
+    input.oninput = () => {
+      const v = normalizeName(input.value);
+      btn1.disabled = v.length === 0;
+      input.classList.remove('err');
+      document.getElementById('name-err').style.display = 'none';
+    };
+
+    // Wire returning user input
+    const inputR = document.getElementById('name-input-returning');
+    const btnR = document.getElementById('name-btn-returning');
+    inputR.value = '';
+    inputR.oninput = () => {
+      const v = normalizeName(inputR.value);
+      btnR.disabled = v.length === 0;
+      inputR.classList.remove('err');
+      document.getElementById('name-err-returning').style.display = 'none';
+    };
+
+    window._nameResolve = resolve;
+  });
+}
+
+function goToStep0(){
+  document.querySelectorAll('.name-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('name-step-0').classList.add('active');
+  document.getElementById('name-dots').style.display = 'none';
+}
+
+function choosePath(path){
+  document.querySelectorAll('.name-step').forEach(s => s.classList.remove('active'));
+  if(path === 'new'){
+    document.getElementById('name-dots').style.display = 'flex';
+    document.getElementById('dot-1').classList.add('active');
+    document.getElementById('dot-2').classList.remove('active');
+    document.getElementById('name-step-1').classList.add('active');
+    setTimeout(() => document.getElementById('name-input').focus(), 100);
+  } else {
+    document.getElementById('name-dots').style.display = 'none';
+    document.getElementById('name-step-returning').classList.add('active');
+    setTimeout(() => document.getElementById('name-input-returning').focus(), 100);
+  }
+}
+
+async function returningLogin(){
+  const input = document.getElementById('name-input-returning');
+  const errEl = document.getElementById('name-err-returning');
+  const btn = document.getElementById('name-btn-returning');
+  const val = normalizeName(input.value);
+  if(!val) return;
+  btn.disabled = true;
+  btn.textContent = '登录中…';
+  try {
+    const res = await progressCol.doc(val).get();
+    if(!res.data || res.data.length === 0){
+      input.classList.add('err');
+      errEl.textContent = '未找到此账号，请检查昵称或注册新账号';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '登录 →';
+      return;
+    }
+    const doc = res.data[0];
+    studentId = val;
+    localStorage.setItem('student_id', val);
+    const storedEmoji = doc.emoji || '';
+    if(storedEmoji){
+      localStorage.setItem('student_emoji', storedEmoji);
+      sr = doc.sr || {};
+      document.getElementById('name-overlay').classList.add('hidden');
+      if(window._nameResolve){ window._nameResolve(); window._nameResolve = null; }
+    } else {
+      // No emoji yet — route to emoji picker
+      window._pendingName = val;
+      sr = doc.sr || {};
+      document.querySelectorAll('.name-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('name-dots').style.display = 'flex';
+      document.getElementById('dot-1').classList.remove('active');
+      document.getElementById('dot-2').classList.add('active');
+      document.getElementById('name-step-2').classList.add('active');
+    }
+  } catch(e){
+    errEl.textContent = '网络错误，请重试';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '登录 →';
+  }
+}
+
+async function nameNext(){
+  const input = document.getElementById('name-input');
+  const errEl = document.getElementById('name-err');
+  const btn1 = document.getElementById('name-btn-1');
+  const val = normalizeName(input.value);
+  if(!val) return;
+  if(val.length > 20){
+    input.classList.add('err');
+    errEl.textContent = '昵称最多20个字符';
+    errEl.style.display = 'block';
+    return;
+  }
+  btn1.disabled = true;
+  btn1.textContent = '检查中…';
+  try {
+    const res = await progressCol.doc(val).get();
+    if(res.data && res.data.length > 0){
+      input.classList.add('err');
+      errEl.textContent = '此昵称已被使用，请换一个';
+      errEl.style.display = 'block';
+      btn1.disabled = false;
+      btn1.textContent = '下一步 →';
+      return;
+    }
+  } catch(e){}
+  btn1.textContent = '下一步 →';
+  window._pendingName = val;
+  document.querySelectorAll('.name-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('name-dots').style.display = 'flex';
+  document.getElementById('dot-1').classList.remove('active');
+  document.getElementById('dot-2').classList.add('active');
+  document.getElementById('name-step-2').classList.add('active');
+}
+
+function nameBack(){
+  document.getElementById('name-step-2').classList.remove('active');
+  document.getElementById('name-step-1').classList.add('active');
+  document.getElementById('dot-2').classList.remove('active');
+  document.getElementById('dot-1').classList.add('active');
+  setTimeout(() => document.getElementById('name-input').focus(), 100);
+}
+
+function confirmIdentity(){
+  if(!_selectedEmoji) return;
+  if(!studentId) studentId = window._pendingName;
+  localStorage.setItem('student_id', studentId);
+  localStorage.setItem('student_emoji', _selectedEmoji);
+  document.getElementById('name-overlay').classList.add('hidden');
+  if(window._nameResolve){ window._nameResolve(); window._nameResolve = null; }
+}
+
+function srSave(){
+  try{ localStorage.setItem(SR_KEY,JSON.stringify(sr)); }catch{}
+  progressCol.doc(studentId).set({ sr, emoji: localStorage.getItem('student_emoji') || '' });
+}
+function today(){ return new Date().toISOString().slice(0,10); }
+function days(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); }
+function srGet(t){ return sr[t]||{interval:0,ease:2.5,nextReview:today(),stage:0}; }
+function isDue(t){ const d=sr[t]; if(!d||d.stage===0)return false; return d.nextReview<=today(); }
+function srFirst(t){ if(!sr[t]){ sr[t]={interval:1,ease:2.5,nextReview:days(today(),1),stage:1}; srSave(); } }
+function srUp(t,r){
+  let d=srGet(t);
+  if(r===0){ d.interval=1; d.ease=Math.max(1.3,d.ease-.2); d.stage=1; }
+  else if(r===1){ d.interval=Math.max(1,Math.round(d.interval*1.2)); d.ease=Math.max(1.3,d.ease-.15); d.stage=Math.max(1,d.stage); }
+  else if(r===2){ d.interval=d.stage<=1?1:Math.round(d.interval*d.ease); d.interval=Math.max(1,d.interval); d.stage=d.interval>=14?3:d.interval>=3?2:1; }
+  else{ d.interval=Math.max(4,Math.round(d.interval*d.ease*1.3)); d.ease=Math.min(3.5,d.ease+.1); d.stage=d.interval>=14?3:2; }
+  d.nextReview=days(today(),d.interval); sr[t]=d; srSave(); return d;
+}
+function srChipHtml(t){
+  const d=sr[t];
+  if(!d||d.stage===0)return '<span class="sr-chip sc-new">新词</span>';
+  if(d.stage===1)return `<span class="sr-chip sc-learn">${d.interval}天后复习</span>`;
+  if(d.stage===2)return `<span class="sr-chip sc-young">学习·${d.interval}d</span>`;
+  return `<span class="sr-chip sc-done">掌握·${d.interval}d</span>`;
+}
+function srStats(){ let a=0,b=0,c=0; VOCAB.forEach(w=>{ const d=sr[w.term]; if(!d||d.stage===0)a++; else if(d.stage<=2)b++; else c++; }); return{nw:a,yo:b,ma:c}; }
+
+// ── EXPORT/IMPORT ─────────────────────────────────
+function genExp(){ document.getElementById('sc-code').textContent=btoa(unescape(encodeURIComponent(JSON.stringify(sr)))); document.getElementById('sc-gen').style.display='none'; document.getElementById('sc-copy').style.display=''; }
+function cpExp(){ navigator.clipboard.writeText(document.getElementById('sc-code').textContent).then(()=>{ const b=document.getElementById('sc-copy'); b.textContent='已复制'; setTimeout(()=>b.textContent='复制',2000); }); }
+function doImp(){
+  const msg=document.getElementById('sc-msg');
+  try{
+    const p=JSON.parse(decodeURIComponent(escape(atob(document.getElementById('sc-in').value.trim()))));
+    if(typeof p!=='object'||Array.isArray(p))throw 0;
+    sr=p; srSave(); msg.className='sync-msg ok'; msg.textContent='导入成功';
+    buildUnits(); updDue();
+  }catch{ msg.className='sync-msg err'; msg.textContent='备份码无效'; }
+}
+function toggleSync(){
+  const d=document.getElementById('sync-drawer'); const open=d.classList.toggle('open');
+  document.getElementById('sc-chev').innerHTML=open?'▾':'▸';
+  if(open){ document.getElementById('sc-code').textContent='（点击生成）'; document.getElementById('sc-gen').style.display=''; document.getElementById('sc-copy').style.display='none'; document.getElementById('sc-msg').textContent=''; }
+}
+
+// ── UNIT DATA ─────────────────────────────────────
+const UNITS={
+  'Unit 1':'基础与PPC','Unit 2':'供求与均衡',
+  'Unit 3':'成本与竞争','Unit 4':'不完全竞争',
+  'Unit 5':'要素市场','Unit 6':'市场失灵'
+};
+const UNUMS={'Unit 1':'01','Unit 2':'02','Unit 3':'03','Unit 4':'04','Unit 5':'05','Unit 6':'06'};
+const UCNT={}; VOCAB.forEach(w=>{ UCNT[w.unit]=(UCNT[w.unit]||0)+1; });
+
+// ── STATE ─────────────────────────────────────────
+let S={
+  mode:'practice', units:new Set(Object.keys(UNITS)), size:15,
+  queue:[],qi:0, answered:false, pendingTerm:null,
+  score:{ok:0,tot:0}, streak:0, maxStreak:0, weak:{}
+};
+
+// ── LEADERBOARD ──────────────────────────────────
+
+function getMonday(){
+  const d = new Date();
+  const day = d.getDay();
+  const diff = (day === 0 ? -6 : 1 - day);
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+
+async function lbSave(){
+  if(!studentId) return;
+  const st = srStats();
+  const currentWeekStart = getMonday();
+  try {
+    // Read existing doc to handle weekly reset
+    let sessionsThisWeek = 1;
+    try {
+      const existing = await lbCol.doc(studentId).get();
+      if(existing.data && existing.data.length > 0){
+        const doc = existing.data[0];
+        if(doc.weekStart === currentWeekStart){
+          sessionsThisWeek = (doc.sessionsThisWeek || 0) + 1;
+        }
+      }
+    } catch(e){}
+
+    await lbCol.doc(studentId).set({
+      name: studentId,
+      emoji: localStorage.getItem('student_emoji') || '',
+      mastered: st.ma,
+      sessions: hist.length,
+      sessionsThisWeek,
+      weekStart: currentWeekStart,
+      lastActive: today()
+    });
+  } catch(e){}
+}
+
+async function lbLoad(){
+  try{
+    // Use a where clause to fetch all documents — fixes single-user bug
+    const res = await lbCol.where({ lastActive: db.command.exists(true) }).get();
+    return res.data || [];
+  } catch(e){
+    try{
+      const res = await lbCol.get();
+      return res.data || [];
+    } catch(e2){ return []; }
+  }
+}
+
+// Track active tab state per board instance
+const _lbTab = { setup: 'total', results: 'total' };
+
+function lbSwitchTab(instance, tab){
+  _lbTab[instance] = tab;
+  document.getElementById(`lb-tab-total-${instance}`).classList.toggle('active', tab === 'total');
+  document.getElementById(`lb-tab-week-${instance}`).classList.toggle('active', tab === 'week');
+  // Re-render with cached data if available
+  if(window._lbCache){
+    lbRenderWithData(instance, window._lbCache);
+  }
+}
+
+async function lbRender(listId, footerId){
+  // Extract instance name from id e.g. 'lb-list-setup' → 'setup'
+  const instance = listId.replace('lb-list-','');
+  const listEl = document.getElementById(listId);
+  if(!listEl) return;
+  listEl.innerHTML = '<div class="lb-loading">加载中…</div>';
+  const all = await lbLoad();
+  window._lbCache = all;
+  lbRenderWithData(instance, all);
+}
+
+function lbRenderWithData(instance, all){
+  const listEl = document.getElementById(`lb-list-${instance}`);
+  const footerEl = document.getElementById(`lb-footer-${instance}`);
+  const countEl = document.getElementById(`lb-count-${instance}`);
+  if(!listEl) return;
+
+  if(countEl) countEl.textContent = `${all.length} 位同学参与`;
+
+  if(!all.length){
+    listEl.innerHTML = '<div class="lb-empty">还没有同学上榜，快来第一个！</div>';
+    if(footerEl) footerEl.style.display = 'none';
+    return;
+  }
+
+  const tab = _lbTab[instance] || 'total';
+  const currentWeekStart = getMonday();
+
+  // Sort by active tab metric
+  const sorted = [...all].sort((a,b) => {
+    if(tab === 'week'){
+      const aW = a.weekStart === currentWeekStart ? (a.sessionsThisWeek||0) : 0;
+      const bW = b.weekStart === currentWeekStart ? (b.sessionsThisWeek||0) : 0;
+      return bW - aW;
+    }
+    return (b.mastered||0) - (a.mastered||0);
+  });
+
+  const top10 = sorted.slice(0, 10);
+  const myRank = sorted.findIndex(d => d.name === studentId) + 1;
+  const myScore = tab === 'week'
+    ? (all.find(d => d.name === studentId)?.weekStart === currentWeekStart
+        ? (all.find(d => d.name === studentId)?.sessionsThisWeek || 0)
+        : 0)
+    : srStats().ma;
+  const below = sorted.filter((d, i) => {
+    const score = tab === 'week'
+      ? (d.weekStart === currentWeekStart ? (d.sessionsThisWeek||0) : 0)
+      : (d.mastered||0);
+    return score < myScore;
+  }).length;
+  const percentile = sorted.length > 1 ? Math.round(below / (sorted.length - 1) * 100) : 100;
+  const rankCls = i => i===0?'gold':i===1?'silver':i===2?'bronze':'';
+
+  listEl.innerHTML = top10.map((d,i) => {
+    const isMe = d.name === studentId;
+    const score = tab === 'week'
+      ? (d.weekStart === currentWeekStart ? (d.sessionsThisWeek||0) : 0)
+      : (d.mastered||0);
+    const scoreLbl = tab === 'week' ? ' 次' : ' 词';
+    return `<div class="lb-row${isMe?' lb-me':''}">
+      <span class="lb-rank ${rankCls(i)}">${i+1}</span>
+      <span class="lb-emoji">${esc(d.emoji||'🐾')}</span>
+      <span class="lb-name${isMe?' lb-me-name':''}">${esc(d.name)}</span>
+      <span class="lb-score">${score}<span class="lb-score-lbl">${scoreLbl}</span></span>
+    </div>`;
+  }).join('');
+
+  if(footerEl){
+    footerEl.style.display = '';
+    if(!studentId){
+      footerEl.innerHTML = '登录后查看你的排名';
+    } else if(myRank > 0){
+      footerEl.innerHTML = `你排第 <strong>${myRank}</strong> 名 · 超越了 <strong>${percentile}%</strong> 的同学`;
+    } else {
+      footerEl.innerHTML = `完成练习后上榜 · 目前共 <strong>${all.length}</strong> 人参与`;
+    }
+  }
+}
+
+function renderIdStrip(){
+  const id = localStorage.getItem('student_id');
+  const emoji = localStorage.getItem('student_emoji');
+  if(!id || !emoji) return;
+  const st = srStats();
+  document.getElementById('id-avatar').textContent = emoji;
+  document.getElementById('id-name').textContent = id;
+  document.getElementById('id-mastered').innerHTML = `${st.ma}<span> 词已掌握</span>`;
+  document.getElementById('id-strip').style.display = 'flex';
+}
+
+// ── SETUP INIT ────────────────────────────────────
+async function init(){ await srLoad(); histLoad(); buildUnits(); updDue(); histRender(); renderIdStrip(); lbRender('lb-list-setup','lb-footer-setup'); }
+
+function buildUnits(){
+  const g = document.getElementById('unit-grid'); 
+  if (!g) return;
+  g.innerHTML = ''; // Clear the fake mockup data
+  
+  Object.keys(UNITS).forEach(u => {
+    const cnt = UCNT[u] || 0;
+    
+    // Calculate exact numbers
+    const due = VOCAB.filter(w => w.unit === u && isDue(w.term)).length;
+    const mat = VOCAB.filter(w => w.unit === u && sr[w.term] && sr[w.term].stage >= 3).length;
+    const prog = VOCAB.filter(w => w.unit === u && sr[w.term] && sr[w.term].stage > 0 && sr[w.term].stage < 3).length;
+    
+    const pct = cnt > 0 ? Math.round(mat / cnt * 100) : 0;
+    const isSel = S.units.has(u);
+    
+    // Smart label hierarchy
+    let statusStr = '未学';
+    if (due > 0) statusStr = `${due} 循环复习`;
+    else if (mat > 0) statusStr = `${mat} 已掌握`;
+    else if (prog > 0) statusStr = `${prog} 学习中`;
+
+    const c = document.createElement('div');
+    c.className = 'unit' + (isSel ? ' sel' : '');
+    c.innerHTML = `
+      <span class="unit-num">UNIT ${UNUMS[u]}</span>
+      <span class="unit-name">${UNITS[u]}</span>
+      <span class="unit-meta">${cnt} 词 · ${statusStr}</span>
+      <div class="unit-bar"><div class="unit-bar-fill" style="width:${pct}%"></div></div>`;
+      
+    c.onclick = () => { 
+      S.units.has(u) ? S.units.delete(u) : S.units.add(u); 
+      c.classList.toggle('sel'); 
+    };
+    g.appendChild(c);
+  });
+}
+
+function updDue(){
+  const n = VOCAB.filter(w => isDue(w.term)).length;
+  const cnt = document.getElementById('due-cnt');
+  const tag = document.getElementById('due-tag');
+  
+  if (cnt) cnt.textContent = n;
+  if (tag) tag.style.display = n ? 'inline-block' : 'none';
+}
+
+function selMode(m){
+  S.mode=m;
+  document.getElementById('mode-practice').className='mode-btn'+(m==='practice'?' active':'');
+  document.getElementById('mode-review').className='mode-btn'+(m==='review'?' active':'');
+  const us=document.getElementById('unit-sec'), ss=document.getElementById('size-sec');
+  const di=document.getElementById('due-info');
+  if(m==='review'){
+    const due=VOCAB.filter(w=>isDue(w.term));
+    us.style.display='none'; ss.style.display='none';
+    di.classList.add('show');
+    di.innerHTML=due.length
+      ?`今天有 <strong>${due.length} 个词汇</strong> 需循环复习 · ${[...new Set(due.map(w=>w.unit))].join(' / ')}`
+      :`暂无循环复习词汇，先做自主学习积累记录吧`;
+    document.getElementById('start-btn').disabled=!due.length;
+  } else {
+    us.style.display='block'; ss.style.display='block';
+    di.classList.remove('show');
+    document.getElementById('start-btn').disabled=false;
+  }
+}
+
+function selSz(b){ document.querySelectorAll('.sz').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); S.size=parseInt(b.dataset.n); }
+
+// ── SESSION ───────────────────────────────────────
+function go(){
+  const err=document.getElementById('start-err'); let pool;
+  if(S.mode==='review'){ pool=VOCAB.filter(w=>isDue(w.term)); if(!pool.length)return; }
+  else{ if(!S.units.size){ err.style.display='block'; return; } err.style.display='none'; pool=VOCAB.filter(w=>S.units.has(w.unit)); }
+  const all=VOCAB.filter(w=>S.units.size?S.units.has(w.unit):true);
+  const words=shuf(pool).slice(0,Math.min(S.size,pool.length));
+  S.queue=words.map(w=>({w,type:pickType(w),pool:all}));
+  S.qi=0; S.score={ok:0,tot:0}; S.streak=0; S.maxStreak=0; S.weak={}; S.pendingTerm=null;
+  show('screen-quiz'); renderQ();
+}
+
+function retryWeak(){
+  const ws=Object.values(S.weak).map(v=>v.w); if(!ws.length){goBack();return;}
+  S.queue=ws.map(w=>({w,type:pickType(w,['zh_to_en','en_to_zh','spelling']),pool:VOCAB}));
+  S.qi=0; S.score={ok:0,tot:0}; S.streak=0; S.maxStreak=0; S.weak={}; S.pendingTerm=null;
+  show('screen-quiz'); renderQ();
+}
+
+function goBack(){ buildUnits(); updDue(); histRender(); show('screen-setup'); }
+function show(id, pushState=true){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(pushState && id !== 'screen-setup'){
+    history.pushState({ screen: id }, '');
+  }
+}
+
+window.addEventListener('popstate', function(e){
+  goBack();
+});
+
+// ── QUESTION TYPES ────────────────────────────────
+function isEcon(w){ return w.def&&w.def.length>20&&!['noun','verb','adjective','adverb','phrase','preposition','conjunction','noun phrase','phrasal verb'].includes(w.def.trim().toLowerCase().split(/[ .]/)[0]); }
+function hasSent(w){ return !!(SENTENCES[w.term]||SENTENCES[stripA(w.term)]); }
+function getSents(w){ return SENTENCES[w.term]||SENTENCES[stripA(w.term)]||[]; }
+function pickType(w,force){
+  if(force)return force[Math.floor(Math.random()*force.length)];
+  const ec=isEcon(w),hs=hasSent(w);
+  const el=['zh_to_en','en_to_zh'];
+  if(ec)el.push('def_match','spelling');
+  if(ec&&hs)el.push('fill_blank');
+  return el[Math.floor(Math.random()*el.length)];
+}
+const QTLBL={'zh_to_en':'中 → 英','en_to_zh':'英 → 中','def_match':'定义匹配','spelling':'拼写练习','fill_blank':'句子填空'};
+const QTPROMPT={'zh_to_en':'以下哪个英文词汇对应此中文？','en_to_zh':'哪个中文翻译最准确？','def_match':'哪个词汇符合以下定义？','spelling':'根据中文含义，拼写出完整英文词汇','fill_blank':'选出最合适的词汇填入空白处'};
+
+// ── RENDER Q ──────────────────────────────────────
+function renderQ(){
+  S.answered=false; S.pendingTerm=null;
+  const tot=S.queue.length, done=S.qi;
+  document.getElementById('q-prog').textContent=`${done} / ${tot}`;
+  document.getElementById('bar-fill').style.width=`${tot?done/tot*100:0}%`;
+  document.getElementById('score-chip').textContent=`${S.score.ok} ✓`;
+  const st=document.getElementById('streak-tag');
+  if(S.streak>=3){ st.classList.add('on'); document.getElementById('streak-n').textContent=S.streak; }
+  else st.classList.remove('on');
+  
+  // reset UI
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('next-btn').classList.remove('on');
+  document.getElementById('conf-wrap').style.display='none';
+  document.querySelector('.cf-bad').innerHTML='<span class="conf-txt">模糊</span><span class="conf-sub">😳</span>';
+  document.querySelector('.cf-ok').innerHTML='<span class="conf-txt">记得</span><span class="conf-sub">👌</span>';
+  document.querySelector('.cf-ez').innerHTML='<span class="conf-txt">熟练</span><span class="conf-sub">🔥</span>';
+  document.getElementById('opts-list').style.display='none';
+  document.getElementById('opts-list').innerHTML='';
+  document.getElementById('spell-wrap').style.display='none';
+  document.getElementById('q-hint').style.display='none';
+
+  const {w,type,pool}=S.queue[S.qi];
+  // Injects the Unit number directly inside the question type pill
+  document.getElementById('qtype').innerHTML=`<span style="font-family: 'DM Mono', monospace; opacity: 0.6; margin-right: 6px;">UNIT ${UNUMS[w.unit]}</span> ${QTLBL[type]}`;
+  document.getElementById('sr-slot').innerHTML=srChipHtml(w.term);
+  document.getElementById('q-prompt').textContent=QTPROMPT[type];
+
+  const qm=document.getElementById('q-main'), qh=document.getElementById('q-hint');
+  const dist=shuf(pool.filter(x=>x.term!==w.term)).slice(0,3);
+
+  if(type==='zh_to_en'){
+    qm.className='qtext-zh'; qm.textContent=w.zh;
+    renderOpts(shuf([w,...dist]),w,x=>stripA(x.term),type);
+  } else if(type==='en_to_zh'){
+    qm.className='qtext-en'; qm.textContent=stripA(w.term);
+    if(isEcon(w)){ qh.style.display='block'; qh.innerHTML='<em>定义：</em>'+esc(w.def); }
+    renderOpts(shuf([w,...dist]),w,x=>x.zh,type);
+  } else if(type==='def_match'){
+    qm.className='qtext-def'; qm.textContent=w.def;
+    qh.style.display='block'; qh.innerHTML='<em>中文：</em>'+esc(w.zh);
+    renderOpts(shuf([w,...dist]),w,x=>stripA(x.term),type);
+  } else if(type==='spelling'){
+    qm.className='qtext-zh'; qm.textContent=w.zh;
+    if(isEcon(w)){ qh.style.display='block'; qh.innerHTML='<em>定义：</em>'+esc(w.def); }
+    document.getElementById('spell-wrap').style.display='block';
+    const si=document.getElementById('spell-input');
+    si.value=''; si.className='spell-input'; si.disabled=false;
+    document.getElementById('spell-go').disabled=false;
+    setTimeout(()=>si.focus(),100);
+  } else if(type==='fill_blank'){
+    const sents=getSents(w), s=sents[Math.floor(Math.random()*sents.length)];
+    qm.className='qtext-fill';
+    qm.innerHTML=s.replace(/___/g,'<span class="fill-blank">___</span>');
+    qh.style.display='block'; qh.innerHTML='<em>中文：</em>'+esc(w.zh);
+    renderOpts(shuf([w,...dist]),w,x=>stripA(x.term),type);
+  }
+}
+
+function renderOpts(opts,correct,getText,type){
+  const list=document.getElementById('opts-list');
+  list.style.display='block'; list.innerHTML='';
+  ['A','B','C','D'].forEach((k,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.innerHTML=`<span class="opt-key">${k}</span><span class="opt-text">${esc(getText(opts[i]))}</span>`;
+    btn.onclick=()=>handleMC(opts[i],correct,btn,list,type);
+    list.appendChild(btn);
+  });
+}
+
+// ── ANSWER HANDLERS ───────────────────────────────
+function handleMC(chosen,correct,btn,list,type){
+  if(S.answered)return; S.answered=true;
+  const ok=chosen.term===correct.term; S.score.tot++;
+  Array.from(list.children).forEach(b=>{
+    b.disabled=true;
+    const ct=esc(type==='en_to_zh'?correct.zh:stripA(correct.term));
+    if(b.querySelector('.opt-text').textContent===ct) b.classList.add('ok');
+  });
+  if(!ok)btn.classList.add('bad');
+  if(ok){
+    S.score.ok++; S.streak++;
+    if(S.streak>S.maxStreak) S.maxStreak=S.streak;
+    onCorrect(S.streak);
+    S.pendingTerm=correct.term;
+    document.getElementById('conf-wrap').style.display='block';
+  } else {
+    S.streak=0; addWeak(correct);
+    onWrong();
+    const wd = srUp(correct.term,0);
+    document.getElementById('next-btn').textContent = `${wd.interval} 天后再见 →`;
+    S.queue.push({w:correct,type:pickType(correct,['zh_to_en','en_to_zh']),pool:S.queue[S.qi].pool});
+    document.getElementById('next-btn').classList.add('on');
+  }
+}
+
+function doSpell(){
+  if(S.answered)return;
+  const si=document.getElementById('spell-input'); const v=si.value.trim(); if(!v)return;
+  S.answered=true;
+  const {w,pool}=S.queue[S.qi]; const exp=stripA(w.term);
+  const r=chkSpell(v,exp); S.score.tot++;
+  si.disabled=true; document.getElementById('spell-go').disabled=true;
+  if(r.ok){
+    S.score.ok++; S.streak++; si.className='spell-input ok';
+    if(S.streak>S.maxStreak) S.maxStreak=S.streak;
+    onCorrect(S.streak);
+    showFb(true,r.close?('接受！标准写法：'+exp):null);
+    S.pendingTerm=w.term;
+    document.getElementById('conf-wrap').style.display='block';
+  } else {
+    S.streak=0; si.className='spell-input bad'; addWeak(w);
+    onWrong();
+    const wd = srUp(w.term,0);
+    document.getElementById('next-btn').textContent = `${wd.interval} 天后再见 →`;
+    S.queue.push({w,type:'spelling',pool});
+    showFb(false,exp);
+    document.getElementById('next-btn').classList.add('on');
+  }
+}
+
+function rate(r, btn){
+  if(!S.pendingTerm) return;
+  const d = srUp(S.pendingTerm, r); S.pendingTerm = null;
+  btn.innerHTML = `<span class="conf-txt">${d.interval} 天后再见</span>`;
+  document.querySelectorAll('.conf-btn').forEach(b => {
+    if(b !== btn) b.style.opacity = '0.2';
+  });
+  setTimeout(() => {
+    document.getElementById('conf-wrap').style.display = 'none';
+    document.querySelectorAll('.conf-btn').forEach(b => b.style.opacity = '');
+    nextQ();
+  }, 800);
+}
+
+function showFb(ok,ans){
+  const fb=document.getElementById('feedback');
+  fb.className='feedback '+(ok?'ok':'bad'); fb.style.display='block';
+  let h=`<strong>${ok?'正确':'答错了'}</strong>`;
+  if(ans) h+=`<div class="fb-ans">正确答案：${esc(ans)}</div>`;
+  fb.innerHTML=h;
+}
+
+function nextQ(){
+  S.qi++;
+  if(S.qi>=S.queue.length){ showResults(); return; }
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('next-btn').classList.remove('on');
+  document.getElementById('next-btn').textContent = '下一题 →';
+  
+  const tot = S.queue.length;
+  const done = S.qi;
+  if(done === Math.floor(tot*0.25) && S.score.ok >= done*0.6) toast('完成四分之一，继续保持！','enc-good');
+  else if(done === Math.floor(tot*0.5)) {
+    const pct = Math.round(S.score.ok/done*100);
+    if(pct>=80) toast('过半啦！正确率'+pct+'%，非常棒！','enc-good');
+    else if(pct>=60) toast('一半了！还有'+Math.ceil(tot/2)+'题，加油！','enc-good');
+    else toast('过半了，弱词之后重练就好！','enc-bad');
+  } else if(done === Math.floor(tot*0.75)) {
+    toast('最后四分之一，冲刺！','enc-good');
+  }
+  renderQ();
+}
+
+function addWeak(w){ const k=w.term; if(!S.weak[k])S.weak[k]={w,n:0}; S.weak[k].n++; }
+
+// ── TOAST ENCOURAGEMENT ───────────────────────────
+let _toastTimer = null;
+function toast(msg, cls='enc-good'){
+  const el = document.getElementById('enc-toast');
+  if(!el) return;
+  el.className = 'enc-toast';
+  el.textContent = msg;
+  void el.offsetWidth;
+  el.classList.add(cls, 'show');
+  if(_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>{ el.classList.remove('show'); }, 2200);
+}
+
+function onCorrect(streak){
+  if(streak===3)  toast('3 连对！太棒了！','enc-good');
+  else if(streak===5)  toast('5 连对！势不可挡！','enc-good');
+  else if(streak===8)  toast('8 连对！词汇达人！','enc-good');
+  else if(streak>8 && streak%5===0) toast(`${streak} 连对！完美！`,'enc-good');
+  else if(streak===1 && S.score.ok===1) toast('开门红！','enc-good');
+}
+
+function onWrong(){
+  const msgs =['没关系，错题加深印象！','别灰心，下次一定记住！','好词值得多练几次','这道题待会儿还会出现的！','错了不怕，记住就好'];
+  if(Math.random()<0.5) toast(msgs[Math.floor(Math.random()*msgs.length)],'enc-bad');
+}
+
+
+// Level tiers
+const LEVELS =[
+  {min:0,  max:9,   name:'新苗',    caption:'继续加油，迈出第一步！'},
+  {min:10, max:29,  name:'入门',    caption:'词汇量在增长，保持节奏！'},
+  {min:30, max:59,  name:'进修中',  caption:'已掌握核心概念，很好！'},
+  {min:60, max:99,  name:'有底气',  caption:'超过一半词汇已掌握！'},
+  {min:100,max:149, name:'达人', caption:'你的经济学词汇很扎实！'},
+  {min:150,max:249, name:'准AP选手', caption:'距离满分只差一步！'},
+  {min:250,max:999, name:'AP高手',   caption:'词汇全面，考试有把握！'},
+];
+function getLevel(mastered){
+  return LEVELS.find(l=>mastered>=l.min&&mastered<=l.max)||LEVELS[LEVELS.length-1];
+}
+
+function showResults(){
+  const pct=S.score.tot>0?Math.round(S.score.ok/S.score.tot*100):0;
+  histAdd(pct, S.score.ok, S.score.tot);
+  lbSave().then(()=>lbRender('lb-list-results','lb-footer-results'));
+  document.getElementById('rn').textContent=pct;
+  document.getElementById('r-detail').textContent=`${S.score.ok} / ${S.score.tot} 准确率`;
+
+  const pctEl=document.getElementById('r-pct-big');
+  const tag=document.getElementById('r-grade-tag');
+  const msg=document.getElementById('r-msg');
+  if(pct>=90){
+    pctEl.style.color='var(--go)';
+    tag.style.color='var(--go)'; tag.textContent='优秀表现';
+    msg.textContent='太棒了！词汇掌握得非常扎实！';
+  } else if(pct>=75){
+    pctEl.style.color='var(--hi)';
+    tag.style.color='var(--hi)'; tag.textContent='良好发挥';
+    msg.textContent='做得不错！继续巩固弱词会更好！';
+  } else if(pct>=60){
+    pctEl.style.color='var(--sub)';
+    tag.style.color='var(--sub)'; tag.textContent='继续努力';
+    msg.textContent='有进步空间，重练弱词效果更好！';
+  } else {
+    pctEl.style.color='var(--err)';
+    tag.style.color='var(--err)'; tag.textContent='加把劲';
+    msg.textContent='别灰心！每次练习都是积累！';
+  }
+
+  document.getElementById('rb-correct').textContent=S.score.ok;
+  document.getElementById('rb-streak').textContent=S.maxStreak||0;
+  const st=srStats();
+  document.getElementById('rb-mastered').textContent=st.ma;
+  document.getElementById('rb-sessions').textContent=hist.length;
+  document.getElementById('r-new').textContent=st.nw;
+  document.getElementById('r-young').textContent=st.yo;
+  document.getElementById('r-mat').textContent=st.ma;
+
+  const wa=Object.values(S.weak).sort((a,b)=>b.n-a.n);
+  document.getElementById('w-cnt').textContent=wa.length;
+  const wl=document.getElementById('w-list'); wl.innerHTML='';
+  const rb=document.getElementById('retry-btn');
+  if(!wa.length){ wl.innerHTML='<div class="wempty">本次练习全部正确</div>'; rb.disabled=true; }
+  else{
+    rb.disabled=false;
+    wa.forEach(({w,n})=>{
+      const d=document.createElement('div'); d.className='witem';
+      d.innerHTML=`<div><div class="wterm">${esc(w.term)}</div><div class="wzh">${esc(w.zh)}</div>${w.def&&w.def.length>10?`<div class="wdef">${esc(w.def)}</div>`:''}</div><div class="wmiss">${n}×</div>`;
+      wl.appendChild(d);
+    });
+  }
+  show('screen-results');
+}
+
+function cpWeak(){
+  const wa=Object.values(S.weak); if(!wa.length)return;
+  const t=wa.map(({w})=>`${w.term} | ${w.zh}${w.def&&w.def.length>10?'\n  '+w.def:''}`).join('\n\n');
+  navigator.clipboard.writeText(t).then(()=>{ const b=document.querySelector('.wcopy'); b.textContent='已复制'; setTimeout(()=>b.textContent='复制',2000); });
+}
+
+function replaySession(){
+  S.queue=[]; S.qi=0; S.score={ok:0,tot:0}; S.weak={}; S.pendingTerm=null; S.streak=0; S.maxStreak=0;
+  go();
+}
+
+// ── UTILS ─────────────────────────────────────────
+function shuf(a){ const r=[...a]; for(let i=r.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [r[i],r[j]]=[r[j],r[i]]; } return r; }
+function stripA(t){ return String(t).replace(/\s*\([A-Z\/;]+\)\s*$/,'').trim(); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function lev(a,b){ if(a===b)return 0; const dp=Array.from({length:b.length+1},(_,i)=>i); for(let i=1;i<=a.length;i++){let p=dp[0];dp[0]=i;for(let j=1;j<=b.length;j++){const t=dp[j];dp[j]=a[i-1]===b[j-1]?p:1+Math.min(p,dp[j],dp[j-1]);p=t;}}return dp[b.length]; }
+function chkSpell(inp,exp){ const a=inp.toLowerCase().trim(),b=exp.toLowerCase().trim(); if(a===b)return{ok:true,close:false}; const d=lev(a,b),th=b.length>15?3:b.length>8?2:b.length>4?1:0; return{ok:d<=th,close:d>0&&d<=th}; }
+
+// ── BOOT ──────────────────────────────────────────
+init();
+requestAnimationFrame(()=>requestAnimationFrame(()=>{ document.body.style.opacity='1'; }));
+
+</script>
+</div>
+</body>
+</html>
