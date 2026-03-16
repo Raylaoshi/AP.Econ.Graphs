@@ -453,7 +453,7 @@ body {
         <span class="pill">6 单元</span>        
         <span class="pill">729 词</span>
         <span class="pill">间隔重复</span>
-        <span class="pill">v2.0</span>
+        <span class="pill">v2.1</span>
 
       </div>
     </div>
@@ -623,16 +623,6 @@ body {
       <div class="res-badge">
         <div class="res-badge-val" id="rb-sessions">--</div>
         <div class="res-badge-lbl">累计练习</div>
-      </div>
-    </div>
-
-    <div class="res-level-block">
-      <div class="res-level-row">
-        <div class="res-level-name" id="r-level-name">加载中…</div>
-        <div class="res-level-xp" id="r-level-xp"></div>
-      </div>
-      <div class="res-level-bar">
-        <div class="res-level-fill" id="r-level-fill" style="width:0%"></div>
       </div>
     </div>
 
@@ -1221,14 +1211,6 @@ function showResults(){
   document.getElementById('r-new').textContent=st.nw;
   document.getElementById('r-young').textContent=st.yo;
   document.getElementById('r-mat').textContent=st.ma;
-
-  const lv=getLevel(st.ma);
-  const nextLv=LEVELS.find(l=>l.min>st.ma)||null;
-  document.getElementById('r-level-name').textContent=lv.name;
-  const toNext=nextLv?nextLv.min-st.ma:0;
-  document.getElementById('r-level-xp').textContent=nextLv?`还差 ${toNext} 词升级`:'已达最高级';
-  const lvPct=nextLv?Math.round((st.ma-lv.min)/(nextLv.min-lv.min)*100):100;
-  setTimeout(()=>{ document.getElementById('r-level-fill').style.width=lvPct+'%'; },100);
 
   const wa=Object.values(S.weak).sort((a,b)=>b.n-a.n);
   document.getElementById('w-cnt').textContent=wa.length;
