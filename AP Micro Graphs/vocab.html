@@ -626,6 +626,16 @@ body {
       </div>
     </div>
 
+    <div class="res-level-block">
+      <div class="res-level-row">
+        <div class="res-level-name" id="r-level-name">加载中…</div>
+        <div class="res-level-xp" id="r-level-xp"></div>
+      </div>
+      <div class="res-level-bar">
+        <div class="res-level-fill" id="r-level-fill" style="width:0%"></div>
+      </div>
+    </div>
+
     <div class="rlabel">间隔重复进度</div>
     <div class="sr-trio">
       <div class="sr-cell"><div class="sr-num" id="r-new">0</div><div class="sr-lbl">新词</div></div>
@@ -947,18 +957,7 @@ function retryWeak(){
 }
 
 function goBack(){ buildUnits(); updDue(); histRender(); show('screen-setup'); }
-function show(id, pushState=true){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  if(pushState && id !== 'screen-setup'){
-    history.pushState({ screen: id }, '');
-  }
-}
-
-window.addEventListener('popstate', function(e){
-  goBack();
-});
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
 
 // ── QUESTION TYPES ────────────────────────────────
 function isEcon(w){ return w.def&&w.def.length>20&&!['noun','verb','adjective','adverb','phrase','preposition','conjunction','noun phrase','phrasal verb'].includes(w.def.trim().toLowerCase().split(/[ .]/)[0]); }
@@ -1212,6 +1211,14 @@ function showResults(){
   document.getElementById('r-young').textContent=st.yo;
   document.getElementById('r-mat').textContent=st.ma;
 
+  const lv=getLevel(st.ma);
+  const nextLv=LEVELS.find(l=>l.min>st.ma)||null;
+  document.getElementById('r-level-name').textContent=lv.name;
+  const toNext=nextLv?nextLv.min-st.ma:0;
+  document.getElementById('r-level-xp').textContent=nextLv?`还差 ${toNext} 词升级`:'已达最高级';
+  const lvPct=nextLv?Math.round((st.ma-lv.min)/(nextLv.min-lv.min)*100):100;
+  setTimeout(()=>{ document.getElementById('r-level-fill').style.width=lvPct+'%'; },100);
+
   const wa=Object.values(S.weak).sort((a,b)=>b.n-a.n);
   document.getElementById('w-cnt').textContent=wa.length;
   const wl=document.getElementById('w-list'); wl.innerHTML='';
@@ -1233,7 +1240,6 @@ function cpWeak(){
   const t=wa.map(({w})=>`${w.term} | ${w.zh}${w.def&&w.def.length>10?'\n  '+w.def:''}`).join('\n\n');
   navigator.clipboard.writeText(t).then(()=>{ const b=document.querySelector('.wcopy'); b.textContent='已复制'; setTimeout(()=>b.textContent='复制',2000); });
 }
-
 
 function replaySession(){
   S.queue=[]; S.qi=0; S.score={ok:0,tot:0}; S.weak={}; S.pendingTerm=null; S.streak=0; S.maxStreak=0;
